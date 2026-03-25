@@ -1,0 +1,22 @@
+{
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "subtitle": "Login to your account to continue",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign In",
+    "signingIn": "Signing In...",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email is invalid",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 6 characters"
+  },
+  "header": {
+    "brand": "WEBSITENAME",
+    "collections": "Collections",
+    "deals": "Deals",
+    "support": "Support"
+  }
+}

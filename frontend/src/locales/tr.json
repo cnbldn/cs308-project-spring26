@@ -1,0 +1,22 @@
+{
+  "login": {
+    "welcomeBack": "Tekrar Hoş Geldiniz",
+    "subtitle": "Devam etmek için hesabınıza giriş yapın",
+    "emailLabel": "E-posta Adresi",
+    "emailPlaceholder": "siz@ornek.com",
+    "passwordLabel": "Şifre",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Giriş Yap",
+    "signingIn": "Giriş Yapılıyor...",
+    "emailRequired": "E-posta gerekli",
+    "emailInvalid": "E-posta geçersiz",
+    "passwordRequired": "Şifre gerekli",
+    "passwordMinLength": "Şifre en az 6 karakter olmalı"
+  },
+  "header": {
+    "brand": "WEBSITESİ",
+    "collections": "Koleksiyonlar",
+    "deals": "Teklifler",
+    "support": "Destek"
+  }
+}

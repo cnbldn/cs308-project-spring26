@@ -1,7 +1,13 @@
+import Login from './components/Login';
+import Header from './components/Header';
+import Footer from './components/Footer';
+
 function App() {
   return (
     <div>
-      <h1>Online Store Frontend is Running</h1>
+      <Header />
+      <Login />
+      <Footer />
     </div>
   )
 }
