@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import styles from './Login.module.css';
 
 const Login: React.FC = () => {
@@ -8,7 +9,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
@@ -38,13 +39,32 @@ const Login: React.FC = () => {
     }
 
     setIsLoading(true);
+    setErrors({});
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Login attempt:', { email, password });
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password,
+      });
+
+      if (response.data.user) {
+        // Save user info and token (if any) to localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+        }
+        
+        console.log('Login successful:', response.data.user);
+        navigate('/');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error.response?.data || error.message);
+      setErrors({
+        general: error.response?.data?.message || 'Something went wrong. Please try again.',
+      });
+    } finally {
       setIsLoading(false);
-      navigate('/');
-    }, 2000);
+    }
   };
 
   return (
@@ -52,6 +72,13 @@ const Login: React.FC = () => {
       <div className={styles.loginCard}>
         <h2 className={styles.loginTitle}>{t('login.welcomeBack')}</h2>
         <p className={styles.subTitle}>{t('login.subtitle')}</p>
+        
+        {errors.general && (
+          <div className={styles.error} style={{ marginBottom: '1rem', color: '#dc2626', textAlign: 'center' }}>
+            {errors.general}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>
