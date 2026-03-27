@@ -2,113 +2,179 @@ import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
   const navigate = useNavigate();
+
   return (
     <main
       style={{
-        padding: '70px 20px',
+        padding: '90px 20px 80px',
         textAlign: 'center',
-        maxWidth: '1000px',
+        maxWidth: '900px',
         margin: '0 auto',
+        minHeight: '100vh',
       }}
     >
-      <h1 style={{ fontSize: '42px', marginBottom: '18px' }}>
-        Welcome to Our Store
-      </h1>
-
-      <p
-        style={{
-          fontSize: '18px',
-          color: '#444',
-          maxWidth: '650px',
-          margin: '0 auto',
-          lineHeight: '1.5',
-        }}
-      >
-        This is the landing page of our e-commerce project. Users can browse
-        products, check categories, and access the platform in a simple way.
-      </p>
-
+      {/* Hero */}
       <div
         style={{
-          marginTop: '28px',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '14px',
-          flexWrap: 'wrap',
+          border: '1px solid #3a3225',
+          background: '#161210',
+          borderRadius: '6px',
+          padding: '50px 30px',
         }}
       >
-        <button
-          onClick={() => navigate('/shop')}
+        <h1
           style={{
-            padding: '12px 24px',
-            fontSize: '16px',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            backgroundColor: '#2d6cdf',
-            color: 'white',
+            fontSize: '2.4rem',
+            marginBottom: '8px',
+            color: '#ffd700',
+            fontWeight: '700',
+            letterSpacing: '1px',
           }}
         >
-          Shop Now
-        </button>
+          Game Vault
+        </h1>
 
-        <button
-          onClick={() => navigate('/login')}
+        <p
           style={{
-            padding: '12px 24px',
-            fontSize: '16px',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            backgroundColor: 'white',
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: '0.55rem',
+            color: '#6b5c3a',
+            letterSpacing: '3px',
+            marginBottom: '24px',
           }}
         >
-          Login
-        </button>
+          VIDEOGAME CD STORE
+        </p>
+
+        <p
+          style={{
+            fontSize: '1.05rem',
+            color: '#b5a882',
+            maxWidth: '520px',
+            margin: '0 auto',
+            lineHeight: '1.7',
+          }}
+        >
+          Browse our collection of videogame CDs — retro classics,
+          new releases, and everything in between.
+        </p>
+
+        <div
+          style={{
+            marginTop: '30px',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '14px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <button
+            onClick={() => navigate('/shop')}
+            style={{
+              padding: '12px 32px',
+              fontSize: '0.95rem',
+              border: '1px solid #d4a017',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              background: '#2a2215',
+              color: '#ffd700',
+              fontWeight: '600',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => e.target.style.background = '#3a3020'}
+            onMouseLeave={e => e.target.style.background = '#2a2215'}
+          >
+            Browse Shop
+          </button>
+
+          <button
+            onClick={() => navigate('/login')}
+            style={{
+              padding: '12px 32px',
+              fontSize: '0.95rem',
+              border: '1px solid #3a3225',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              background: 'transparent',
+              color: '#b5a882',
+              fontWeight: '600',
+              transition: 'border-color 0.15s, color 0.15s',
+            }}
+            onMouseEnter={e => {
+              e.target.style.borderColor = '#d4a017';
+              e.target.style.color = '#ffd700';
+            }}
+            onMouseLeave={e => {
+              e.target.style.borderColor = '#3a3225';
+              e.target.style.color = '#b5a882';
+            }}
+          >
+            Sign In
+          </button>
+        </div>
       </div>
 
+      {/* Feature Cards */}
       <div
         style={{
-          marginTop: '55px',
+          marginTop: '36px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '18px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+          gap: '16px',
         }}
       >
-        <div
-          style={{
-            padding: '20px',
-            borderRadius: '12px',
-            backgroundColor: '#f5f5f5',
-          }}
-        >
-          <h3>Simple Design</h3>
-          <p>A clean interface for users to explore the website easily.</p>
-        </div>
-
-        <div
-          style={{
-            padding: '20px',
-            borderRadius: '12px',
-            backgroundColor: '#f5f5f5',
-          }}
-        >
-          <h3>Product Access</h3>
-          <p>Users can view products, categories, and current offers here.</p>
-        </div>
-
-        <div
-          style={{
-            padding: '20px',
-            borderRadius: '12px',
-            backgroundColor: '#f5f5f5',
-          }}
-        >
-          <h3>User Friendly</h3>
-          <p>The page is designed to be simple, clear, and easy to use.</p>
-        </div>
+        {[
+          {
+            title: 'Rare Finds',
+            desc: 'Hard-to-find CDs, retro classics, and limited edition releases.',
+          },
+          {
+            title: 'Verified Quality',
+            desc: 'Every disc is checked and graded before it hits the shelf.',
+          },
+          {
+            title: 'New Arrivals',
+            desc: 'Weekly drops, deals, and community-picked recommendations.',
+          },
+        ].map((card) => (
+          <div
+            key={card.title}
+            style={{
+              padding: '24px 20px',
+              border: '1px solid #2a2215',
+              background: '#131110',
+              borderRadius: '6px',
+              transition: 'border-color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = '#5c4a2a'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = '#2a2215'}
+          >
+            <h3
+              style={{
+                color: '#e8d5a3',
+                fontSize: '1.1rem',
+                marginBottom: '8px',
+                marginTop: 0,
+                fontWeight: '600',
+              }}
+            >
+              {card.title}
+            </h3>
+            <p
+              style={{
+                color: '#8a7d62',
+                fontSize: '0.9rem',
+                lineHeight: '1.6',
+                margin: 0,
+              }}
+            >
+              {card.desc}
+            </p>
+          </div>
+        ))}
       </div>
     </main>
   );
 }
+
 export default LandingPage;
