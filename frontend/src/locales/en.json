@@ -13,6 +13,19 @@
     "passwordRequired": "Password is required",
     "passwordMinLength": "Password must be at least 6 characters"
   },
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Join us to start browsing",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "John Doe",
+    "confirmLabel": "Confirm Password",
+    "createAccount": "Create Account",
+    "creatingAccount": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "nameRequired": "Name is required",
+    "confirmRequired": "Please confirm your password",
+    "passwordMismatch": "Passwords do not match"
+  },
   "header": {
     "brand": "Game Vault",
     "collections": "Collection",
