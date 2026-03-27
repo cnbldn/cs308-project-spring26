@@ -13,6 +13,19 @@
     "passwordRequired": "Şifre gerekli",
     "passwordMinLength": "Şifre en az 6 karakter olmalı"
   },
+  "register": {
+    "title": "Hesap Oluştur",
+    "subtitle": "Göz atmaya başlamak için katılın",
+    "nameLabel": "Ad Soyad",
+    "namePlaceholder": "Ad Soyad",
+    "confirmLabel": "Şifreyi Onayla",
+    "createAccount": "Hesap Oluştur",
+    "creatingAccount": "Hesap Oluşturuluyor...",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "nameRequired": "İsim gerekli",
+    "confirmRequired": "Lütfen şifrenizi onaylayın",
+    "passwordMismatch": "Şifreler eşleşmiyor"
+  },
   "header": {
     "brand": "WEBSITESİ",
     "collections": "Koleksiyonlar",
