@@ -1,15 +1,20 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Login from './components/Login';
 
 function App() {
   return (
-    <div>
+    <BrowserRouter>
       <Header />
-      <LandingPage />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
       <Footer />
-    </div>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

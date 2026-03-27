@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
 
@@ -7,11 +8,12 @@ const Header: React.FC = () => {
 
   return (
     <header className={styles.pageHeader}>
-      <div className={styles.brand}>{t('header.brand')}</div>
+      <Link to="/" className={styles.brand}>{t('header.brand')}</Link>
       <div className={styles.linkGroup}>
-        <a href="#" className={styles.navLink}>{t('header.collections')}</a>
-        <a href="#" className={styles.navLink}>{t('header.deals')}</a>
-        <a href="#" className={styles.navLink}>{t('header.support')}</a>
+        <Link to="/shop" className={styles.navLink}>{t('header.collections')}</Link>
+        <Link to="/deals" className={styles.navLink}>{t('header.deals')}</Link>
+        <Link to="/support" className={styles.navLink}>{t('header.support')}</Link>
+        <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
       </div>
       <div className={styles.languageSwitcher} data-lang={i18n.language}>
         <button
