@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 function LandingPage() {
+  const navigate = useNavigate();
   return (
     <main
       style={{
@@ -35,6 +38,7 @@ function LandingPage() {
         }}
       >
         <button
+          onClick={() => navigate('/shop')}
           style={{
             padding: '12px 24px',
             fontSize: '16px',
@@ -49,6 +53,7 @@ function LandingPage() {
         </button>
 
         <button
+          onClick={() => navigate('/login')}
           style={{
             padding: '12px 24px',
             fontSize: '16px',
@@ -106,5 +111,4 @@ function LandingPage() {
     </main>
   );
 }
-
 export default LandingPage;

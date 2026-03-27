@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Login.module.css';
 
 const Login: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -40,8 +42,8 @@ const Login: React.FC = () => {
     // Simulate API call
     setTimeout(() => {
       console.log('Login attempt:', { email, password });
-      alert('Login successful! (Frontend simulation)');
       setIsLoading(false);
+      navigate('/');
     }, 2000);
   };
 
@@ -93,9 +95,9 @@ const Login: React.FC = () => {
         </form>
 
         <div className={styles.links}>
-          <a href="#" className={styles.link}>Forgot Password?</a>
+          <Link to="/forgot-password" className={styles.link}>Forgot Password?</Link>
           <span className={styles.dotSeparator}>•</span>
-          <a href="#" className={styles.link}>Create account</a>
+          <Link to="/register" className={styles.link}>Create account</Link>
         </div>
       </div>
     </div>
