@@ -1,28 +1,60 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const Customer = require("../models/Customer");
 
-// Mock Login Route
-// This will unblock the frontend developer immediately
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+// REGISTER
+router.post("/register", async (req, res) => {
+  try {
+    const { name, email, password, taxId, homeAddress } = req.body;
 
-    console.log(`Login attempt for: ${email}`);
-
-    // Temporary logic: Allow any login for the demo
-    if (email && password) {
-        return res.status(200).json({
-            message: "Login successful (Mock)",
-            user: {
-                id: "mock-123",
-                email: email,
-                name: "Demo User",
-                role: "customer"
-            },
-            token: "mock-jwt-token-for-demo"
-        });
+    const existing = await Customer.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    return res.status(400).json({ message: "Invalid email or password" });
+    const customer = await Customer.create({
+      name,
+      email,
+      password,
+      taxId,
+      homeAddress,
+    });
+
+    res.status(201).json({
+      message: "Customer created",
+      id: customer._id,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+// LOGIN
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const customer = await Customer.findOne({ email }).select("+password");
+    if (!customer) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await customer.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    res.json({
+      message: "Login successful",
+      user: {
+        id: customer._id,
+        email: customer.email,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;
