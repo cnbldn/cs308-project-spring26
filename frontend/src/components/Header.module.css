@@ -4,45 +4,52 @@
   right: 0;
   position: fixed;
   top: 0;
-  padding: 0.8rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   margin: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg, #0ea5e9 0%, #3b82f6 100%);
-  color: #ffffff;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.5);
-  border-radius: 0;
-  box-shadow: 0 6px 17px rgba(15, 23, 42, 0.15);
+  background: #161210;
+  color: #d4c9a8;
+  border-bottom: 1px solid #3a3225;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
 
 .brand {
   font-weight: 700;
-  color: #ffffff;
-  font-size: 1rem;
+  color: #ffd700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.brand:hover {
+  color: #ffe44d;
 }
 
 .linkGroup {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .navLink {
-  color: #eef2ff;
+  color: #a89a78;
   font-size: 0.9rem;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.15s;
 }
 
 .navLink:hover {
-  color: #ffffff;
+  color: #ffd700;
 }
 
 .languageSwitcher {
   display: flex;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #3a3225;
+  border-radius: 4px;
   padding: 2px;
   position: relative;
 }
@@ -50,18 +57,19 @@
 .langButton {
   background: transparent;
   border: none;
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 18px;
+  color: #a89a78;
+  padding: 0.3rem 0.7rem;
+  border-radius: 3px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  font-size: 0.7rem;
+  transition: color 0.2s ease;
   position: relative;
   z-index: 2;
 }
 
 .langButton.active {
-  color: #1e293b;
+  color: #ffd700;
 }
 
 .languageSwitcher::before {
@@ -71,8 +79,8 @@
   left: 2px;
   width: calc(50% - 2px);
   height: calc(100% - 4px);
-  background: #ffffff;
-  border-radius: 18px;
+  background: rgba(212, 160, 23, 0.1);
+  border-radius: 3px;
   transition: transform 0.3s ease;
   z-index: 1;
 }

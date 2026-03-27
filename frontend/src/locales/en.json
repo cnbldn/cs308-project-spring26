@@ -1,7 +1,7 @@
 {
   "login": {
     "welcomeBack": "Welcome Back",
-    "subtitle": "Login to your account to continue",
+    "subtitle": "Sign in to your account",
     "emailLabel": "Email Address",
     "emailPlaceholder": "you@example.com",
     "passwordLabel": "Password",
@@ -14,8 +14,8 @@
     "passwordMinLength": "Password must be at least 6 characters"
   },
   "header": {
-    "brand": "WEBSITENAME",
-    "collections": "Collections",
+    "brand": "Game Vault",
+    "collections": "Collection",
     "deals": "Deals",
     "support": "Support"
   }
