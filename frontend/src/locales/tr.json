@@ -24,7 +24,13 @@
     "alreadyHaveAccount": "Zaten hesabınız var mı?",
     "nameRequired": "İsim gerekli",
     "confirmRequired": "Lütfen şifrenizi onaylayın",
-    "passwordMismatch": "Şifreler eşleşmiyor"
+    "passwordMismatch": "Şifreler eşleşmiyor",
+    "addressLabel": "Adres",
+    "addressPlaceholder": "Örn. Atatürk Cad. No:1, İstanbul",
+    "addressRequired": "Adres gerekli",
+    "taxIdLabel": "Vergi Numarası",
+    "taxIdPlaceholder": "Örn. 1234567890",
+    "taxIdRequired": "Vergi numarası gerekli"
   },
   "header": {
     "brand": "Game Vault",

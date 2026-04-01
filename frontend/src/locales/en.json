@@ -24,7 +24,13 @@
     "alreadyHaveAccount": "Already have an account?",
     "nameRequired": "Name is required",
     "confirmRequired": "Please confirm your password",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "addressLabel": "Address",
+    "addressPlaceholder": "123 Main St, City, Country",
+    "addressRequired": "Address is required",
+    "taxIdLabel": "Tax ID",
+    "taxIdPlaceholder": "e.g. 1234567890",
+    "taxIdRequired": "Tax ID is required"
   },
   "header": {
     "brand": "Game Vault",
