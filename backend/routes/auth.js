@@ -7,6 +7,11 @@ router.post("/register", async (req, res) => {
   try {
     const { name, email, password, taxId, homeAddress } = req.body;
 
+    // Basic validation to help the frontend dev
+    if (!name || !email || !password || !taxId || !homeAddress) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const existing = await Customer.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "User already exists" });
@@ -17,15 +22,16 @@ router.post("/register", async (req, res) => {
       email,
       password,
       taxId,
-      homeAddress,
+      homeAddress, // Database guy will change this to String in the model
     });
 
     res.status(201).json({
-      message: "Customer created",
+      message: "Customer created successfully",
       id: customer._id,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Registration error:", err);
+    res.status(500).json({ message: "Server error during registration" });
   }
 });
 
