@@ -1,15 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const addressSchema = new mongoose.Schema(
-  {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    country: { type: String, default: "Turkey" },
-  },
-  { _id: false }
-);
-
 const customerSchema = new mongoose.Schema(
   {
     name: {
@@ -40,8 +31,9 @@ const customerSchema = new mongoose.Schema(
     },
 
     homeAddress: {
-      type: addressSchema,
-      required: true,
+      type: String,
+      required: [true, "Home address is required"],
+      trim: true,
     },
   },
   { timestamps: true }
