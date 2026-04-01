@@ -10,11 +10,15 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [address, setAddress] = useState('');
+  const [taxId, setTaxId] = useState('');
   const [errors, setErrors] = useState<{
     name?: string;
     email?: string;
     password?: string;
     confirm?: string;
+    address?: string;
+    taxId?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,6 +47,14 @@ const Register: React.FC = () => {
       newErrors.confirm = t('register.passwordMismatch');
     }
 
+    if (!address.trim()) {
+      newErrors.address = t('register.addressRequired');
+    }
+
+    if (!taxId.trim()) {
+      newErrors.taxId = t('register.taxIdRequired');
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -58,7 +70,7 @@ const Register: React.FC = () => {
 
     // Simulate API call
     setTimeout(() => {
-      console.log('Register attempt:', { name, email, password });
+      console.log('Register attempt:', { name, email, password, address, taxId });
       setIsLoading(false);
       navigate('/login');
     }, 2000);
@@ -132,6 +144,38 @@ const Register: React.FC = () => {
               required
             />
             {errors.confirm && <div className={styles.error}>{errors.confirm}</div>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="address" className={styles.label}>
+              {t('register.addressLabel')}
+            </label>
+            <input
+              type="text"
+              id="address"
+              className={styles.input}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder={t('register.addressPlaceholder')}
+              required
+            />
+            {errors.address && <div className={styles.error}>{errors.address}</div>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="taxId" className={styles.label}>
+              {t('register.taxIdLabel')}
+            </label>
+            <input
+              type="text"
+              id="taxId"
+              className={styles.input}
+              value={taxId}
+              onChange={(e) => setTaxId(e.target.value)}
+              placeholder={t('register.taxIdPlaceholder')}
+              required
+            />
+            {errors.taxId && <div className={styles.error}>{errors.taxId}</div>}
           </div>
 
           <button
