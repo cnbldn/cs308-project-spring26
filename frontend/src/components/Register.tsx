@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import styles from './Login.module.css';
 
 const Register: React.FC = () => {
@@ -21,6 +22,7 @@ const Register: React.FC = () => {
     taxId?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -67,13 +69,23 @@ const Register: React.FC = () => {
     }
 
     setIsLoading(true);
+    setApiError('');
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Register attempt:', { name, email, password, address, taxId });
-      setIsLoading(false);
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', {
+        name,
+        email,
+        password,
+        taxId,
+        homeAddress: address,
+      });
       navigate('/login');
-    }, 2000);
+    } catch (err: any) {
+      const message = err.response?.data?.message || t('register.registrationFailed');
+      setApiError(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -81,6 +93,7 @@ const Register: React.FC = () => {
       <div className={styles.loginCard}>
         <h2 className={styles.loginTitle}>{t('register.title')}</h2>
         <p className={styles.subTitle}>{t('register.subtitle')}</p>
+        {apiError && <div className={styles.error}>{apiError}</div>}
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="name" className={styles.label}>
