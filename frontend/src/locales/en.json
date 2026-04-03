@@ -30,7 +30,8 @@
     "addressRequired": "Address is required",
     "taxIdLabel": "Tax ID",
     "taxIdPlaceholder": "e.g. 1234567890",
-    "taxIdRequired": "Tax ID is required"
+    "taxIdRequired": "Tax ID is required",
+    "registrationFailed": "Registration failed. Please try again."
   },
   "header": {
     "brand": "Game Vault",
