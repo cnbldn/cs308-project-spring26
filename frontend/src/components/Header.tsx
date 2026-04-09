@@ -26,6 +26,7 @@ const Header: React.FC = () => {
         <Link to="/shop" className={styles.navLink}>{t('header.collections')}</Link>
         <Link to="/deals" className={styles.navLink}>{t('header.deals')}</Link>
         <Link to="/support" className={styles.navLink}>{t('header.support')}</Link>
+<<<<<<< Updated upstream
         
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -43,6 +44,10 @@ const Header: React.FC = () => {
         ) : (
           <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
         )}
+=======
+        <Link to="/cart" className={styles.navLink}>{t('cart.title')}</Link>
+        <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
+>>>>>>> Stashed changes
       </div>
       <div className={styles.languageSwitcher} data-lang={i18n.language}>
         <button
