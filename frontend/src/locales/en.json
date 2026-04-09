@@ -37,6 +37,8 @@
     "brand": "Game Vault",
     "collections": "Collection",
     "deals": "Deals",
-    "support": "Support"
+    "support": "Support",
+    "hello": "Hello",
+    "logout": "Logout"
   }
 }

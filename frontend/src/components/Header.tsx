@@ -1,10 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  // Check if user is logged in (from localStorage)
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+    // Force a re-render to update the header immediately
+    window.location.reload();
+  };
 
   return (
     <header className={styles.pageHeader}>
@@ -13,7 +26,23 @@ const Header: React.FC = () => {
         <Link to="/shop" className={styles.navLink}>{t('header.collections')}</Link>
         <Link to="/deals" className={styles.navLink}>{t('header.deals')}</Link>
         <Link to="/support" className={styles.navLink}>{t('header.support')}</Link>
-        <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
+        
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>
+              {t('header.hello')}, {user.name || user.email.split('@')[0]}
+            </span>
+            <button 
+              onClick={handleLogout}
+              className={styles.navLink}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              {t('header.logout')}
+            </button>
+          </div>
+        ) : (
+          <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
+        )}
       </div>
       <div className={styles.languageSwitcher} data-lang={i18n.language}>
         <button
