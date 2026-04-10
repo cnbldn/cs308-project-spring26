@@ -116,6 +116,8 @@ const Cart: React.FC = () => {
     );
   }
 
+  const PLACEHOLDER_IMAGE = 'https://placehold.co/100x100?text=Product';
+
   return (
     <div className={styles.cartContainer}>
       <h2 className={styles.cartTitle}>{t('cart.title')}</h2>
