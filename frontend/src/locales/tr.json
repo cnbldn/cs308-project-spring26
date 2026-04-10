@@ -38,6 +38,13 @@
     "deals": "Teklifler",
     "support": "Destek"
   },
+  "shop": {
+    "title": "Mağaza",
+    "subtitle": "Videoyun CD koleksiyonumuza göz atın",
+    "addToCart": "Sepete Ekle",
+    "inStock": "Stokta {{count}} adet",
+    "outOfStock": "Stokta yok"
+  },
   "cart": {
     "title": "Sepet",
     "empty": "Sepetiniz boş.",

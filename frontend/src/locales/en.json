@@ -41,6 +41,13 @@
     "hello": "Hello",
     "logout": "Logout"
   },
+  "shop": {
+    "title": "Shop",
+    "subtitle": "Browse our collection of videogame CDs",
+    "addToCart": "Add to Cart",
+    "inStock": "{{count}} in stock",
+    "outOfStock": "Out of stock"
+  },
   "cart": {
     "title": "Cart",
     "empty": "Your cart is empty.",
