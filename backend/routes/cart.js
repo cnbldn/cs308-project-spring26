@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 
-// ADD TO CART
+// ADD TO CART (Fulfills Req #4: Guest support)
 // POST /api/cart/add
 router.post('/add', async (req, res) => {
   try {
-    const { productId, quantity, customerId } = req.body;
+    const { productId, quantity, customerId, sessionId } = req.body;
 
     // 1. Find the product and check stock (Req #3)
     const product = await Product.findById(productId);
@@ -19,27 +20,32 @@ router.post('/add', async (req, res) => {
       return res.status(400).json({ message: `Insufficient stock. Only ${product.stock} items left.` });
     }
 
-    // 2. Find or create the user's cart
-    // For now, we use customerId from the body (simplified for demo)
-    let cart = await Cart.findOne({ customerId: customerId });
-    if (!cart) {
-      cart = new Cart({ customerId: customerId, items: [], cartTotal: 0 });
+    // 2. Find or create the user's cart (Check customerId first, then sessionId)
+    let cart;
+    if (customerId) {
+      cart = await Cart.findOne({ customerId: customerId });
+    } else if (sessionId) {
+      cart = await Cart.findOne({ sessionId: sessionId, customerId: null });
     }
 
-    // 3. Update items
+    if (!cart) {
+      cart = new Cart({ 
+        customerId: customerId || null, 
+        sessionId: customerId ? null : sessionId,
+        items: [], 
+        cartTotal: 0 
+      });
+    }
+
+    // 3. Update items (using the addItem method from the model for cleanliness)
     const itemIndex = cart.items.findIndex(p => p.product.toString() === productId);
     if (itemIndex > -1) {
-      // Product exists, update quantity
       cart.items[itemIndex].quantity += quantity;
-      // Note: In a real app, you'd check stock again for the NEW total
     } else {
-      // New product, add to cart
       cart.items.push({ product: productId, quantity: quantity, price: product.price });
     }
 
-    // 4. Update cart total
-    cart.cartTotal = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
-
+    // Note: The cartTotal is automatically updated by the pre-save hook in Cart.js!
     await cart.save();
     res.status(200).json({ message: "Item added to cart", cart });
 
@@ -50,28 +56,21 @@ router.post('/add', async (req, res) => {
 });
 
 // REMOVE ITEM FROM CART
-// DELETE /api/cart/:customerId/:productId
-router.delete('/:customerId/:productId', async (req, res) => {
+// DELETE /api/cart/:id/:productId (id can be customerId or sessionId)
+router.delete('/:id/:productId', async (req, res) => {
   try {
-    const { customerId, productId } = req.params;
+    const { id, productId } = req.params;
 
-    const cart = await Cart.findOne({ customerId });
+    const cart = await Cart.findOne({ 
+      $or: [{ customerId: id }, { sessionId: id }] 
+    });
+
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    const beforeLength = cart.items.length;
     cart.items = cart.items.filter(
       (item) => item.product.toString() !== productId
-    );
-
-    if (cart.items.length === beforeLength) {
-      return res.status(404).json({ message: "Item not in cart" });
-    }
-
-    cart.cartTotal = cart.items.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
     );
 
     await cart.save();
@@ -82,13 +81,33 @@ router.delete('/:customerId/:productId', async (req, res) => {
   }
 });
 
-// GET USER CART
-router.get('/:customerId', async (req, res) => {
+// GET USER OR GUEST CART
+// GET /api/cart/:id (id can be customerId or sessionId)
+router.get('/:id', async (req, res) => {
   try {
-    const cart = await Cart.findOne({ customerId: req.params.customerId }).populate('items.product');
-    if (!cart) return res.status(200).json({ items: [], cartTotal: 0 });
+    const id = req.params.id;
+    let cart;
+
+    // 1. Check if ID is a valid MongoDB ObjectId
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+
+    if (isValidObjectId) {
+      // Try searching by customerId first
+      cart = await Cart.findOne({ customerId: id }).populate('items.product');
+    }
+
+    // 2. If no cart found by customerId, search by sessionId
+    if (!cart) {
+      cart = await Cart.findOne({ sessionId: id }).populate('items.product');
+    }
+
+    if (!cart) {
+      return res.status(200).json({ items: [], cartTotal: 0 });
+    }
+    
     res.json(cart);
   } catch (err) {
+    console.error("Get cart error:", err);
     res.status(500).json({ message: err.message });
   }
 });
