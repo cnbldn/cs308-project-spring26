@@ -18,41 +18,68 @@ interface CartItem {
   price: number;
 }
 
+const PLACEHOLDER_IMAGE = 'https://placehold.co/100x100?text=Product';
+
+const getCustomerId = (): string | null => {
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  return user?.id || user?._id || null;
+};
+
 const Cart: React.FC = () => {
   const { t } = useTranslation();
   const [items, setItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const fetchCart = async () => {
+    const customerId = getCustomerId();
+    if (!customerId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${API_BASE}/cart/${customerId}`);
+      setItems(res.data.items || []);
+      setTotal(res.data.cartTotal || 0);
+    } catch (err) {
+      console.error('Failed to fetch cart:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCart = async () => {
-      const userStr = localStorage.getItem('user');
-      const user = userStr ? JSON.parse(userStr) : null;
-      const customerId = user?.id || user?._id;
-
-      if (!customerId) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await axios.get(`${API_BASE}/cart/${customerId}`);
-        setItems(res.data.items || []);
-        setTotal(res.data.cartTotal || 0);
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCart();
   }, []);
 
-  const updateQuantity = async (productId: string, delta: number) => {
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
-    const customerId = user?.id || user?._id;
+  const removeItem = async (productId: string) => {
+    const customerId = getCustomerId();
+    if (!customerId) return;
+
+    try {
+      await axios.delete(`${API_BASE}/cart/${customerId}/${productId}`);
+      // Refresh the data instead of page reload for better UX
+      await fetchCart();
+    } catch (err) {
+      console.error('Remove failed:', err);
+    }
+  };
+
+  const updateQuantity = async (
+    productId: string,
+    delta: number,
+    currentQuantity: number
+  ) => {
+    // If the decrement would bring quantity to 0, remove the item instead.
+    if (delta < 0 && currentQuantity + delta <= 0) {
+      await removeItem(productId);
+      return;
+    }
+
+    const customerId = getCustomerId();
+    if (!customerId) return;
 
     try {
       await axios.post(`${API_BASE}/cart/add`, {
@@ -60,14 +87,19 @@ const Cart: React.FC = () => {
         quantity: delta,
         customerId,
       });
-      // Refresh the page to show new data
-      window.location.reload(); 
+      await fetchCart(); // Refresh data
     } catch (err) {
       console.error('Update failed:', err);
     }
   };
 
-  if (loading) return <div className={styles.cartContainer}><p>Loading cart...</p></div>;
+  if (loading) {
+    return (
+      <div className={styles.cartContainer}>
+        <p>Loading cart...</p>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -92,30 +124,42 @@ const Cart: React.FC = () => {
       <div className={styles.cartContent}>
         {items.map((item) => (
           <div key={item.product._id} className={styles.cartItem}>
-            <img 
-              src={item.product.imageUrl || item.product.image || PLACEHOLDER_IMAGE} 
-              alt={item.product.name} 
-              className={styles.itemImage} 
+            <img
+              src={item.product.imageUrl || item.product.image || PLACEHOLDER_IMAGE}
+              alt={item.product.name}
+              className={styles.itemImage}
             />
             <div className={styles.itemDetails}>
               <div className={styles.itemName}>{item.product.name}</div>
-              <div className={styles.itemPrice}>${item.product.price.toFixed(2)}</div>
+              <div className={styles.itemPrice}>
+                ${item.product.price.toFixed(2)}
+              </div>
             </div>
             <div className={styles.quantityControls}>
               <button
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(item.product._id, -1)}
+                onClick={() =>
+                  updateQuantity(item.product._id, -1, item.quantity)
+                }
               >
                 -
               </button>
               <span className={styles.quantity}>{item.quantity}</span>
               <button
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(item.product._id, 1)}
+                onClick={() =>
+                  updateQuantity(item.product._id, 1, item.quantity)
+                }
               >
                 +
               </button>
             </div>
+            <button
+              className={styles.removeButton}
+              onClick={() => removeItem(item.product._id)}
+            >
+              {t('cart.remove')}
+            </button>
           </div>
         ))}
 
@@ -129,7 +173,11 @@ const Cart: React.FC = () => {
             <span>{t('cart.total')}</span>
             <span>${total.toFixed(2)}</span>
           </div>
-          <Link to="/checkout" className={styles.checkoutButton} style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>
+          <Link
+            to="/checkout"
+            className={styles.checkoutButton}
+            style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}
+          >
             {t('cart.checkout')}
           </Link>
         </div>
