@@ -32,25 +32,25 @@ const Cart: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const fetchCart = async () => {
+    const customerId = getCustomerId();
+    if (!customerId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${API_BASE}/cart/${customerId}`);
+      setItems(res.data.items || []);
+      setTotal(res.data.cartTotal || 0);
+    } catch (err) {
+      console.error('Failed to fetch cart:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCart = async () => {
-      const customerId = getCustomerId();
-      if (!customerId) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await axios.get(`${API_BASE}/cart/${customerId}`);
-        setItems(res.data.items || []);
-        setTotal(res.data.cartTotal || 0);
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCart();
   }, []);
 
@@ -60,7 +60,8 @@ const Cart: React.FC = () => {
 
     try {
       await axios.delete(`${API_BASE}/cart/${customerId}/${productId}`);
-      window.location.reload();
+      // Refresh the data instead of page reload for better UX
+      await fetchCart();
     } catch (err) {
       console.error('Remove failed:', err);
     }
@@ -72,8 +73,6 @@ const Cart: React.FC = () => {
     currentQuantity: number
   ) => {
     // If the decrement would bring quantity to 0, remove the item instead.
-    // The backend's cartItemSchema enforces `min: 1` on quantity, so a
-    // save with qty=0 would fail validation and the item would stay.
     if (delta < 0 && currentQuantity + delta <= 0) {
       await removeItem(productId);
       return;
@@ -88,7 +87,7 @@ const Cart: React.FC = () => {
         quantity: delta,
         customerId,
       });
-      window.location.reload();
+      await fetchCart(); // Refresh data
     } catch (err) {
       console.error('Update failed:', err);
     }
