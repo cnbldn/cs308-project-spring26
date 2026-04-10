@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Cart.module.css';
 
+// Matches backend cartItemSchema (backend/models/Cart.js).
+// `product` is the Product ObjectId reference; the rest are denormalized
+// fields we need to render the row without a second lookup.
 interface CartItem {
-  id: string;
+  product: string;
   name: string;
+  image: string;
   price: number;
   quantity: number;
-  image: string;
 }
 
 const Cart: React.FC = () => {
@@ -17,18 +20,20 @@ const Cart: React.FC = () => {
   // TODO: Replace with real cart state (e.g. context or backend)
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const updateQuantity = (id: string, delta: number) => {
+  const updateQuantity = (productId: string, delta: number) => {
     setItems((prev) =>
       prev
         .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + delta } : item
+          item.product === productId
+            ? { ...item, quantity: item.quantity + delta }
+            : item
         )
         .filter((item) => item.quantity > 0)
     );
   };
 
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const removeItem = (productId: string) => {
+    setItems((prev) => prev.filter((item) => item.product !== productId));
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -53,7 +58,7 @@ const Cart: React.FC = () => {
       <h2 className={styles.cartTitle}>{t('cart.title')}</h2>
       <div className={styles.cartContent}>
         {items.map((item) => (
-          <div key={item.id} className={styles.cartItem}>
+          <div key={item.product} className={styles.cartItem}>
             <img src={item.image} alt={item.name} className={styles.itemImage} />
             <div className={styles.itemDetails}>
               <div className={styles.itemName}>{item.name}</div>
@@ -62,21 +67,21 @@ const Cart: React.FC = () => {
             <div className={styles.quantityControls}>
               <button
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(item.id, -1)}
+                onClick={() => updateQuantity(item.product, -1)}
               >
                 -
               </button>
               <span className={styles.quantity}>{item.quantity}</span>
               <button
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(item.id, 1)}
+                onClick={() => updateQuantity(item.product, 1)}
               >
                 +
               </button>
             </div>
             <button
               className={styles.removeButton}
-              onClick={() => removeItem(item.id)}
+              onClick={() => removeItem(item.product)}
             >
               {t('cart.remove')}
             </button>
