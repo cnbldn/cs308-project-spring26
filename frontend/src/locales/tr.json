@@ -37,5 +37,14 @@
     "collections": "Koleksiyon",
     "deals": "Teklifler",
     "support": "Destek"
+  },
+  "cart": {
+    "title": "Sepet",
+    "empty": "Sepetiniz boş.",
+    "continueShopping": "Alışverişe Devam Et",
+    "remove": "Kaldır",
+    "subtotal": "Ara Toplam",
+    "total": "Toplam",
+    "checkout": "Ödemeye Geç"
   }
 }

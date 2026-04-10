@@ -40,5 +40,14 @@
     "support": "Support",
     "hello": "Hello",
     "logout": "Logout"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "continueShopping": "Continue Shopping",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "checkout": "Proceed to Checkout"
   }
 }
