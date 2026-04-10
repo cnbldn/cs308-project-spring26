@@ -49,6 +49,39 @@ router.post('/add', async (req, res) => {
   }
 });
 
+// REMOVE ITEM FROM CART
+// DELETE /api/cart/:customerId/:productId
+router.delete('/:customerId/:productId', async (req, res) => {
+  try {
+    const { customerId, productId } = req.params;
+
+    const cart = await Cart.findOne({ customerId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    const beforeLength = cart.items.length;
+    cart.items = cart.items.filter(
+      (item) => item.product.toString() !== productId
+    );
+
+    if (cart.items.length === beforeLength) {
+      return res.status(404).json({ message: "Item not in cart" });
+    }
+
+    cart.cartTotal = cart.items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    await cart.save();
+    res.status(200).json({ message: "Item removed from cart", cart });
+  } catch (err) {
+    console.error("Cart remove error:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // GET USER CART
 router.get('/:customerId', async (req, res) => {
   try {
