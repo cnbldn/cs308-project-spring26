@@ -1,37 +1,28 @@
 const express = require('express');
 const router = express.Router();
+const Product = require('../models/Product');
 
-// Mock Product List for the Landing Page
-// This fulfills Requirement #1 (Products/Categories) for the Demo
-router.get('/', (req, res) => {
-    const mockProducts = [
-        {
-            id: 'p1',
-            name: 'Gaming Laptop',
-            category: 'Electronics',
-            price: 1200,
-            stock: 5,
-            image: 'https://via.placeholder.com/300'
-        },
-        {
-            id: 'p2',
-            name: 'Classic White Tee',
-            category: 'Clothing',
-            price: 25,
-            stock: 50,
-            image: 'https://via.placeholder.com/300'
-        },
-        {
-            id: 'p3',
-            name: 'Bluetooth Headphones',
-            category: 'Electronics',
-            price: 150,
-            stock: 12,
-            image: 'https://via.placeholder.com/300'
-        }
-    ];
+// GET ALL PRODUCTS
+// Fetches real products from the database (Requirement #1)
+router.get('/', async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.status(200).json(products);
+    } catch (err) {
+        console.error("Error fetching products:", err);
+        res.status(500).json({ message: "Failed to fetch products" });
+    }
+});
 
-    res.status(200).json(mockProducts);
+// GET PRODUCT BY ID
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        res.status(200).json(product);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 module.exports = router;
