@@ -37,12 +37,9 @@
     "brand": "Game Vault",
     "collections": "Collection",
     "deals": "Deals",
-<<<<<<< Updated upstream
     "support": "Support",
     "hello": "Hello",
     "logout": "Logout"
-=======
-    "support": "Support"
   },
   "cart": {
     "title": "Cart",
@@ -52,6 +49,5 @@
     "subtotal": "Subtotal",
     "total": "Total",
     "checkout": "Proceed to Checkout"
->>>>>>> Stashed changes
   }
 }
