@@ -122,3 +122,17 @@
   border-color: #3a3225;
   cursor: not-allowed;
 }
+
+.successMessage {
+  color: #6fbf6f;
+  font-size: 0.72rem;
+  margin: 0.5rem 0 0 0;
+  text-align: center;
+}
+
+.errorMessage {
+  color: #e05050;
+  font-size: 0.72rem;
+  margin: 0.5rem 0 0 0;
+  text-align: center;
+}

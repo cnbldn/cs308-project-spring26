@@ -81,6 +81,14 @@ const Register: React.FC = () => {
       });
       navigate('/login');
     } catch (err: any) {
+      // This prints the error to your Browser Console (F12 -> Console)
+      console.error("REGISTRATION ERROR:", err);
+      
+      // This specifically prints what the backend sent back
+      if (err.response) {
+        console.log("Backend Data:", err.response.data);
+        console.log("Status Code:", err.response.status);
+      }
       const message = err.response?.data?.message || t('register.registrationFailed');
       setApiError(message);
     } finally {

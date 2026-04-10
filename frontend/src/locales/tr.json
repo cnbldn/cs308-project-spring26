@@ -42,6 +42,11 @@
     "title": "Mağaza",
     "subtitle": "Videoyun CD koleksiyonumuza göz atın",
     "addToCart": "Sepete Ekle",
+    "adding": "Ekleniyor...",
+    "added": "Sepete eklendi!",
+    "addToCartFailed": "Ürün eklenemedi. Lütfen tekrar deneyin.",
+    "loading": "Ürünler yükleniyor...",
+    "loadError": "Ürünler yüklenemedi. Lütfen tekrar deneyin.",
     "inStock": "Stokta {{count}} adet",
     "outOfStock": "Stokta yok"
   },
