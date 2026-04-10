@@ -45,6 +45,11 @@
     "title": "Shop",
     "subtitle": "Browse our collection of videogame CDs",
     "addToCart": "Add to Cart",
+    "adding": "Adding...",
+    "added": "Added to cart!",
+    "addToCartFailed": "Could not add item. Please try again.",
+    "loading": "Loading products...",
+    "loadError": "Could not load products. Please try again.",
     "inStock": "{{count}} in stock",
     "outOfStock": "Out of stock"
   },
