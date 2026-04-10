@@ -43,11 +43,10 @@ const cartSchema = new mongoose.Schema({
 });
 
 // 🧮 Pre-save hook: Automatically calculate cartTotal before saving
-cartSchema.pre('save', function (next) {
+cartSchema.pre('save', async function () {
   this.cartTotal = this.items.reduce((total, item) => {
     return total + (item.price * item.quantity);
   }, 0);
-  next();
 });
 
 // 🤝 Static Method: Merge guest cart into user cart on login
