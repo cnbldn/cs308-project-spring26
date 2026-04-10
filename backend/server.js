@@ -12,10 +12,12 @@ app.use(express.json());
 // Import Routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const cartRoutes = require('./routes/cart');
 
 // Register Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 // basic health-check route
 app.get('/', (req, res) => {
