@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Customer = require("../models/Customer");
+const Cart = require("../models/Cart");
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -51,7 +52,7 @@ router.post("/register", async (req, res) => {
 // LOGIN
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, sessionId } = req.body;
 
     const customer = await Customer.findOne({ email }).select("+password");
     if (!customer) {
@@ -61,6 +62,16 @@ router.post("/login", async (req, res) => {
     const isMatch = await customer.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Merge carts if a sessionId is present (Requirement #4)
+    if (sessionId) {
+      try {
+        await Cart.mergeCarts(sessionId, customer._id);
+        console.log(`[LOGIN] Carts merged for user ${customer._id} and session ${sessionId}`);
+      } catch (mergeErr) {
+        console.error("[LOGIN] Cart merge failed:", mergeErr);
+      }
     }
 
     res.json({

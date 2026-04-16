@@ -42,9 +42,11 @@ const Login: React.FC = () => {
     setErrors({});
 
     try {
+      const sessionId = localStorage.getItem('sessionId');
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password,
+        sessionId,
       });
 
       if (response.data.user) {
