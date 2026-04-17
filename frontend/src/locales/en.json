@@ -50,6 +50,12 @@
     "addToCartFailed": "Could not add item. Please try again.",
     "loading": "Loading products...",
     "loadError": "Could not load products. Please try again.",
+    "searchPlaceholder": "Search products...",
+    "allCategories": "All Categories",
+    "sortDefault": "Newest",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "sortPopularity": "Popularity",
     "inStock": "{{count}} in stock",
     "outOfStock": "Out of stock"
   },

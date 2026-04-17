@@ -47,6 +47,12 @@
     "addToCartFailed": "Ürün eklenemedi. Lütfen tekrar deneyin.",
     "loading": "Ürünler yükleniyor...",
     "loadError": "Ürünler yüklenemedi. Lütfen tekrar deneyin.",
+    "searchPlaceholder": "Ürün ara...",
+    "allCategories": "Tüm Kategoriler",
+    "sortDefault": "En Yeni",
+    "sortPriceAsc": "Fiyat: Düşükten Yükseğe",
+    "sortPriceDesc": "Fiyat: Yüksekten Düşüğe",
+    "sortPopularity": "Popülerlik",
     "inStock": "Stokta {{count}} adet",
     "outOfStock": "Stokta yok"
   },

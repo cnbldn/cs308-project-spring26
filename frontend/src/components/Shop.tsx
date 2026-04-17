@@ -52,6 +52,7 @@ const getSessionId = () => {
 const Shop: React.FC = () => {
   const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [addingId, setAddingId] = useState<string | null>(null);
@@ -61,20 +62,65 @@ const Shop: React.FC = () => {
     message: string;
   } | null>(null);
 
+  // Filter & sort state
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [sort, setSort] = useState('');
+
+  // Debounce timer ref for search
+  const searchTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchProducts = async (
+    searchVal: string,
+    categoryVal: string,
+    sortVal: string
+  ) => {
+    setLoading(true);
+    try {
+      const params: Record<string, string> = {};
+      if (searchVal.trim()) params.search = searchVal.trim();
+      if (categoryVal) params.category = categoryVal;
+      if (sortVal) params.sort = sortVal;
+
+      const res = await axios.get<RawProduct[]>(`${API_BASE}/products`, {
+        params,
+      });
+      setProducts(res.data.map(normalize));
+      setError('');
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setError(t('shop.loadError') || 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch categories once on mount
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCategories = async () => {
       try {
-        const res = await axios.get<RawProduct[]>(`${API_BASE}/products`);
-        setProducts(res.data.map(normalize));
+        const res = await axios.get<string[]>(`${API_BASE}/products/categories`);
+        setCategories(res.data);
       } catch (err) {
-        console.error('Failed to fetch products:', err);
-        setError(t('shop.loadError') || 'Failed to load products');
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch categories:', err);
       }
     };
-    fetchProducts();
-  }, [t]);
+    fetchCategories();
+  }, []);
+
+  // Fetch products when category or sort changes (immediate)
+  useEffect(() => {
+    fetchProducts(search, selectedCategory, sort);
+  }, [selectedCategory, sort]);
+
+  // Debounced search — waits 400ms after the user stops typing
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      fetchProducts(value, selectedCategory, sort);
+    }, 400);
+  };
 
   const handleAddToCart = async (product: Product) => {
     setAddingId(product.id);
@@ -129,6 +175,38 @@ const Shop: React.FC = () => {
     <div className={styles.shopContainer}>
       <h2 className={styles.shopTitle}>{t('shop.title') || 'Shop'}</h2>
       <p className={styles.shopSubtitle}>{t('shop.subtitle') || 'Explore our collection'}</p>
+
+      <div className={styles.toolbar}>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder={t('shop.searchPlaceholder') || 'Search products...'}
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+        />
+        <select
+          className={styles.selectInput}
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">{t('shop.allCategories') || 'All Categories'}</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        <select
+          className={styles.selectInput}
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="">{t('shop.sortDefault') || 'Newest'}</option>
+          <option value="price_asc">{t('shop.sortPriceAsc') || 'Price: Low to High'}</option>
+          <option value="price_desc">{t('shop.sortPriceDesc') || 'Price: High to Low'}</option>
+          <option value="popularity">{t('shop.sortPopularity') || 'Popularity'}</option>
+        </select>
+      </div>
 
       <div className={styles.productGrid}>
         {products.map((product) => {
