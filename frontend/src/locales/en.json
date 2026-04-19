@@ -51,6 +51,8 @@
     "loading": "Loading products...",
     "loadError": "Could not load products. Please try again.",
     "searchPlaceholder": "Search products...",
+    "categories": "Categories",
+    "allProducts": "All Products",
     "allCategories": "All Categories",
     "sortDefault": "Newest",
     "sortPriceAsc": "Price: Low to High",

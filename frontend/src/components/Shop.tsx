@@ -153,93 +153,101 @@ const Shop: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.shopContainer}>
-        <h2 className={styles.shopTitle}>{t('shop.title') || 'Shop'}</h2>
-        <p className={styles.shopSubtitle}>{t('shop.loading') || 'Loading...'}</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.shopContainer}>
-        <h2 className={styles.shopTitle}>{t('shop.title') || 'Shop'}</h2>
-        <p className={styles.errorMessage}>{error}</p>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.shopContainer}>
       <h2 className={styles.shopTitle}>{t('shop.title') || 'Shop'}</h2>
       <p className={styles.shopSubtitle}>{t('shop.subtitle') || 'Explore our collection'}</p>
 
-      <div className={styles.toolbar}>
-        <input
-          type="text"
-          className={styles.searchInput}
-          placeholder={t('shop.searchPlaceholder') || 'Search products...'}
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-        />
-        <select
-          className={styles.selectInput}
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">{t('shop.allCategories') || 'All Categories'}</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-        <select
-          className={styles.selectInput}
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-        >
-          <option value="">{t('shop.sortDefault') || 'Newest'}</option>
-          <option value="price_asc">{t('shop.sortPriceAsc') || 'Price: Low to High'}</option>
-          <option value="price_desc">{t('shop.sortPriceDesc') || 'Price: High to Low'}</option>
-          <option value="popularity">{t('shop.sortPopularity') || 'Popularity'}</option>
-        </select>
-      </div>
-
-      <div className={styles.productGrid}>
-        {products.map((product) => {
-          const outOfStock = product.stock === 0;
-          const isAdding = addingId === product.id;
-          const productFeedback = feedback && feedback.id === product.id ? feedback : null;
-
-          return (
-            <div key={product.id} className={styles.productCard}>
-              <img src={product.image} alt={product.name} className={styles.productImage} />
-              <p className={styles.productCategory}>{product.category}</p>
-              <h3 className={styles.productName}>{product.name}</h3>
-              <p className={`${styles.productStock} ${outOfStock ? styles.outOfStock : ''}`}>
-                {outOfStock ? (t('shop.outOfStock') || 'Out of Stock') : (t('shop.inStock', { count: product.stock }) || `In Stock: ${product.stock}`)}
-              </p>
-              <div className={styles.productFooter}>
-                <span className={styles.productPrice}>${product.price.toFixed(2)}</span>
+      <div className={styles.mainLayout}>
+        <aside className={styles.sidebar}>
+          <h4 className={styles.sidebarTitle}>{t('shop.categories') || 'Categories'}</h4>
+          <ul className={styles.categoryList}>
+            <li className={styles.categoryItem}>
+              <button
+                className={`${styles.categoryButton} ${selectedCategory === '' ? styles.activeCategory : ''}`}
+                onClick={() => setSelectedCategory('')}
+              >
+                {t('shop.allProducts') || 'All Products'}
+              </button>
+            </li>
+            {categories.map((cat) => (
+              <li key={cat} className={styles.categoryItem}>
                 <button
-                  className={styles.addButton}
-                  disabled={outOfStock || isAdding}
-                  onClick={() => handleAddToCart(product)}
+                  className={`${styles.categoryButton} ${selectedCategory === cat ? styles.activeCategory : ''}`}
+                  onClick={() => setSelectedCategory(cat)}
                 >
-                  {isAdding ? (t('shop.adding') || 'Adding...') : (t('shop.addToCart') || 'Add to Cart')}
+                  {cat}
                 </button>
-              </div>
-              {productFeedback && (
-                <p className={productFeedback.type === 'success' ? styles.successMessage : styles.errorMessage}>
-                  {productFeedback.message}
-                </p>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <main className={styles.contentArea}>
+          <div className={styles.toolbar}>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder={t('shop.searchPlaceholder') || 'Search products...'}
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+            />
+            <select
+              className={styles.selectInput}
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="">{t('shop.sortDefault') || 'Newest'}</option>
+              <option value="price_asc">{t('shop.sortPriceAsc') || 'Price: Low to High'}</option>
+              <option value="price_desc">{t('shop.sortPriceDesc') || 'Price: High to Low'}</option>
+              <option value="popularity">{t('shop.sortPopularity') || 'Popularity'}</option>
+            </select>
+          </div>
+
+          {loading && products.length === 0 ? (
+            <p className={styles.shopSubtitle}>{t('shop.loading') || 'Loading...'}</p>
+          ) : error ? (
+            <p className={styles.errorMessage}>{error}</p>
+          ) : (
+            <div className={styles.productGrid}>
+              {products.length > 0 ? (
+                products.map((product) => {
+                  const outOfStock = product.stock === 0;
+                  const isAdding = addingId === product.id;
+                  const productFeedback = feedback && feedback.id === product.id ? feedback : null;
+
+                  return (
+                    <div key={product.id} className={styles.productCard}>
+                      <img src={product.image} alt={product.name} className={styles.productImage} />
+                      <p className={styles.productCategory}>{product.category}</p>
+                      <h3 className={styles.productName}>{product.name}</h3>
+                      <p className={`${styles.productStock} ${outOfStock ? styles.outOfStock : ''}`}>
+                        {outOfStock ? (t('shop.outOfStock') || 'Out of Stock') : (t('shop.inStock', { count: product.stock }) || `In Stock: ${product.stock}`)}
+                      </p>
+                      <div className={styles.productFooter}>
+                        <span className={styles.productPrice}>${product.price.toFixed(2)}</span>
+                        <button
+                          className={styles.addButton}
+                          disabled={outOfStock || isAdding}
+                          onClick={() => handleAddToCart(product)}
+                        >
+                          {isAdding ? (t('shop.adding') || 'Adding...') : (t('shop.addToCart') || 'Add to Cart')}
+                        </button>
+                      </div>
+                      {productFeedback && (
+                        <p className={productFeedback.type === 'success' ? styles.successMessage : styles.errorMessage}>
+                          {productFeedback.message}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className={styles.shopSubtitle}>{t('shop.noProducts') || 'No products found.'}</p>
               )}
             </div>
-          );
-        })}
+          )}
+        </main>
       </div>
     </div>
   );
