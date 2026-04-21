@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Product = require("./models/Product");
 
 // Sample Products Data
-const productsData = [
+const baseProductsData = [
   {
     name: "Elden Ring",
     description: "An epic action RPG set in a vast, dark fantasy world created by Hidetaka Miyazaki and George R. R. Martin.",
@@ -123,8 +123,371 @@ const productsData = [
     stock: 400,
     category: "RPG",
     imageUrl: "https://dummyimage.com/400x400/000/fff&text=Witcher+3"
+  },
+  {
+    name: "Stardew Valley",
+    description: "Build the farm of your dreams, befriend the local community, and explore mines in this cozy farming RPG.",
+    price: 14.99,
+    stock: 0,
+    category: "Simulation",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Stardew+Valley"
+  },
+  {
+    name: "NieR: Automata",
+    description: "Androids 2B, 9S, and A2 fight to reclaim Earth in a stylish action RPG with a haunting story.",
+    price: 39.99,
+    stock: 145,
+    category: "Action RPG",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=NieR+Automata"
+  },
+  {
+    name: "Dead by Daylight",
+    description: "A multiplayer horror game where one killer hunts four survivors trying to escape a deadly trial.",
+    price: 19.99,
+    stock: 210,
+    category: "Horror",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Dead+by+Daylight"
+  },
+  {
+    name: "Titanfall 2",
+    description: "A fast-paced sci-fi shooter featuring fluid pilot movement, giant Titans, and a cinematic campaign.",
+    price: 24.99,
+    stock: 95,
+    category: "Shooter",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Titanfall+2"
+  },
+  {
+    name: "Team Fortress 2",
+    description: "A class-based team shooter with distinct characters, objective modes, and chaotic multiplayer battles.",
+    price: 9.99,
+    stock: 0,
+    category: "Shooter",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Team+Fortress+2"
+  },
+  {
+    name: "Drakengard",
+    description: "A dark fantasy action game about a pact-bound warrior and dragon fighting through a brutal war.",
+    price: 34.99,
+    stock: 45,
+    category: "Action RPG",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Drakengard"
+  },
+  {
+    name: "Resident Evil 7: Biohazard",
+    description: "A first-person survival horror experience set in a terrifying derelict plantation mansion.",
+    price: 29.99,
+    stock: 105,
+    category: "Horror",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Resident+Evil+7"
+  },
+  {
+    name: "Call of Duty: Black Ops III",
+    description: "A futuristic Call of Duty entry with campaign, competitive multiplayer, and Zombies mode.",
+    price: 39.99,
+    stock: 165,
+    category: "Shooter",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Black+Ops+III"
+  },
+  {
+    name: "Persona 5",
+    description: "Lead the Phantom Thieves through stylish turn-based battles and daily life in modern Tokyo.",
+    price: 49.99,
+    stock: 125,
+    category: "JRPG",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Persona+5"
+  },
+  {
+    name: "For Honor",
+    description: "A melee action game where knights, vikings, and samurai clash in tactical multiplayer combat.",
+    price: 19.99,
+    stock: 150,
+    category: "Fighting",
+    imageUrl: "https://dummyimage.com/400x400/000/fff&text=For+Honor"
   }
 ];
+
+const demoProductMetadata = [
+  {
+    model: "PS5 Standard Edition",
+    serialNumber: "GAME-ELDEN-PS5-001",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Bandai Namco Entertainment",
+      contactEmail: "support@bandainamco.example",
+      country: "Japan"
+    },
+    popularity: 98
+  },
+  {
+    model: "PC Ultimate Edition",
+    serialNumber: "GAME-CYBER-PC-002",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "CD Projekt",
+      contactEmail: "support@cdprojekt.example",
+      country: "Poland"
+    },
+    popularity: 89
+  },
+  {
+    model: "PS5 Standard Edition",
+    serialNumber: "GAME-FC24-PS5-003",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Electronic Arts",
+      contactEmail: "support@ea.example",
+      country: "United States"
+    },
+    popularity: 84
+  },
+  {
+    model: "Xbox Series X Edition",
+    serialNumber: "GAME-MWIII-XBX-004",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Activision",
+      contactEmail: "support@activision.example",
+      country: "United States"
+    },
+    popularity: 91
+  },
+  {
+    model: "PS5 Launch Edition",
+    serialNumber: "GAME-SPIDER2-PS5-005",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Sony Interactive Entertainment",
+      contactEmail: "support@playstation.example",
+      country: "United States"
+    },
+    popularity: 94
+  },
+  {
+    model: "Nintendo Switch Physical Edition",
+    serialNumber: "GAME-ZELDA-SW-006",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Nintendo",
+      contactEmail: "support@nintendo.example",
+      country: "Japan"
+    },
+    popularity: 97
+  },
+  {
+    model: "PS5 Premium Edition",
+    serialNumber: "GAME-GTAV-PS5-007",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Rockstar Games",
+      contactEmail: "support@rockstar.example",
+      country: "United States"
+    },
+    popularity: 92
+  },
+  {
+    model: "Xbox Series X Edition",
+    serialNumber: "GAME-RDR2-XBX-008",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Rockstar Games",
+      contactEmail: "support@rockstar.example",
+      country: "United States"
+    },
+    popularity: 88
+  },
+  {
+    model: "Nintendo Switch Standard Edition",
+    serialNumber: "GAME-MARIO-SW-009",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Nintendo",
+      contactEmail: "support@nintendo.example",
+      country: "Japan"
+    },
+    popularity: 86
+  },
+  {
+    model: "PS5 Standard Edition",
+    serialNumber: "GAME-GOWR-PS5-010",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Sony Interactive Entertainment",
+      contactEmail: "support@playstation.example",
+      country: "United States"
+    },
+    popularity: 90
+  },
+  {
+    model: "PS5 Remake Edition",
+    serialNumber: "GAME-RE4-PS5-011",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Capcom",
+      contactEmail: "support@capcom.example",
+      country: "Japan"
+    },
+    popularity: 82
+  },
+  {
+    model: "PS5 Premium Edition",
+    serialNumber: "GAME-MK1-PS5-012",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Warner Bros. Games",
+      contactEmail: "support@wbgames.example",
+      country: "United States"
+    },
+    popularity: 78
+  },
+  {
+    model: "PC Deluxe Edition",
+    serialNumber: "GAME-BG3-PC-013",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Larian Studios",
+      contactEmail: "support@larian.example",
+      country: "Belgium"
+    },
+    popularity: 96
+  },
+  {
+    model: "Xbox Series X Edition",
+    serialNumber: "GAME-HALO-XBX-014",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Xbox Game Studios",
+      contactEmail: "support@xbox.example",
+      country: "United States"
+    },
+    popularity: 74
+  },
+  {
+    model: "PC Complete Edition",
+    serialNumber: "GAME-WITCHER-PC-015",
+    warrantyStatus: "expired",
+    distributorInfo: {
+      name: "CD Projekt",
+      contactEmail: "support@cdprojekt.example",
+      country: "Poland"
+    },
+    popularity: 87
+  },
+  {
+    model: "Nintendo Switch Digital Code",
+    serialNumber: "GAME-STARDEW-SW-016",
+    warrantyStatus: "none",
+    distributorInfo: {
+      name: "ConcernedApe",
+      contactEmail: "support@stardew.example",
+      country: "United States"
+    },
+    popularity: 73
+  },
+  {
+    model: "PS4 Game of the YoRHa Edition",
+    serialNumber: "GAME-NIER-PS4-017",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Square Enix",
+      contactEmail: "support@squareenix.example",
+      country: "Japan"
+    },
+    popularity: 85
+  },
+  {
+    model: "PC Standard Edition",
+    serialNumber: "GAME-DBD-PC-018",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Behaviour Interactive",
+      contactEmail: "support@bhvr.example",
+      country: "Canada"
+    },
+    popularity: 80
+  },
+  {
+    model: "Xbox One Standard Edition",
+    serialNumber: "GAME-TF2-XBO-019",
+    warrantyStatus: "expired",
+    distributorInfo: {
+      name: "Electronic Arts",
+      contactEmail: "support@ea.example",
+      country: "United States"
+    },
+    popularity: 83
+  },
+  {
+    model: "PC Digital Code",
+    serialNumber: "GAME-TF2-PC-020",
+    warrantyStatus: "none",
+    distributorInfo: {
+      name: "Valve",
+      contactEmail: "support@valvesoftware.example",
+      country: "United States"
+    },
+    popularity: 79
+  },
+  {
+    model: "PS2 Collector Edition",
+    serialNumber: "GAME-DRAKENGARD-PS2-021",
+    warrantyStatus: "expired",
+    distributorInfo: {
+      name: "Square Enix",
+      contactEmail: "support@squareenix.example",
+      country: "Japan"
+    },
+    popularity: 58
+  },
+  {
+    model: "PS4 Gold Edition",
+    serialNumber: "GAME-RE7-PS4-022",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Capcom",
+      contactEmail: "support@capcom.example",
+      country: "Japan"
+    },
+    popularity: 81
+  },
+  {
+    model: "PS4 Zombies Chronicles Edition",
+    serialNumber: "GAME-BO3-PS4-023",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Activision",
+      contactEmail: "support@activision.example",
+      country: "United States"
+    },
+    popularity: 77
+  },
+  {
+    model: "PS4 Royal Edition",
+    serialNumber: "GAME-PERSONA5-PS4-024",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Atlus",
+      contactEmail: "support@atlus.example",
+      country: "Japan"
+    },
+    popularity: 93
+  },
+  {
+    model: "PS4 Standard Edition",
+    serialNumber: "GAME-FORHONOR-PS4-025",
+    warrantyStatus: "active",
+    distributorInfo: {
+      name: "Ubisoft",
+      contactEmail: "support@ubisoft.example",
+      country: "France"
+    },
+    popularity: 70
+  }
+];
+
+const productsData = baseProductsData.map((product, index) => ({
+  ...product,
+  ...demoProductMetadata[index]
+}));
 
 const seedDatabase = async () => {
   try {
