@@ -126,44 +126,47 @@ const Cart: React.FC = () => {
     <div className={styles.cartContainer}>
       <h2 className={styles.cartTitle}>{t('cart.title')}</h2>
       <div className={styles.cartContent}>
-        {items.map((item) => (
-          <div key={item.product._id} className={styles.cartItem}>
-            <img 
-              src={item.product.imageUrl || item.product.image || PLACEHOLDER_IMAGE} 
-              alt={item.product.name} 
-              className={styles.itemImage} 
-            />
-            <div className={styles.itemDetails}>
-              <div className={styles.itemName}>{item.product.name}</div>
-              <div className={styles.itemPrice}>${item.product.price.toFixed(2)}</div>
-            </div>
-            <div className={styles.quantityControls}>
+        {items.map((item) => {
+          if (!item?.product) return null;
+          return (
+            <div key={item.product._id} className={styles.cartItem}>
+              <img 
+                src={item.product.imageUrl || item.product.image || PLACEHOLDER_IMAGE} 
+                alt={item.product.name} 
+                className={styles.itemImage} 
+              />
+              <div className={styles.itemDetails}>
+                <div className={styles.itemName}>{item.product.name}</div>
+                <div className={styles.itemPrice}>${item.product.price.toFixed(2)}</div>
+              </div>
+              <div className={styles.quantityControls}>
+                <button
+                  className={styles.quantityButton}
+                  onClick={() =>
+                    updateQuantity(item.product._id, -1, item.quantity)
+                  }
+                >
+                  -
+                </button>
+                <span className={styles.quantity}>{item.quantity}</span>
+                <button
+                  className={styles.quantityButton}
+                  onClick={() =>
+                    updateQuantity(item.product._id, 1, item.quantity)
+                  }
+                >
+                  +
+                </button>
+              </div>
               <button
-                className={styles.quantityButton}
-                onClick={() =>
-                  updateQuantity(item.product._id, -1, item.quantity)
-                }
+                className={styles.removeButton}
+                onClick={() => removeItem(item.product._id)}
               >
-                -
-              </button>
-              <span className={styles.quantity}>{item.quantity}</span>
-              <button
-                className={styles.quantityButton}
-                onClick={() =>
-                  updateQuantity(item.product._id, 1, item.quantity)
-                }
-              >
-                +
+                {t('cart.remove')}
               </button>
             </div>
-            <button
-              className={styles.removeButton}
-              onClick={() => removeItem(item.product._id)}
-            >
-              {t('cart.remove')}
-            </button>
-          </div>
-        ))}
+          );
+        })}
 
         <div className={styles.cartSummary}>
           <div className={styles.summaryRow}>
