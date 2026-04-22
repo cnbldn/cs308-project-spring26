@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Cart from './components/Cart';
 import Shop from './components/Shop';
 import ProductDetail from './components/ProductDetail';
+import Checkout from './components/Checkout';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/checkout" element={<div style={{ padding: '100px', textAlign: 'center' }}><h1>Checkout Page</h1><p>Welcome! Only logged-in users can see this.</p></div>} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<div style={{ padding: '100px', textAlign: 'center' }}><h1>Profile Page</h1><p>Welcome! This is your private profile.</p></div>} />
         </Route>
       </Routes>

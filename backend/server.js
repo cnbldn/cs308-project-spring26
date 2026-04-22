@@ -14,12 +14,14 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const reviewRoutes = require('./routes/reviews');
+const orderRoutes = require('./routes/orders');
 
 // Register Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/orders', orderRoutes);
 
 // basic health-check route
 app.get('/', (req, res) => {
