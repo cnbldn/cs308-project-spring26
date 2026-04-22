@@ -7,6 +7,7 @@ import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Cart from './components/Cart';
 import Shop from './components/Shop';
+import ProductDetail from './components/ProductDetail';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
