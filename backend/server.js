@@ -13,11 +13,13 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
+const reviewRoutes = require('./routes/reviews');
 
 // Register Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // basic health-check route
 app.get('/', (req, res) => {
