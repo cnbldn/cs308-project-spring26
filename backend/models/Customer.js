@@ -24,6 +24,12 @@ const customerSchema = new mongoose.Schema(
       select: false,
     },
 
+    role: {
+      type: String,
+      enum: ["customer", "salesManager", "productManager"],
+      default: "customer",
+    },
+
     taxId: {
       type: String,
       required: [true, "Tax ID is required"],
@@ -51,5 +57,7 @@ customerSchema.pre("save", async function () {
 customerSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+customerSchema.index({ role: 1 });
 
 module.exports = mongoose.model("Customer", customerSchema);
