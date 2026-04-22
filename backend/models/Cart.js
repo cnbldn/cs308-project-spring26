@@ -125,4 +125,7 @@ cartSchema.methods.updateQuantity = async function (productId, quantity) {
   return this;
 };
 
+cartSchema.index({ customerId: 1 });
+cartSchema.index({ sessionId: 1 });
+
 module.exports = mongoose.model('Cart', cartSchema, 'cart');
