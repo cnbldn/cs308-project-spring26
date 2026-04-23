@@ -104,7 +104,15 @@ router.get('/:id', async (req, res) => {
     if (!cart) {
       return res.status(200).json({ items: [], cartTotal: 0 });
     }
-    
+
+    // Drop ghost items (product deleted from DB) so the stored cartTotal
+    // doesn't keep charging the user for products that no longer exist.
+    const originalLength = cart.items.length;
+    cart.items = cart.items.filter((item) => item.product);
+    if (cart.items.length !== originalLength) {
+      await cart.save();
+    }
+
     res.json(cart);
   } catch (err) {
     console.error("Get cart error:", err);
