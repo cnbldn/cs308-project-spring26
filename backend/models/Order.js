@@ -45,7 +45,7 @@ const statusHistorySchema = new mongoose.Schema(
   {
     status: {
       type: String,
-      enum: ['processing', 'in-transit', 'delivered'],
+      enum: ['processing', 'in-transit', 'delivered', 'cancelled'],
       required: true
     },
     changedAt: {
@@ -90,7 +90,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['processing', 'in-transit', 'delivered'],
+      enum: ['processing', 'in-transit', 'delivered', 'cancelled'],
       default: 'processing'
     },
     deliveryAddress: {

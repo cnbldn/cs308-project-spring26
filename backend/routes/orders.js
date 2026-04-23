@@ -211,4 +211,50 @@ router.patch('/:id/status', async (req, res) => {
     }
 });
 
+// PATCH /api/orders/:id/cancel
+// Requirement #13: Allow customers to cancel orders + return items to stock
+router.patch('/:id/cancel', async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { id } = req.params;
+
+        const order = await Order.findById(id).session(session);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        // Only allow cancellation if order is still 'processing'
+        if (order.orderStatus !== 'processing') {
+            return res.status(400).json({ message: `Cannot cancel an order that is already ${order.orderStatus}.` });
+        }
+
+        // 1. Return items to stock
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(
+                item.product,
+                { $inc: { stock: item.quantity } },
+                { session }
+            );
+        }
+
+        // 2. Update Order status
+        order.orderStatus = 'cancelled';
+        order.statusHistory.push({ status: 'cancelled', changedAt: new Date() });
+        await order.save({ session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: "Order cancelled successfully and items returned to stock.", order });
+
+    } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error("[CANCELLATION ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
