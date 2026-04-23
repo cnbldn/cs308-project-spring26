@@ -167,4 +167,48 @@ router.get('/invoice/:invoiceId/pdf', async (req, res) => {
     }
 });
 
+// GET /api/orders/history/:customerId
+// Allows users to see their order history (Required for Requirement #3)
+router.get('/history/:customerId', async (req, res) => {
+    try {
+        const orders = await Order.find({ customer: req.params.customerId })
+            .sort({ createdAt: -1 });
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// PATCH /api/orders/:id/status
+// Requirement #3 (Tracking) & #12 (Managerial tasks)
+router.patch('/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // 'processing', 'in-transit', 'delivered'
+
+        const validStatuses = ['processing', 'in-transit', 'delivered'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status value." });
+        }
+
+        const order = await Order.findById(id);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        order.orderStatus = status;
+        order.statusHistory.push({ status, changedAt: new Date() });
+
+        await order.save();
+
+        res.status(200).json({ 
+            message: `Order status updated to ${status}`,
+            order 
+        });
+    } catch (err) {
+        console.error("[STATUS UPDATE ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
