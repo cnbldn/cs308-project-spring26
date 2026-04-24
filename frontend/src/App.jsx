@@ -11,6 +11,7 @@ import ProductDetail from './components/ProductDetail';
 import Checkout from './components/Checkout';
 import Account from './components/Account';
 import OrderHistory from './components/OrderHistory';
+import ManagerDashboard from './components/ManagerDashboard';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/account" element={<Account />} />
           <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/manager" element={<ManagerDashboard />} />
         </Route>
       </Routes>
       <Footer />

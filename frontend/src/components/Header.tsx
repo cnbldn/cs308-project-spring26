@@ -23,6 +23,9 @@ const Header: React.FC = () => {
             {/* Note: You may want to add a translation key for 'Orders' here eventually */}
             <Link to="/orders" className={styles.navLink}>Orders</Link>
             
+            {user.role === 'productManager' && (
+              <Link to="/manager" className={styles.navLink}>Manager</Link>
+            )}
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
