@@ -110,6 +110,27 @@
     "placeOrder": "Place Order",
     "failed": "Checkout failed."
   },
+  "account": {
+    "title": "My Account",
+    "subtitle": "Manage your profile",
+    "name": "Full Name",
+    "email": "Email Address",
+    "address": "Delivery Address",
+    "passwordSection": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "savePassword": "Save Password",
+    "saving": "Saving...",
+    "logout": "Logout",
+    "myAccount": "My Account",
+    "currentPasswordRequired": "Current password is required",
+    "newPasswordRequired": "New password is required",
+    "newPasswordMinLength": "New password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "passwordSuccess": "Password updated successfully!",
+    "passwordError": "Failed to update password. Please try again."
+  },
   "productDetail": {
     "loading": "Loading...",
     "notFound": "Product not found.",
