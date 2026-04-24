@@ -110,6 +110,27 @@
     "placeOrder": "Sipariş Ver",
     "failed": "Ödeme başarısız."
   },
+  "account": {
+    "title": "Hesabım",
+    "subtitle": "Profilinizi yönetin",
+    "name": "Ad Soyad",
+    "email": "E-posta Adresi",
+    "address": "Teslimat Adresi",
+    "passwordSection": "Şifre Değiştir",
+    "currentPassword": "Mevcut Şifre",
+    "newPassword": "Yeni Şifre",
+    "confirmPassword": "Yeni Şifreyi Onayla",
+    "savePassword": "Şifreyi Kaydet",
+    "saving": "Kaydediliyor...",
+    "logout": "Çıkış Yap",
+    "myAccount": "Hesabım",
+    "currentPasswordRequired": "Mevcut şifre gerekli",
+    "newPasswordRequired": "Yeni şifre gerekli",
+    "newPasswordMinLength": "Yeni şifre en az 6 karakter olmalı",
+    "passwordMismatch": "Şifreler eşleşmiyor",
+    "passwordSuccess": "Şifre başarıyla güncellendi!",
+    "passwordError": "Şifre güncellenemedi. Lütfen tekrar deneyin."
+  },
   "productDetail": {
     "loading": "Yükleniyor...",
     "notFound": "Ürün bulunamadı.",
