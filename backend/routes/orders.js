@@ -101,7 +101,8 @@ router.post('/checkout', async (req, res) => {
         res.status(201).json({
             message: "Order placed successfully!",
             orderId: order._id,
-            invoiceId: invoice._id
+            invoiceId: invoice._id,
+            invoice: invoice
         });
 
     } catch (err) {

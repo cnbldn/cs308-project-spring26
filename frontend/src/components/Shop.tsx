@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import styles from './Shop.module.css';
+import ProductImageHover from './ProductImageHover';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -220,7 +221,7 @@ const Shop: React.FC = () => {
                   return (
                     <div key={product.id} className={styles.productCard}>
                       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
-                        <img src={product.image} alt={product.name} className={styles.productImage} />
+                        <ProductImageHover src={product.image} alt={product.name} />
                         <p className={styles.productCategory}>{product.category}</p>
                         <h3 className={styles.productName}>{product.name}</h3>
                       </Link>

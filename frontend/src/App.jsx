@@ -10,6 +10,7 @@ import Shop from './components/Shop';
 import ProductDetail from './components/ProductDetail';
 import Checkout from './components/Checkout';
 import Account from './components/Account';
+import OrderHistory from './components/OrderHistory';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/orders" element={<OrderHistory />} />
         </Route>
       </Routes>
       <Footer />

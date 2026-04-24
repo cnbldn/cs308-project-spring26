@@ -96,6 +96,94 @@
   margin-bottom: 1rem;
 }
 
+.successTitle {
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+}
+
+.emailNote {
+  color: #8a7d62;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.invoiceDisplay {
+  background: #0d0d0d;
+  border: 1px solid #3a3225;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.invoiceHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #3a3225;
+  padding-bottom: 1rem;
+}
+
+.invoiceHeader h3 {
+  color: #d4a017;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.invoiceHeader p {
+  font-size: 0.8rem;
+  color: #8a7d62;
+  margin-top: 0.2rem;
+}
+
+.invoiceSection {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.invoiceSection strong {
+  color: #8a7d62;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.invoiceSection p {
+  margin: 0.2rem 0;
+}
+
+.invoiceTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.invoiceTable th {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #8a7d62;
+  text-transform: uppercase;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #3a3225;
+}
+
+.invoiceTable td {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #1a1610;
+  font-size: 0.9rem;
+}
+
+.invoiceTotal {
+  border-top: 2px solid #3a3225;
+  padding-top: 1rem;
+}
+
+.grandTotal {
+  margin-top: 0.5rem;
+  color: #ffd700 !important;
+  font-size: 1.2rem !important;
+  font-weight: 700;
+}
+
 .actions {
   display: flex;
   flex-direction: column;
@@ -124,4 +212,48 @@
 .error {
   color: #e05050;
   margin-bottom: 1.5rem;
+}
+
+/* Jira: CS308-FE-10 Styling */
+.processingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.processingModal {
+  background: #161210;
+  padding: 3rem;
+  border-radius: 12px;
+  border: 1px solid #d4a017;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #3a3225;
+  border-top-color: #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.processingModal p {
+  color: #ffd700;
+  font-weight: 600;
+  font-size: 1.1rem;
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 function LandingPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isLoggedIn = !!localStorage.getItem('user');
 
   const featureCards = [
     { title: t('landing.rareFindTitle'), desc: t('landing.rareFindDesc') },
@@ -94,30 +95,32 @@ function LandingPage() {
             {t('landing.browseShop')}
           </button>
 
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              padding: '12px 32px',
-              fontSize: '0.95rem',
-              border: '1px solid #3a3225',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: 'transparent',
-              color: '#b5a882',
-              fontWeight: '600',
-              transition: 'border-color 0.15s, color 0.15s',
-            }}
-            onMouseEnter={e => {
-              e.target.style.borderColor = '#d4a017';
-              e.target.style.color = '#ffd700';
-            }}
-            onMouseLeave={e => {
-              e.target.style.borderColor = '#3a3225';
-              e.target.style.color = '#b5a882';
-            }}
-          >
-            {t('login.signIn')}
-          </button>
+          {!isLoggedIn && (
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                padding: '12px 32px',
+                fontSize: '0.95rem',
+                border: '1px solid #3a3225',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                background: 'transparent',
+                color: '#b5a882',
+                fontWeight: '600',
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+              onMouseEnter={e => {
+                e.target.style.borderColor = '#d4a017';
+                e.target.style.color = '#ffd700';
+              }}
+              onMouseLeave={e => {
+                e.target.style.borderColor = '#3a3225';
+                e.target.style.color = '#b5a882';
+              }}
+            >
+              {t('login.signIn')}
+            </button>
+          )}
         </div>
       </div>
 

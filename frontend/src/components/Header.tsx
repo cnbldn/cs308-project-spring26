@@ -19,14 +19,18 @@ const Header: React.FC = () => {
         <Link to="/cart" className={styles.navLink}>{t('cart.title')}</Link>
 
         {user ? (
-          <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Note: You may want to add a translation key for 'Orders' here eventually */}
+            <Link to="/orders" className={styles.navLink}>Orders</Link>
+            
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
+            
             <Link to="/account" className={styles.signInButton}>
               {t('account.myAccount')}
             </Link>
-          </>
+          </div>
         ) : (
           <Link to="/login" className={styles.signInButton}>{t('login.signIn')}</Link>
         )}
