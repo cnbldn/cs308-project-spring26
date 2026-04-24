@@ -189,6 +189,34 @@
   min-height: 2.3em;
 }
 
+.productRating {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.35rem 0;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.ratingStars {
+  color: #ffd700;
+  letter-spacing: 1px;
+}
+
+.ratingStarsEmpty {
+  color: #3a3225;
+}
+
+.ratingValue {
+  color: #d4c9a8;
+  font-weight: 600;
+}
+
+.ratingCount {
+  color: #6b5c3a;
+  font-weight: 400;
+}
+
 .productStock {
   color: #8a7d62;
   font-size: 0.72rem;
