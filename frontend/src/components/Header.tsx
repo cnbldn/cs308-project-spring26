@@ -29,20 +29,16 @@ const Header: React.FC = () => {
         <Link to="/cart" className={styles.navLink}>{t('cart.title')}</Link>
 
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>
+          <>
+            <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
-            <button
-              onClick={handleLogout}
-              className={styles.navLink}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
+            <button onClick={handleLogout} className={styles.logoutButton}>
               {t('header.logout')}
             </button>
-          </div>
+          </>
         ) : (
-          <Link to="/login" className={styles.navLink}>{t('login.signIn')}</Link>
+          <Link to="/login" className={styles.signInButton}>{t('login.signIn')}</Link>
         )}
       </div>
       <div className={styles.languageSwitcher} data-lang={i18n.language}>
