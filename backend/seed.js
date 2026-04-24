@@ -512,6 +512,14 @@ const demoUsersData = [
     homeAddress: "Orhanli Mah., Tuzla, Istanbul"
   },
   {
+    name: "Demo Customer Three",
+    email: "demo.customer3@example.com",
+    password: "demo1234",
+    role: "customer",
+    taxId: "CUST-1003",
+    homeAddress: "Pendik Sahil, Istanbul"
+  },
+  {
     name: "Demo Product Manager",
     email: "demo.pm@example.com",
     password: "demo1234",
@@ -543,6 +551,27 @@ const buildOrderItem = (product, quantity) => ({
 
 const sumLineTotals = (items) =>
   Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
+
+const buildStatusHistory = (orderStatus, placedAt) => {
+  const baseTime = new Date(placedAt);
+
+  if (orderStatus === "delivered") {
+    return [
+      { status: "processing", changedAt: baseTime },
+      { status: "in-transit", changedAt: new Date(baseTime.getTime() + 24 * 60 * 60 * 1000) },
+      { status: "delivered", changedAt: new Date(baseTime.getTime() + 48 * 60 * 60 * 1000) }
+    ];
+  }
+
+  if (orderStatus === "in-transit") {
+    return [
+      { status: "processing", changedAt: baseTime },
+      { status: "in-transit", changedAt: new Date(baseTime.getTime() + 18 * 60 * 60 * 1000) }
+    ];
+  }
+
+  return [{ status: "processing", changedAt: baseTime }];
+};
 
 const seedDatabase = async () => {
   try {
@@ -577,129 +606,121 @@ const seedDatabase = async () => {
 
     const customerOne = userByEmail.get("demo.customer1@example.com");
     const customerTwo = userByEmail.get("demo.customer2@example.com");
+    const customerThree = userByEmail.get("demo.customer3@example.com");
     const productManager = userByEmail.get("demo.pm@example.com");
+    const demoCustomers = [customerOne, customerTwo, customerThree];
 
-    // 4. Seed ratings.
+    // 4. Seed ratings so every game has at least one, and many have two.
     console.log("Seeding ratings...");
-    await Rating.insertMany([
-      {
-        product: productByName.get("Elden Ring")._id,
-        customer: customerOne._id,
-        value: 5
-      },
-      {
-        product: productByName.get("Persona 5")._id,
-        customer: customerOne._id,
-        value: 5
-      },
-      {
-        product: productByName.get("Dead by Daylight")._id,
-        customer: customerTwo._id,
-        value: 4
-      },
-      {
-        product: productByName.get("Titanfall 2")._id,
-        customer: customerTwo._id,
-        value: 5
-      }
-    ]);
+    const ratingsData = insertedProducts.flatMap((product, index) => {
+      const primaryCustomer = demoCustomers[index % demoCustomers.length];
+      const primaryRating = {
+        product: product._id,
+        customer: primaryCustomer._id,
+        value: 3 + (index % 3)
+      };
 
-    // 5. Seed comments.
+      if (index % 2 === 0) {
+        const secondaryCustomer = demoCustomers[(index + 1) % demoCustomers.length];
+        return [
+          primaryRating,
+          {
+            product: product._id,
+            customer: secondaryCustomer._id,
+            value: 4 + (index % 2)
+          }
+        ];
+      }
+
+      return [primaryRating];
+    });
+    await Rating.insertMany(ratingsData);
+
+    // 5. Seed comments so every game has at least one approved comment.
     console.log("Seeding comments...");
-    await Comment.insertMany([
-      {
-        product: productByName.get("Elden Ring")._id,
-        customer: customerOne._id,
-        text: "Fantastic atmosphere and world design. Easy demo item for approved comments.",
+    const commentsData = insertedProducts.flatMap((product, index) => {
+      const approvedCustomer = demoCustomers[index % demoCustomers.length];
+      const approvedComment = {
+        product: product._id,
+        customer: approvedCustomer._id,
+        text: `${product.name} is in the demo catalog and this approved comment should be visible on the product page.`,
         status: "approved",
         approvedBy: productManager._id,
-        approvedAt: new Date("2026-04-20T10:00:00Z")
-      },
-      {
-        product: productByName.get("Persona 5")._id,
-        customer: customerTwo._id,
-        text: "Stylish game, but I want to see whether this comment stays hidden until approval.",
-        status: "pending"
-      }
-    ]);
+        approvedAt: new Date(Date.UTC(2026, 3, 10 + (index % 10), 10, 0, 0))
+      };
 
-    // 6. Seed orders.
+      if (index % 3 === 0) {
+        const pendingCustomer = demoCustomers[(index + 1) % demoCustomers.length];
+        return [
+          approvedComment,
+          {
+            product: product._id,
+            customer: pendingCustomer._id,
+            text: `Pending moderation example for ${product.name}. This one should stay hidden until approval.`,
+            status: "pending"
+          }
+        ];
+      }
+
+      return [approvedComment];
+    });
+    await Comment.insertMany(commentsData);
+
+    // 6. Seed orders covering the full catalog in batches.
     console.log("Seeding orders...");
-    const orderOneItems = [
-      buildOrderItem(productByName.get("Elden Ring"), 1),
-      buildOrderItem(productByName.get("Persona 5"), 1)
-    ];
-    const orderTwoItems = [
-      buildOrderItem(productByName.get("Dead by Daylight"), 2)
-    ];
+    const orderBatches = [];
+    for (let index = 0; index < insertedProducts.length; index += 5) {
+      orderBatches.push(insertedProducts.slice(index, index + 5));
+    }
 
-    const orderOneSubtotal = sumLineTotals(orderOneItems);
-    const orderTwoSubtotal = sumLineTotals(orderTwoItems);
+    const orderStatuses = ["delivered", "in-transit", "processing", "delivered", "in-transit"];
+    const insertedOrders = await Order.insertMany(
+      orderBatches.map((batch, index) => {
+        const customer = demoCustomers[index % demoCustomers.length];
+        const items = batch.map((product, itemIndex) =>
+          buildOrderItem(product, (itemIndex % 2) + 1)
+        );
+        const subtotal = sumLineTotals(items);
+        const placedAt = new Date(Date.UTC(2026, 3, 12 + index, 9, 0, 0));
+        const orderStatus = orderStatuses[index % orderStatuses.length];
 
-    const insertedOrders = await Order.insertMany([
-      {
-        customer: customerOne._id,
-        items: orderOneItems,
-        subtotal: orderOneSubtotal,
-        totalAmount: orderOneSubtotal,
-        paymentStatus: "paid",
-        orderStatus: "delivered",
-        deliveryAddress: customerOne.homeAddress,
-        mockPaymentReference: "MOCK-PAY-ORDER-001",
-        statusHistory: [
-          { status: "processing", changedAt: new Date("2026-04-18T08:00:00Z") },
-          { status: "in-transit", changedAt: new Date("2026-04-19T12:00:00Z") },
-          { status: "delivered", changedAt: new Date("2026-04-20T16:00:00Z") }
-        ],
-        placedAt: new Date("2026-04-18T08:00:00Z")
-      },
-      {
-        customer: customerTwo._id,
-        items: orderTwoItems,
-        subtotal: orderTwoSubtotal,
-        totalAmount: orderTwoSubtotal,
-        paymentStatus: "paid",
-        orderStatus: "in-transit",
-        deliveryAddress: customerTwo.homeAddress,
-        mockPaymentReference: "MOCK-PAY-ORDER-002",
-        statusHistory: [
-          { status: "processing", changedAt: new Date("2026-04-21T09:00:00Z") },
-          { status: "in-transit", changedAt: new Date("2026-04-22T14:30:00Z") }
-        ],
-        placedAt: new Date("2026-04-21T09:00:00Z")
-      }
-    ]);
+        return {
+          customer: customer._id,
+          items,
+          subtotal,
+          totalAmount: subtotal,
+          paymentStatus: "paid",
+          orderStatus,
+          deliveryAddress: customer.homeAddress,
+          mockPaymentReference: `MOCK-PAY-ORDER-${String(index + 1).padStart(3, "0")}`,
+          statusHistory: buildStatusHistory(orderStatus, placedAt),
+          placedAt
+        };
+      })
+    );
 
-    // 7. Seed invoices for the paid demo orders.
+    // 7. Seed invoices for all demo orders.
     console.log("Seeding invoices...");
-    await Invoice.insertMany([
-      {
-        invoiceNumber: "INV-2026-0001",
-        order: insertedOrders[0]._id,
-        customer: customerOne._id,
-        billingEmail: customerOne.email,
-        billingAddress: customerOne.homeAddress,
-        items: orderOneItems,
-        subtotal: orderOneSubtotal,
-        totalAmount: orderOneSubtotal,
-        pdfUrl: "/mock/invoices/INV-2026-0001.pdf",
-        emailStatus: "mock-sent",
-        issuedAt: new Date("2026-04-18T08:05:00Z")
-      },
-      {
-        invoiceNumber: "INV-2026-0002",
-        order: insertedOrders[1]._id,
-        customer: customerTwo._id,
-        billingEmail: customerTwo.email,
-        billingAddress: customerTwo.homeAddress,
-        items: orderTwoItems,
-        subtotal: orderTwoSubtotal,
-        totalAmount: orderTwoSubtotal,
-        pdfUrl: "/mock/invoices/INV-2026-0002.pdf",
-        emailStatus: "pending",
-        issuedAt: new Date("2026-04-21T09:05:00Z")
-      }
-    ]);
+    await Invoice.insertMany(
+      insertedOrders.map((order, index) => {
+        const customer = demoCustomers[index % demoCustomers.length];
+        const issuedAt = new Date(order.placedAt.getTime() + 5 * 60 * 1000);
+
+        return {
+          invoiceNumber: `INV-2026-${String(index + 1).padStart(4, "0")}`,
+          order: order._id,
+          customer: customer._id,
+          billingEmail: customer.email,
+          billingAddress: customer.homeAddress,
+          items: order.items,
+          subtotal: order.subtotal,
+          totalAmount: order.totalAmount,
+          pdfUrl: `/mock/invoices/INV-2026-${String(index + 1).padStart(4, "0")}.pdf`,
+          emailStatus: index % 2 === 0 ? "mock-sent" : "pending",
+          issuedAt
+        };
+      })
+    );
 
     console.log("Database seeded successfully with products, demo users, ratings, comments, orders, and invoices.");
     process.exit(0);
