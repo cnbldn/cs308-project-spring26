@@ -17,6 +17,8 @@ interface RawProduct {
   stock: number;
   imageUrl?: string | null;
   image?: string;
+  averageRating?: number;
+  totalRatings?: number;
 }
 
 interface Product {
@@ -27,6 +29,8 @@ interface Product {
   price: number;
   stock: number;
   image: string;
+  averageRating: number;
+  totalRatings: number;
 }
 
 const PLACEHOLDER_IMAGE = 'https://placehold.co/300x300/161210/ffd700?text=No+Image';
@@ -39,6 +43,8 @@ const normalize = (raw: RawProduct): Product => ({
   price: raw.price,
   stock: raw.stock,
   image: raw.imageUrl || raw.image || PLACEHOLDER_IMAGE,
+  averageRating: raw.averageRating ?? 0,
+  totalRatings: raw.totalRatings ?? 0,
 });
 
 // Helper to handle guest session IDs (Fulfills Req #4)
@@ -217,6 +223,7 @@ const Shop: React.FC = () => {
                   const outOfStock = product.stock === 0;
                   const isAdding = addingId === product.id;
                   const productFeedback = feedback && feedback.id === product.id ? feedback : null;
+                  const rounded = Math.round(product.averageRating);
 
                   return (
                     <div key={product.id} className={styles.productCard}>
@@ -225,6 +232,18 @@ const Shop: React.FC = () => {
                         <p className={styles.productCategory}>{product.category}</p>
                         <h3 className={styles.productName}>{product.name}</h3>
                       </Link>
+                      <div className={styles.productRating} aria-label={`Rating ${product.averageRating} out of 5`}>
+                        <span className={styles.ratingStars}>
+                          {'★'.repeat(rounded)}<span className={styles.ratingStarsEmpty}>{'★'.repeat(5 - rounded)}</span>
+                        </span>
+                        {product.totalRatings > 0 ? (
+                          <span className={styles.ratingValue}>
+                            {product.averageRating.toFixed(1)} <span className={styles.ratingCount}>({product.totalRatings})</span>
+                          </span>
+                        ) : (
+                          <span className={styles.ratingCount}>(0)</span>
+                        )}
+                      </div>
                       <p className={`${styles.productStock} ${outOfStock ? styles.outOfStock : ''}`}>
                         {outOfStock ? (t('shop.outOfStock') || 'Out of Stock') : (t('shop.inStock', { count: product.stock }) || `In Stock: ${product.stock}`)}
                       </p>
