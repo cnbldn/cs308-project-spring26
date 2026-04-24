@@ -1,23 +1,13 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
 
-  // Check if user is logged in (from localStorage)
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    navigate('/login');
-    // Force a re-render to update the header immediately
-    window.location.reload();
-  };
 
   return (
     <header className={styles.pageHeader}>
@@ -33,9 +23,9 @@ const Header: React.FC = () => {
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              {t('header.logout')}
-            </button>
+            <Link to="/account" className={styles.signInButton}>
+              {t('account.myAccount')}
+            </Link>
           </>
         ) : (
           <Link to="/login" className={styles.signInButton}>{t('login.signIn')}</Link>

@@ -9,6 +9,7 @@ import Cart from './components/Cart';
 import Shop from './components/Shop';
 import ProductDetail from './components/ProductDetail';
 import Checkout from './components/Checkout';
+import Account from './components/Account';
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/profile" element={<div style={{ padding: '100px', textAlign: 'center' }}><h1>Profile Page</h1><p>Welcome! This is your private profile.</p></div>} />
+          <Route path="/account" element={<Account />} />
         </Route>
       </Routes>
       <Footer />
