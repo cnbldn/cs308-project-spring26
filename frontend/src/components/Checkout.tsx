@@ -20,8 +20,9 @@ const Checkout: React.FC = () => {
   const [cvv, setCvv] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState<{ orderId: string; invoiceId: string } | null>(null);
+  const [success, setSuccess] = useState<any>(null);
 
   // --- Validation Helpers ---
   const validateForm = () => {
@@ -71,6 +72,16 @@ const Checkout: React.FC = () => {
     setError('');
 
     try {
+      // Jira: CS308-FE-10 - Mock Banking Simulation
+      setProcessingMessage('Connecting to secure mock banking entity...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setProcessingMessage('Verifying card details and availability of funds...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setProcessingMessage('Payment Confirmed by Mock Bank! Finalizing order...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const response = await axios.post(`${API_BASE}/orders/checkout`, {
         customerId: user.id || user._id,
         deliveryAddress: address,
@@ -78,14 +89,13 @@ const Checkout: React.FC = () => {
         mockPaymentReference: `MOCK-${cardNumber.slice(-4)}-${Date.now()}`
       });
 
-      setSuccess({
-        orderId: response.data.orderId,
-        invoiceId: response.data.invoiceId
-      });
+      setSuccess(response.data.invoice); // Store full invoice for Jira CS308-FE-11
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Checkout failed.');
+      console.error('Checkout failed:', err);
+      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
     } finally {
       setIsLoading(false);
+      setProcessingMessage('');
     }
   };
 
@@ -106,19 +116,70 @@ const Checkout: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.successCard}>
           <div className={styles.successIcon}>✓</div>
-          <h2>Order Confirmed!</h2>
-          <p>Order ID: {success.orderId.slice(-8)}</p>
+          <h2 className={styles.successTitle}>Payment Confirmed!</h2>
+          <p className={styles.emailNote}>
+            A PDF copy of your invoice has been sent to <strong>{success.billingEmail}</strong>.
+          </p>
+          
+          <div className={styles.invoiceDisplay}>
+            <div className={styles.invoiceHeader}>
+              <div>
+                <h3>INVOICE</h3>
+                <p>#{success.invoiceNumber}</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p><strong>Date:</strong> {new Date(success.issuedAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+
+            <div className={styles.invoiceSection}>
+              <strong>Billed To:</strong>
+              <p>{user?.name || 'Customer'}</p>
+              <p>{success.billingAddress}</p>
+            </div>
+
+            <table className={styles.invoiceTable}>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th style={{ textAlign: 'center' }}>Qty</th>
+                  <th style={{ textAlign: 'right' }}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {success.items.map((item: any, idx: number) => (
+                  <tr key={idx}>
+                    <td>{item.name}</td>
+                    <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                    <td style={{ textAlign: 'right' }}>${item.lineTotal.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className={styles.invoiceTotal}>
+              <div className={styles.totalRow}>
+                <span>Subtotal </span>
+                <span>${success.subtotal.toFixed(2)}</span>
+              </div>
+              <div className={`${styles.totalRow} ${styles.grandTotal}`}>
+                <span>Total Amount </span>
+                <span>${success.totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
           <div className={styles.actions}>
             <a 
-              href={`${API_BASE}/orders/invoice/${success.invoiceId}/pdf`} 
+              href={`${API_BASE}/orders/invoice/${success._id}/pdf`} 
               target="_blank" 
               rel="noreferrer"
               className={styles.downloadButton}
             >
-              Download Invoice (PDF)
+              Download PDF Version
             </a>
             <button onClick={() => navigate('/shop')} className={styles.shopButton}>
-              Continue Shopping
+              Back to Store
             </button>
           </div>
         </div>
@@ -190,6 +251,16 @@ const Checkout: React.FC = () => {
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
+        
+        {processingMessage && (
+          <div className={styles.processingOverlay}>
+            <div className={styles.processingModal}>
+              <div className={styles.spinner}></div>
+              <p>{processingMessage}</p>
+            </div>
+          </div>
+        )}
+
         <button type="submit" className={styles.submitButton} disabled={isLoading}>
           {isLoading ? 'Processing...' : 'Place Order'}
         </button>
