@@ -31,6 +31,9 @@ const Header: React.FC = () => {
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Link to="/orders" className={styles.navLink}>Orders</Link>
+            {user.role === 'productManager' && (
+              <Link to="/manager" className={styles.navLink}>Manager</Link>
+            )}
             <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
