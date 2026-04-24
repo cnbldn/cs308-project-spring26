@@ -1,6 +1,11 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const Product = require("./models/Product");
+const Customer = require("./models/Customer");
+const Comment = require("./models/Comment");
+const Rating = require("./models/Rating");
+const Order = require("./models/Order");
+const Invoice = require("./models/Invoice");
 
 // Sample Products Data
 const baseProductsData = [
@@ -489,22 +494,214 @@ const productsData = baseProductsData.map((product, index) => ({
   ...demoProductMetadata[index]
 }));
 
+const demoUsersData = [
+  {
+    name: "Demo Customer One",
+    email: "demo.customer1@example.com",
+    password: "demo1234",
+    role: "customer",
+    taxId: "CUST-1001",
+    homeAddress: "Sabanci University Dorms, Tuzla, Istanbul"
+  },
+  {
+    name: "Demo Customer Two",
+    email: "demo.customer2@example.com",
+    password: "demo1234",
+    role: "customer",
+    taxId: "CUST-1002",
+    homeAddress: "Orhanli Mah., Tuzla, Istanbul"
+  },
+  {
+    name: "Demo Product Manager",
+    email: "demo.pm@example.com",
+    password: "demo1234",
+    role: "productManager",
+    taxId: "PM-2001",
+    homeAddress: "Campus Office, Tuzla, Istanbul"
+  },
+  {
+    name: "Demo Sales Manager",
+    email: "demo.sm@example.com",
+    password: "demo1234",
+    role: "salesManager",
+    taxId: "SM-3001",
+    homeAddress: "Admin Building, Tuzla, Istanbul"
+  }
+];
+
+const demoUserEmails = demoUsersData.map((user) => user.email);
+
+const buildOrderItem = (product, quantity) => ({
+  product: product._id,
+  name: product.name,
+  model: product.model,
+  serialNumber: product.serialNumber,
+  quantity,
+  unitPrice: product.price,
+  lineTotal: Number((product.price * quantity).toFixed(2))
+});
+
+const sumLineTotals = (items) =>
+  Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
+
 const seedDatabase = async () => {
   try {
     const mongoURI = process.env.MONGO_URI;
     await mongoose.connect(mongoURI);
     console.log("Connected to MongoDB...");
 
-    // 1. Clear only the old product data
-    console.log("Clearing old products...");
-    await Product.deleteMany({});
+    // 1. Clear products and DB-8 demo support data.
+    console.log("Clearing old products and demo support data...");
+    await Promise.all([
+      Product.deleteMany({}),
+      Comment.deleteMany({}),
+      Rating.deleteMany({}),
+      Order.deleteMany({}),
+      Invoice.deleteMany({}),
+      Customer.deleteMany({ email: { $in: demoUserEmails } })
+    ]);
 
-    // 2. Seed Video Game CDs
-    console.log("Seeding video game CDs...");
+    // 2. Seed products.
+    console.log("Seeding video game products...");
     const insertedProducts = await Product.insertMany(productsData);
-    console.log(`Successfully added ${insertedProducts.length} video games.`);
+    console.log(`Successfully added ${insertedProducts.length} products.`);
 
-    console.log("Database seeded successfully! 🎮");
+    const productByName = new Map(
+      insertedProducts.map((product) => [product.name, product])
+    );
+
+    // 3. Seed demo users.
+    console.log("Seeding demo users...");
+    const insertedUsers = await Customer.create(demoUsersData);
+    const userByEmail = new Map(insertedUsers.map((user) => [user.email, user]));
+
+    const customerOne = userByEmail.get("demo.customer1@example.com");
+    const customerTwo = userByEmail.get("demo.customer2@example.com");
+    const productManager = userByEmail.get("demo.pm@example.com");
+
+    // 4. Seed ratings.
+    console.log("Seeding ratings...");
+    await Rating.insertMany([
+      {
+        product: productByName.get("Elden Ring")._id,
+        customer: customerOne._id,
+        value: 5
+      },
+      {
+        product: productByName.get("Persona 5")._id,
+        customer: customerOne._id,
+        value: 5
+      },
+      {
+        product: productByName.get("Dead by Daylight")._id,
+        customer: customerTwo._id,
+        value: 4
+      },
+      {
+        product: productByName.get("Titanfall 2")._id,
+        customer: customerTwo._id,
+        value: 5
+      }
+    ]);
+
+    // 5. Seed comments.
+    console.log("Seeding comments...");
+    await Comment.insertMany([
+      {
+        product: productByName.get("Elden Ring")._id,
+        customer: customerOne._id,
+        text: "Fantastic atmosphere and world design. Easy demo item for approved comments.",
+        status: "approved",
+        approvedBy: productManager._id,
+        approvedAt: new Date("2026-04-20T10:00:00Z")
+      },
+      {
+        product: productByName.get("Persona 5")._id,
+        customer: customerTwo._id,
+        text: "Stylish game, but I want to see whether this comment stays hidden until approval.",
+        status: "pending"
+      }
+    ]);
+
+    // 6. Seed orders.
+    console.log("Seeding orders...");
+    const orderOneItems = [
+      buildOrderItem(productByName.get("Elden Ring"), 1),
+      buildOrderItem(productByName.get("Persona 5"), 1)
+    ];
+    const orderTwoItems = [
+      buildOrderItem(productByName.get("Dead by Daylight"), 2)
+    ];
+
+    const orderOneSubtotal = sumLineTotals(orderOneItems);
+    const orderTwoSubtotal = sumLineTotals(orderTwoItems);
+
+    const insertedOrders = await Order.insertMany([
+      {
+        customer: customerOne._id,
+        items: orderOneItems,
+        subtotal: orderOneSubtotal,
+        totalAmount: orderOneSubtotal,
+        paymentStatus: "paid",
+        orderStatus: "delivered",
+        deliveryAddress: customerOne.homeAddress,
+        mockPaymentReference: "MOCK-PAY-ORDER-001",
+        statusHistory: [
+          { status: "processing", changedAt: new Date("2026-04-18T08:00:00Z") },
+          { status: "in-transit", changedAt: new Date("2026-04-19T12:00:00Z") },
+          { status: "delivered", changedAt: new Date("2026-04-20T16:00:00Z") }
+        ],
+        placedAt: new Date("2026-04-18T08:00:00Z")
+      },
+      {
+        customer: customerTwo._id,
+        items: orderTwoItems,
+        subtotal: orderTwoSubtotal,
+        totalAmount: orderTwoSubtotal,
+        paymentStatus: "paid",
+        orderStatus: "in-transit",
+        deliveryAddress: customerTwo.homeAddress,
+        mockPaymentReference: "MOCK-PAY-ORDER-002",
+        statusHistory: [
+          { status: "processing", changedAt: new Date("2026-04-21T09:00:00Z") },
+          { status: "in-transit", changedAt: new Date("2026-04-22T14:30:00Z") }
+        ],
+        placedAt: new Date("2026-04-21T09:00:00Z")
+      }
+    ]);
+
+    // 7. Seed invoices for the paid demo orders.
+    console.log("Seeding invoices...");
+    await Invoice.insertMany([
+      {
+        invoiceNumber: "INV-2026-0001",
+        order: insertedOrders[0]._id,
+        customer: customerOne._id,
+        billingEmail: customerOne.email,
+        billingAddress: customerOne.homeAddress,
+        items: orderOneItems,
+        subtotal: orderOneSubtotal,
+        totalAmount: orderOneSubtotal,
+        pdfUrl: "/mock/invoices/INV-2026-0001.pdf",
+        emailStatus: "mock-sent",
+        issuedAt: new Date("2026-04-18T08:05:00Z")
+      },
+      {
+        invoiceNumber: "INV-2026-0002",
+        order: insertedOrders[1]._id,
+        customer: customerTwo._id,
+        billingEmail: customerTwo.email,
+        billingAddress: customerTwo.homeAddress,
+        items: orderTwoItems,
+        subtotal: orderTwoSubtotal,
+        totalAmount: orderTwoSubtotal,
+        pdfUrl: "/mock/invoices/INV-2026-0002.pdf",
+        emailStatus: "pending",
+        issuedAt: new Date("2026-04-21T09:05:00Z")
+      }
+    ]);
+
+    console.log("Database seeded successfully with products, demo users, ratings, comments, orders, and invoices.");
     process.exit(0);
   } catch (error) {
     console.error("Error seeding database:", error);
