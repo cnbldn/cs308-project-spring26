@@ -92,7 +92,7 @@ const Checkout: React.FC = () => {
       setSuccess(response.data.invoice); // Store full invoice for Jira CS308-FE-11
     } catch (err: any) {
       console.error('Checkout failed:', err);
-      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
+      setError(err.response?.data?.message || t('checkout.failed'));
     } finally {
       setIsLoading(false);
       setProcessingMessage('');
@@ -103,9 +103,11 @@ const Checkout: React.FC = () => {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <h2>{t('login.signIn')} Required</h2>
-          <p>Please log in to complete your purchase.</p>
-          <button onClick={() => navigate('/login')} className={styles.button}>Login</button>
+          <h2>{t('checkout.loginRequired')}</h2>
+          <p>{t('checkout.loginPrompt')}</p>
+          <button onClick={() => navigate('/login')} className={styles.button}>
+            {t('checkout.loginButton')}
+          </button>
         </div>
       </div>
     );
@@ -116,7 +118,7 @@ const Checkout: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.successCard}>
           <div className={styles.successIcon}>✓</div>
-          <h2 className={styles.successTitle}>Payment Confirmed!</h2>
+          <h2 className={styles.successTitle}>{t('checkout.confirmed')}</h2>
           <p className={styles.emailNote}>
             A PDF copy of your invoice has been sent to <strong>{success.billingEmail}</strong>.
           </p>
@@ -176,10 +178,10 @@ const Checkout: React.FC = () => {
               rel="noreferrer"
               className={styles.downloadButton}
             >
-              Download PDF Version
+              {t('checkout.downloadInvoice')}
             </a>
             <button onClick={() => navigate('/shop')} className={styles.shopButton}>
-              Back to Store
+              {t('cart.continueShopping')}
             </button>
           </div>
         </div>
@@ -189,25 +191,25 @@ const Checkout: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Checkout</h2>
+      <h2 className={styles.title}>{t('checkout.title')}</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
-          <h3>Delivery & Billing</h3>
+          <h3>{t('checkout.deliveryBilling')}</h3>
           <div className={styles.field}>
-            <label>Email for Invoice</label>
+            <label>{t('checkout.emailInvoice')}</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className={styles.field}>
-            <label>Delivery Address</label>
+            <label>{t('checkout.deliveryAddress')}</label>
             <textarea value={address} onChange={e => setAddress(e.target.value)} required />
           </div>
         </div>
 
         <div className={styles.section}>
-          <h3>Payment (Mock)</h3>
-          <p className={styles.hint}>Requirement #14: Card verification is out of scope.</p>
+          <h3>{t('checkout.payment')}</h3>
+          <p className={styles.hint}>{t('checkout.paymentHint')}</p>
           <div className={styles.field}>
-            <label>Name on Card</label>
+            <label>{t('checkout.nameOnCard')}</label>
             <input 
               type="text" 
               value={cardName} 
@@ -217,7 +219,7 @@ const Checkout: React.FC = () => {
             />
           </div>
           <div className={styles.field}>
-            <label>Card Number</label>
+            <label>{t('checkout.cardNumber')}</label>
             <input 
               type="text" 
               value={cardNumber} 
@@ -228,7 +230,7 @@ const Checkout: React.FC = () => {
           </div>
           <div className={styles.row}>
             <div className={styles.field}>
-              <label>Expiry</label>
+              <label>{t('checkout.expiry')}</label>
               <input 
                 type="text" 
                 value={expiry} 
@@ -238,7 +240,7 @@ const Checkout: React.FC = () => {
               />
             </div>
             <div className={styles.field}>
-              <label>CVV</label>
+              <label>{t('checkout.cvv')}</label>
               <input 
                 type="text" 
                 value={cvv} 
@@ -262,7 +264,7 @@ const Checkout: React.FC = () => {
         )}
 
         <button type="submit" className={styles.submitButton} disabled={isLoading}>
-          {isLoading ? 'Processing...' : 'Place Order'}
+          {isLoading ? t('checkout.processing') : t('checkout.placeOrder')}
         </button>
       </form>
     </div>

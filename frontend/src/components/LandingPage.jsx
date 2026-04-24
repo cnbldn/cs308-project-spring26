@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function LandingPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const isLoggedIn = !!localStorage.getItem('user');
+
+  const featureCards = [
+    { title: t('landing.rareFindTitle'), desc: t('landing.rareFindDesc') },
+    { title: t('landing.qualityTitle'), desc: t('landing.qualityDesc') },
+    { title: t('landing.newArrivalsTitle'), desc: t('landing.newArrivalsDesc') },
+  ];
 
   return (
     <main
@@ -44,7 +52,7 @@ function LandingPage() {
             marginBottom: '24px',
           }}
         >
-          VIDEOGAME CD STORE
+          {t('landing.tagline')}
         </p>
 
         <p
@@ -56,8 +64,7 @@ function LandingPage() {
             lineHeight: '1.7',
           }}
         >
-          Browse our collection of videogame CDs — retro classics,
-          new releases, and everything in between.
+          {t('landing.subtitle')}
         </p>
 
         <div
@@ -85,7 +92,7 @@ function LandingPage() {
             onMouseEnter={e => e.target.style.background = '#3a3020'}
             onMouseLeave={e => e.target.style.background = '#2a2215'}
           >
-            Browse Shop
+            {t('landing.browseShop')}
           </button>
 
           {!isLoggedIn && (
@@ -111,7 +118,7 @@ function LandingPage() {
                 e.target.style.color = '#b5a882';
               }}
             >
-              Sign In
+              {t('login.signIn')}
             </button>
           )}
         </div>
@@ -126,20 +133,7 @@ function LandingPage() {
           gap: '16px',
         }}
       >
-        {[
-          {
-            title: 'Rare Finds',
-            desc: 'Hard-to-find CDs, retro classics, and limited edition releases.',
-          },
-          {
-            title: 'Verified Quality',
-            desc: 'Every disc is checked and graded before it hits the shelf.',
-          },
-          {
-            title: 'New Arrivals',
-            desc: 'Weekly drops, deals, and community-picked recommendations.',
-          },
-        ].map((card) => (
+        {featureCards.map((card) => (
           <div
             key={card.title}
             style={{

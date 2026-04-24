@@ -1,0 +1,151 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 90px 20px 60px;
+  background: #0d0d0d;
+}
+
+.card {
+  background: #161210;
+  border: 1px solid #3a3225;
+  border-radius: 6px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+}
+
+.title {
+  color: #ffd700;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: #8a7d62;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  color: #d4c9a8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #3a3225;
+  padding-bottom: 0.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.field {
+  margin-bottom: 1.1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #b5a882;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.value {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #2a2215;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.95rem;
+  color: #d4c9a8;
+  box-sizing: border-box;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #3a3225;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 0.95rem;
+  color: #d4c9a8;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #5c5040;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #d4a017;
+  box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.15);
+}
+
+.button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #2a2215;
+  color: #ffd700;
+  border: 1px solid #d4a017;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 0.25rem;
+}
+
+.button:hover {
+  background: #3a3020;
+}
+
+.button:disabled {
+  background: #1a1610;
+  color: #5c5040;
+  border-color: #3a3225;
+  cursor: not-allowed;
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 0.8rem;
+  background: transparent;
+  color: #a89a78;
+  border: 1px solid #3a3225;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  margin-top: 0.5rem;
+}
+
+.logoutButton:hover {
+  border-color: #d4a017;
+  color: #ffd700;
+}
+
+.success {
+  color: #4caf78;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.error {
+  color: #e05050;
+  font-size: 0.875rem;
+  margin-top: 0.4rem;
+}

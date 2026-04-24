@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import styles from './Login.module.css';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
@@ -56,13 +55,12 @@ const Login: React.FC = () => {
           localStorage.setItem('token', response.data.token);
         }
         
-        console.log('Login successful:', response.data.user);
-        navigate('/');
+        window.location.href = '/';
       }
     } catch (error: any) {
       console.error('Login error:', error.response?.data || error.message);
       setErrors({
-        general: error.response?.data?.message || 'Something went wrong. Please try again.',
+        general: error.response?.data?.message || t('login.genericError'),
       });
     } finally {
       setIsLoading(false);
@@ -124,9 +122,9 @@ const Login: React.FC = () => {
         </form>
 
         <div className={styles.links}>
-          <Link to="/forgot-password" className={styles.link}>Forgot Password?</Link>
+          <Link to="/forgot-password" className={styles.link}>{t('login.forgotPassword')}</Link>
           <span className={styles.dotSeparator}>•</span>
-          <Link to="/register" className={styles.link}>Create account</Link>
+          <Link to="/register" className={styles.link}>{t('login.createAccount')}</Link>
         </div>
       </div>
     </div>
