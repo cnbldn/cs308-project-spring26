@@ -16,7 +16,7 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<ReviewData>({ averageRating: 0, totalRatings: 0, comments: [] });
   const [loading, setLoading] = useState(true);
@@ -57,13 +57,13 @@ const ProductDetail: React.FC = () => {
       });
       setFeedback({ type: 'success', message: t('shop.added') });
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err.response?.data?.message || 'Failed to add' });
+      setFeedback({ type: 'error', message: err.response?.data?.message || t('productDetail.addFailed') });
     }
   };
 
   const handleRate = async (value: number) => {
     if (!user) {
-      setFeedback({ type: 'error', message: 'Please login to rate.' });
+      setFeedback({ type: 'error', message: t('productDetail.loginToRate') });
       return;
     }
     try {
@@ -73,18 +73,18 @@ const ProductDetail: React.FC = () => {
         value: value
       });
       setUserRating(value);
-      setFeedback({ type: 'success', message: 'Rating updated!' });
+      setFeedback({ type: 'success', message: t('productDetail.ratingUpdated') });
       const revRes = await axios.get(`${API_BASE}/reviews/product/${id}`);
       setReviews(revRes.data);
     } catch (err) {
-      setFeedback({ type: 'error', message: 'Failed to submit rating.' });
+      setFeedback({ type: 'error', message: t('productDetail.ratingFailed') });
     }
   };
 
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      setFeedback({ type: 'error', message: 'Please login to comment.' });
+      setFeedback({ type: 'error', message: t('productDetail.loginToComment') });
       return;
     }
     if (!commentText.trim()) return;
@@ -95,15 +95,15 @@ const ProductDetail: React.FC = () => {
         customerId: user.id || user._id,
         text: commentText
       });
-      setFeedback({ type: 'success', message: 'Comment submitted! Awaiting approval.' });
+      setFeedback({ type: 'success', message: t('productDetail.commentSubmitted') });
       setCommentText('');
     } catch (err) {
-      setFeedback({ type: 'error', message: 'Failed to submit comment.' });
+      setFeedback({ type: 'error', message: t('productDetail.commentFailed') });
     }
   };
 
-  if (loading) return <div className={styles.container}>Loading...</div>;
-  if (!product) return <div className={styles.container}>Product not found.</div>;
+  if (loading) return <div className={styles.container}>{t('productDetail.loading')}</div>;
+  if (!product) return <div className={styles.container}>{t('productDetail.notFound')}</div>;
 
   return (
     <div className={styles.container}>
@@ -120,18 +120,20 @@ const ProductDetail: React.FC = () => {
           <span className={styles.category}>{product.category}</span>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.price}>${product.price.toFixed(2)}</div>
-          
+
           <p className={styles.description}>{product.description}</p>
-          
+
           <div className={styles.stock}>
-            Status: <span className={product.stock > 0 ? styles.inStock : styles.outOfStock}>
-              {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+            {t('productDetail.status')} <span className={product.stock > 0 ? styles.inStock : styles.outOfStock}>
+              {product.stock > 0
+                ? t('productDetail.inStock', { count: product.stock })
+                : t('productDetail.outOfStock')}
             </span>
           </div>
 
           <div className={styles.actions}>
-            <button 
-              className={styles.addButton} 
+            <button
+              className={styles.addButton}
               disabled={product.stock === 0}
               onClick={handleAddToCart}
             >
@@ -142,49 +144,47 @@ const ProductDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Requirement #9: Technical Specifications */}
       <section className={styles.specsSection}>
-        <h3 className={styles.sectionTitle}>Technical Specifications</h3>
+        <h3 className={styles.sectionTitle}>{t('productDetail.techSpecs')}</h3>
         <div className={styles.specsGrid}>
           <div className={styles.specItem}>
-            <h5>Model</h5>
+            <h5>{t('productDetail.model')}</h5>
             <p>{product.model}</p>
           </div>
           <div className={styles.specItem}>
-            <h5>Serial Number</h5>
+            <h5>{t('productDetail.serialNumber')}</h5>
             <p>{product.serialNumber}</p>
           </div>
           <div className={styles.specItem}>
-            <h5>Warranty Status</h5>
-            <p style={{textTransform: 'capitalize'}}>{product.warrantyStatus}</p>
+            <h5>{t('productDetail.warrantyStatus')}</h5>
+            <p style={{ textTransform: 'capitalize' }}>{product.warrantyStatus}</p>
           </div>
           <div className={styles.specItem}>
-            <h5>Distributor</h5>
+            <h5>{t('productDetail.distributor')}</h5>
             <p>{product.distributorInfo?.name} ({product.distributorInfo?.country})</p>
           </div>
         </div>
       </section>
 
-      {/* Requirement #5: Reviews */}
       <section className={styles.reviewsSection}>
-        <h3 className={styles.sectionTitle}>Customer Reviews & Ratings</h3>
-        
+        <h3 className={styles.sectionTitle}>{t('productDetail.reviews')}</h3>
+
         <div className={styles.ratingOverview}>
           <div className={styles.avgValue}>{reviews.averageRating}</div>
           <div>
             <div className={styles.stars}>{'★'.repeat(Math.round(reviews.averageRating))}{'☆'.repeat(5 - Math.round(reviews.averageRating))}</div>
-            <div style={{fontSize: '0.8rem', color: '#8a7d62'}}>{reviews.totalRatings} ratings</div>
+            <div style={{ fontSize: '0.8rem', color: '#8a7d62' }}>{t('productDetail.ratings', { count: reviews.totalRatings })}</div>
           </div>
         </div>
 
         {user && (
           <div className={styles.reviewActions}>
             <div className={styles.ratingBox}>
-              <h4>Your Rating</h4>
+              <h4>{t('productDetail.yourRating')}</h4>
               <div className={styles.starInput}>
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <button 
-                    key={star} 
+                  <button
+                    key={star}
                     onClick={() => handleRate(star)}
                     className={star <= userRating ? styles.starActive : styles.starInactive}
                   >
@@ -195,15 +195,15 @@ const ProductDetail: React.FC = () => {
             </div>
 
             <form className={styles.commentForm} onSubmit={handleComment}>
-              <h4>Write a Comment</h4>
-              <textarea 
-                className={styles.textArea} 
-                placeholder="Share your thoughts about this game..."
+              <h4>{t('productDetail.writeComment')}</h4>
+              <textarea
+                className={styles.textArea}
+                placeholder={t('productDetail.commentPlaceholder')}
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
               />
               <button type="submit" className={styles.addButton} disabled={!commentText.trim()}>
-                Post Comment
+                {t('productDetail.postComment')}
               </button>
             </form>
           </div>
@@ -219,7 +219,7 @@ const ProductDetail: React.FC = () => {
               <p className={styles.commentText}>{comment.text}</p>
             </div>
           )) : (
-            <p style={{color: '#8a7d62'}}>No approved reviews yet. Be the first!</p>
+            <p style={{ color: '#8a7d62' }}>{t('productDetail.noReviews')}</p>
           )}
         </div>
       </section>
