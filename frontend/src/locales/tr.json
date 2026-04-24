@@ -11,7 +11,10 @@
     "emailRequired": "E-posta gerekli",
     "emailInvalid": "E-posta geçersiz",
     "passwordRequired": "Şifre gerekli",
-    "passwordMinLength": "Şifre en az 6 karakter olmalı"
+    "passwordMinLength": "Şifre en az 6 karakter olmalı",
+    "forgotPassword": "Şifremi Unuttum?",
+    "createAccount": "Hesap oluştur",
+    "genericError": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin."
   },
   "register": {
     "title": "Hesap Oluştur",
@@ -30,13 +33,16 @@
     "addressRequired": "Adres gerekli",
     "taxIdLabel": "Vergi Numarası",
     "taxIdPlaceholder": "Örn. 1234567890",
-    "taxIdRequired": "Vergi numarası gerekli"
+    "taxIdRequired": "Vergi numarası gerekli",
+    "registrationFailed": "Kayıt başarısız. Lütfen tekrar deneyin."
   },
   "header": {
     "brand": "Game Vault",
     "collections": "Koleksiyon",
     "deals": "Teklifler",
-    "support": "Destek"
+    "support": "Destek",
+    "hello": "Merhaba",
+    "logout": "Çıkış Yap"
   },
   "shop": {
     "title": "Mağaza",
@@ -48,6 +54,8 @@
     "loading": "Ürünler yükleniyor...",
     "loadError": "Ürünler yüklenemedi. Lütfen tekrar deneyin.",
     "searchPlaceholder": "Ürün ara...",
+    "categories": "Kategoriler",
+    "allProducts": "Tüm Ürünler",
     "allCategories": "Tüm Kategoriler",
     "sortDefault": "En Yeni",
     "sortPriceAsc": "Fiyat: Düşükten Yükseğe",
@@ -63,6 +71,69 @@
     "remove": "Kaldır",
     "subtotal": "Ara Toplam",
     "total": "Toplam",
-    "checkout": "Ödemeye Geç"
+    "checkout": "Ödemeye Geç",
+    "loading": "Sepet yükleniyor..."
+  },
+  "footer": {
+    "copyright": "© {{year}} Game Vault",
+    "privacyTerms": "Gizlilik · Kullanım Koşulları"
+  },
+  "landing": {
+    "tagline": "VİDEOYUN CD MAĞAZASI",
+    "subtitle": "Videoyun CD koleksiyonumuza göz atın — retro klasikler, yeni çıkışlar ve daha fazlası.",
+    "browseShop": "Mağazaya Göz At",
+    "rareFindTitle": "Nadir Bulunanlar",
+    "rareFindDesc": "Zor bulunan CD'ler, retro klasikler ve sınırlı sayıda yayımlanan oyunlar.",
+    "qualityTitle": "Doğrulanmış Kalite",
+    "qualityDesc": "Her disk rafa çıkmadan önce kontrol edilir ve derecelendirilir.",
+    "newArrivalsTitle": "Yeni Gelenler",
+    "newArrivalsDesc": "Haftalık yeni gelenler, teklifler ve topluluk önerileri."
+  },
+  "checkout": {
+    "title": "Ödeme",
+    "loginRequired": "Giriş Gerekli",
+    "loginPrompt": "Satın alma işlemini tamamlamak için giriş yapın.",
+    "loginButton": "Giriş Yap",
+    "confirmed": "Sipariş Onaylandı!",
+    "orderId": "Sipariş No: {{id}}",
+    "downloadInvoice": "Faturayı İndir (PDF)",
+    "deliveryBilling": "Teslimat & Fatura",
+    "emailInvoice": "Fatura için E-posta",
+    "deliveryAddress": "Teslimat Adresi",
+    "payment": "Ödeme (Simüle)",
+    "paymentHint": "Gereksinim #14: Kart doğrulama kapsam dışıdır.",
+    "nameOnCard": "Kart Üzerindeki İsim",
+    "cardNumber": "Kart Numarası",
+    "expiry": "Son Kullanma",
+    "cvv": "CVV",
+    "processing": "İşleniyor...",
+    "placeOrder": "Sipariş Ver",
+    "failed": "Ödeme başarısız."
+  },
+  "productDetail": {
+    "loading": "Yükleniyor...",
+    "notFound": "Ürün bulunamadı.",
+    "status": "Durum:",
+    "inStock": "Stokta ({{count}})",
+    "outOfStock": "Stokta Yok",
+    "techSpecs": "Teknik Özellikler",
+    "model": "Model",
+    "serialNumber": "Seri Numarası",
+    "warrantyStatus": "Garanti Durumu",
+    "distributor": "Distribütör",
+    "reviews": "Müşteri Yorumları & Puanlamaları",
+    "ratings": "{{count}} puan",
+    "yourRating": "Puanınız",
+    "writeComment": "Yorum Yaz",
+    "commentPlaceholder": "Bu oyun hakkında düşüncelerinizi paylaşın...",
+    "postComment": "Yorum Gönder",
+    "loginToRate": "Puan vermek için giriş yapın.",
+    "ratingUpdated": "Puan güncellendi!",
+    "loginToComment": "Yorum yapmak için giriş yapın.",
+    "ratingFailed": "Puan gönderilemedi.",
+    "commentSubmitted": "Yorum gönderildi! Onay bekleniyor.",
+    "commentFailed": "Yorum gönderilemedi.",
+    "addFailed": "Eklenemedi",
+    "noReviews": "Henüz onaylanmış yorum yok. İlk sen ol!"
   }
 }

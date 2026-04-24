@@ -11,7 +11,10 @@
     "emailRequired": "Email is required",
     "emailInvalid": "Email is invalid",
     "passwordRequired": "Password is required",
-    "passwordMinLength": "Password must be at least 6 characters"
+    "passwordMinLength": "Password must be at least 6 characters",
+    "forgotPassword": "Forgot Password?",
+    "createAccount": "Create account",
+    "genericError": "Something went wrong. Please try again."
   },
   "register": {
     "title": "Create Account",
@@ -68,6 +71,69 @@
     "remove": "Remove",
     "subtotal": "Subtotal",
     "total": "Total",
-    "checkout": "Proceed to Checkout"
+    "checkout": "Proceed to Checkout",
+    "loading": "Loading cart..."
+  },
+  "footer": {
+    "copyright": "© {{year}} Game Vault",
+    "privacyTerms": "Privacy · Terms"
+  },
+  "landing": {
+    "tagline": "VIDEOGAME CD STORE",
+    "subtitle": "Browse our collection of videogame CDs — retro classics, new releases, and everything in between.",
+    "browseShop": "Browse Shop",
+    "rareFindTitle": "Rare Finds",
+    "rareFindDesc": "Hard-to-find CDs, retro classics, and limited edition releases.",
+    "qualityTitle": "Verified Quality",
+    "qualityDesc": "Every disc is checked and graded before it hits the shelf.",
+    "newArrivalsTitle": "New Arrivals",
+    "newArrivalsDesc": "Weekly drops, deals, and community-picked recommendations."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "loginRequired": "Sign In Required",
+    "loginPrompt": "Please log in to complete your purchase.",
+    "loginButton": "Login",
+    "confirmed": "Order Confirmed!",
+    "orderId": "Order ID: {{id}}",
+    "downloadInvoice": "Download Invoice (PDF)",
+    "deliveryBilling": "Delivery & Billing",
+    "emailInvoice": "Email for Invoice",
+    "deliveryAddress": "Delivery Address",
+    "payment": "Payment (Mock)",
+    "paymentHint": "Requirement #14: Card verification is out of scope.",
+    "nameOnCard": "Name on Card",
+    "cardNumber": "Card Number",
+    "expiry": "Expiry",
+    "cvv": "CVV",
+    "processing": "Processing...",
+    "placeOrder": "Place Order",
+    "failed": "Checkout failed."
+  },
+  "productDetail": {
+    "loading": "Loading...",
+    "notFound": "Product not found.",
+    "status": "Status:",
+    "inStock": "In Stock ({{count}})",
+    "outOfStock": "Out of Stock",
+    "techSpecs": "Technical Specifications",
+    "model": "Model",
+    "serialNumber": "Serial Number",
+    "warrantyStatus": "Warranty Status",
+    "distributor": "Distributor",
+    "reviews": "Customer Reviews & Ratings",
+    "ratings": "{{count}} ratings",
+    "yourRating": "Your Rating",
+    "writeComment": "Write a Comment",
+    "commentPlaceholder": "Share your thoughts about this game...",
+    "postComment": "Post Comment",
+    "loginToRate": "Please login to rate.",
+    "ratingUpdated": "Rating updated!",
+    "loginToComment": "Please login to comment.",
+    "ratingFailed": "Failed to submit rating.",
+    "commentSubmitted": "Comment submitted! Awaiting approval.",
+    "commentFailed": "Failed to submit comment.",
+    "addFailed": "Failed to add",
+    "noReviews": "No approved reviews yet. Be the first!"
   }
 }

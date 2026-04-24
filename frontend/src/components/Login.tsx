@@ -62,7 +62,7 @@ const Login: React.FC = () => {
     } catch (error: any) {
       console.error('Login error:', error.response?.data || error.message);
       setErrors({
-        general: error.response?.data?.message || 'Something went wrong. Please try again.',
+        general: error.response?.data?.message || t('login.genericError'),
       });
     } finally {
       setIsLoading(false);
@@ -124,9 +124,9 @@ const Login: React.FC = () => {
         </form>
 
         <div className={styles.links}>
-          <Link to="/forgot-password" className={styles.link}>Forgot Password?</Link>
+          <Link to="/forgot-password" className={styles.link}>{t('login.forgotPassword')}</Link>
           <span className={styles.dotSeparator}>•</span>
-          <Link to="/register" className={styles.link}>Create account</Link>
+          <Link to="/register" className={styles.link}>{t('login.createAccount')}</Link>
         </div>
       </div>
     </div>

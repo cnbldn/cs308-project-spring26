@@ -103,7 +103,7 @@ const Cart: React.FC = () => {
     }
   };
 
-  if (loading) return <div className={styles.cartContainer}><p>Loading cart...</p></div>;
+  if (loading) return <div className={styles.cartContainer}><p>{t('cart.loading')}</p></div>;
 
   if (items.length === 0) {
     return (
