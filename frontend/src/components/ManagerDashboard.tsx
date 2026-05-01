@@ -22,7 +22,16 @@ interface ManagedProduct {
   imageUrl?: string | null;
 }
 
-type Tab = 'comments' | 'stock';
+interface ManagedOrder {
+  _id: string;
+  customer: { name: string; email: string } | null;
+  totalAmount: number;
+  orderStatus: 'processing' | 'in-transit' | 'delivered' | 'cancelled';
+  createdAt: string;
+  items: any[];
+}
+
+type Tab = 'comments' | 'stock' | 'orders';
 
 const ManagerDashboard: React.FC = () => {
   const userStr = localStorage.getItem('user');
@@ -41,6 +50,11 @@ const ManagerDashboard: React.FC = () => {
   const [productsError, setProductsError] = useState('');
   const [stockDrafts, setStockDrafts] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+
+  const [orders, setOrders] = useState<ManagedOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState('');
+
   const [rowFeedback, setRowFeedback] = useState<{
     id: string;
     type: 'success' | 'error';
@@ -74,10 +88,24 @@ const ManagerDashboard: React.FC = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true);
+      const res = await axios.get(`${API_BASE}/orders`);
+      setOrders(res.data || []);
+      setOrdersError('');
+    } catch (err: any) {
+      setOrdersError(err.response?.data?.message || 'Could not load orders.');
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isManager) return;
     fetchPending();
     fetchProducts();
+    fetchOrders();
   }, [isManager]);
 
   if (!user) return <Navigate to="/login" replace />;
@@ -137,6 +165,23 @@ const ManagerDashboard: React.FC = () => {
     }
   };
 
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      setRowFeedback({ id: orderId, type: 'success', message: 'Updating...' });
+      await axios.patch(`${API_BASE}/orders/${orderId}/status`, { status: newStatus });
+      setOrders((prev) => prev.map((o) => (o._id === orderId ? { ...o, orderStatus: newStatus as any } : o)));
+      setRowFeedback({ id: orderId, type: 'success', message: 'Status updated.' });
+    } catch (err: any) {
+      setRowFeedback({
+        id: orderId,
+        type: 'error',
+        message: err.response?.data?.message || 'Update failed.',
+      });
+    } finally {
+      setTimeout(() => setRowFeedback(null), 2500);
+    }
+  };
+
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString(undefined, {
       year: 'numeric',
@@ -154,7 +199,7 @@ const ManagerDashboard: React.FC = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Manager Dashboard</h1>
-        <p className={styles.subtitle}>Moderate customer comments and manage product stock.</p>
+        <p className={styles.subtitle}>Moderate comments, manage stock, and track deliveries.</p>
       </header>
 
       <div className={styles.tabs}>
@@ -170,6 +215,12 @@ const ManagerDashboard: React.FC = () => {
           onClick={() => setTab('stock')}
         >
           Stock Management
+        </button>
+        <button
+          className={`${styles.tab} ${tab === 'orders' ? styles.tabActive : ''}`}
+          onClick={() => setTab('orders')}
+        >
+          Orders & Delivery
         </button>
       </div>
 
@@ -317,13 +368,78 @@ const ManagerDashboard: React.FC = () => {
                       </tr>
                     );
                   })}
-                  {filteredProducts.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className={styles.muted} style={{ textAlign: 'center', padding: '2rem' }}>
-                        No products match your search.
-                      </td>
-                    </tr>
-                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {tab === 'orders' && (
+        <section className={styles.panel}>
+          {ordersLoading ? (
+            <p className={styles.muted}>Loading orders...</p>
+          ) : ordersError ? (
+            <p className={styles.error}>{ordersError}</p>
+          ) : orders.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>No orders have been placed yet.</p>
+            </div>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Placed At</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((o) => {
+                    const feedback = rowFeedback && rowFeedback.id === o._id ? rowFeedback : null;
+                    const statusKey = o.orderStatus.replace('-', '_');
+
+                    return (
+                      <tr key={o._id}>
+                        <td style={{ fontWeight: 600 }}>#{o._id.slice(-8).toUpperCase()}</td>
+                        <td>
+                          <div>{o.customer?.name || 'Unknown'}</div>
+                          <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{o.customer?.email}</div>
+                        </td>
+                        <td>{formatDate(o.createdAt)}</td>
+                        <td>${o.totalAmount.toFixed(2)}</td>
+                        <td>
+                          <span className={`${styles[`status_${statusKey}`]}`} style={{ fontWeight: 600 }}>
+                            {o.orderStatus.charAt(0).toUpperCase() + o.orderStatus.slice(1).replace('-', ' ')}
+                          </span>
+                        </td>
+                        <td>
+                          <div className={styles.actionCell}>
+                            <select
+                              className={styles.statusSelect}
+                              value={o.orderStatus}
+                              disabled={o.orderStatus === 'cancelled'}
+                              onChange={(e) => handleStatusUpdate(o._id, e.target.value)}
+                            >
+                              <option value="processing">Processing</option>
+                              <option value="in-transit">In Transit</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled" disabled>Cancelled</option>
+                            </select>
+                            {feedback && (
+                              <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>
+                                {feedback.message}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

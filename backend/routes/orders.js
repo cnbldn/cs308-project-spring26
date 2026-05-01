@@ -113,6 +113,19 @@ router.post('/checkout', async (req, res) => {
     }
 });
 
+// GET /api/orders
+// Requirement #12: For managers to view all orders
+router.get('/', async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate('customer', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // GET /api/orders/invoice/:invoiceId/pdf
 // Requirement #4: Generate and stream the PDF
 router.get('/invoice/:invoiceId/pdf', async (req, res) => {

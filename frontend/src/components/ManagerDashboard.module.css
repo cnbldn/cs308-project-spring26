@@ -324,6 +324,28 @@
   font-size: 0.8rem;
 }
 
+/* Orders */
+
+.statusSelect {
+  padding: 0.45rem 0.65rem;
+  background: #0d0d0d;
+  border: 1px solid #3a3225;
+  border-radius: 4px;
+  color: #d4c9a8;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.statusSelect:focus {
+  outline: none;
+  border-color: #d4a017;
+}
+
+.status_processing { color: #d4a017; }
+.status_in_transit { color: #3a8f52; }
+.status_delivered { color: #6fbf6f; }
+.status_cancelled { color: #e05050; }
+
 @media (max-width: 700px) {
   .commentMeta {
     grid-template-columns: 1fr;
