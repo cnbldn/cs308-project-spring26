@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import styles from './ProductDetail.module.css';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -16,6 +17,7 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { refreshCart } = useCart();
 
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<ReviewData>({ averageRating: 0, totalRatings: 0, comments: [] });
@@ -55,6 +57,7 @@ const ProductDetail: React.FC = () => {
         customerId: user?.id || user?._id || null,
         sessionId: !user ? sessionId : null
       });
+      await refreshCart();
       setFeedback({ type: 'success', message: t('shop.added') });
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.response?.data?.message || t('productDetail.addFailed') });

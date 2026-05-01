@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import styles from './Shop.module.css';
 import ProductImageHover from './ProductImageHover';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -59,6 +60,7 @@ const getSessionId = () => {
 
 const Shop: React.FC = () => {
   const { t } = useTranslation();
+  const { refreshCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,6 +148,7 @@ const Shop: React.FC = () => {
         customerId,
         sessionId,
       });
+      await refreshCart();
       setFeedback({
         id: product.id,
         type: 'success',
