@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import styles from './Checkout.module.css';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
 
 const Checkout: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { refreshCart } = useCart();
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
@@ -89,6 +91,7 @@ const Checkout: React.FC = () => {
         mockPaymentReference: `MOCK-${cardNumber.slice(-4)}-${Date.now()}`
       });
 
+      await refreshCart();
       setSuccess(response.data.invoice); // Store full invoice for Jira CS308-FE-11
     } catch (err: any) {
       console.error('Checkout failed:', err);
