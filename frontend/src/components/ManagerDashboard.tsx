@@ -11,6 +11,7 @@ interface PendingComment {
   createdAt: string;
   product: { _id: string; name: string } | null;
   customer: { _id: string; name: string } | null;
+  customerRating?: number | null;
 }
 
 interface ManagedProduct {
@@ -248,7 +249,14 @@ const ManagerDashboard: React.FC = () => {
                       </div>
                       <div>
                         <div className={styles.metaLabel}>Customer</div>
-                        <div className={styles.metaValue}>{c.customer?.name ?? '—'}</div>
+                        <div className={styles.metaValue}>
+                          {c.customer?.name ?? '—'}
+                          {c.customerRating && (
+                            <span style={{ color: '#ffd700', marginLeft: '0.5rem' }}>
+                              {'★'.repeat(c.customerRating)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <div className={styles.metaLabel}>Submitted</div>

@@ -216,7 +216,14 @@ const ProductDetail: React.FC = () => {
           {reviews.comments.length > 0 ? reviews.comments.map((comment: any) => (
             <div key={comment._id} className={styles.commentCard}>
               <div className={styles.commentHeader}>
-                <span className={styles.commentUser}>{comment.customer?.name}</span>
+                <div>
+                  <span className={styles.commentUser}>{comment.customer?.name}</span>
+                  {comment.customerRating && (
+                    <span className={styles.commentRating} aria-label={`Rated ${comment.customerRating} stars`}>
+                      {'★'.repeat(comment.customerRating)}
+                    </span>
+                  )}
+                </div>
                 <span className={styles.commentDate}>{new Date(comment.createdAt).toLocaleDateString()}</span>
               </div>
               <p className={styles.commentText}>{comment.text}</p>
