@@ -2,12 +2,65 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
+const { sendInvoiceEmail } = require('../utils/emailService');
 
 const Order = require('../models/Order');
 const Invoice = require('../models/Invoice');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const Customer = require('../models/Customer');
+
+// Helper to generate PDF Buffer for Emails & Downloads
+const generateInvoicePDFBuffer = (invoice) => {
+    return new Promise((resolve, reject) => {
+        const doc = new PDFDocument({ margin: 50 });
+        let buffers = [];
+
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            const pdfData = Buffer.concat(buffers);
+            resolve(pdfData);
+        });
+        doc.on('error', reject);
+
+        // Header
+        doc.fillColor('#444444').fontSize(20).text('GAME VAULT INVOICE', { align: 'center' });
+        doc.fontSize(10).text(`Issued on: ${new Date(invoice.issuedAt).toLocaleDateString()}`, { align: 'center' });
+        doc.moveDown();
+
+        // Customer Details
+        doc.fontSize(12).fillColor('black');
+        doc.text(`Invoice Number: ${invoice.invoiceNumber}`, 50, 160);
+        doc.text(`Bill To: ${invoice.customer?.name || 'Customer'}`, 50, 175);
+        doc.text(`Address: ${invoice.billingAddress}`, 50, 190);
+        if (invoice.customer?.taxId) doc.text(`Tax ID: ${invoice.customer.taxId}`, 50, 205);
+
+        // Table Header
+        const tableTop = 250;
+        doc.font('Helvetica-Bold').text('Product', 50, tableTop);
+        doc.text('Qty', 350, tableTop);
+        doc.text('Total', 450, tableTop);
+        doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
+
+        // Table Rows
+        doc.font('Helvetica');
+        let currentY = tableTop + 30;
+        invoice.items.forEach(item => {
+            doc.text(item.name, 50, currentY);
+            doc.text(item.quantity.toString(), 350, currentY);
+            doc.text(`$${item.lineTotal.toFixed(2)}`, 450, currentY);
+            currentY += 25;
+        });
+
+        // Total
+        doc.moveTo(50, currentY + 10).lineTo(550, currentY + 10).stroke();
+        doc.font('Helvetica-Bold').fontSize(14).text(`TOTAL: $${invoice.totalAmount.toFixed(2)}`, 350, currentY + 30);
+
+        doc.fontSize(10).font('Helvetica').fillColor('grey').text('Payment confirmed (Mock entity).', 50, 700, { align: 'center' });
+        
+        doc.end();
+    });
+};
 
 // POST /api/orders/checkout
 // Requirement #4 (Orders) & #3 (Stock Decrement)
@@ -98,6 +151,24 @@ router.post('/checkout', async (req, res) => {
         await session.commitTransaction();
         session.endSession();
 
+        // 6. Generate PDF and Send Email (Requirement #4)
+        // We do this after the transaction to ensure the DB state is solid.
+        // We use a separate try/catch so email failure doesn't break the response.
+        try {
+            const populatedInvoice = await Invoice.findById(invoice._id).populate('customer', 'name taxId');
+            const pdfBuffer = await generateInvoicePDFBuffer(populatedInvoice);
+            
+            await sendInvoiceEmail(billingEmail, invoice.invoiceNumber, pdfBuffer);
+            
+            // Update email status in DB
+            await Invoice.findByIdAndUpdate(invoice._id, { emailStatus: 'sent' });
+            invoice.emailStatus = 'sent';
+        } catch (emailErr) {
+            console.error("[CHECKOUT EMAIL ERROR]", emailErr);
+            await Invoice.findByIdAndUpdate(invoice._id, { emailStatus: 'failed' });
+            invoice.emailStatus = 'failed';
+        }
+
         res.status(201).json({
             message: "Order placed successfully!",
             orderId: order._id,
@@ -133,48 +204,11 @@ router.get('/invoice/:invoiceId/pdf', async (req, res) => {
         const invoice = await Invoice.findById(req.params.invoiceId).populate('customer', 'name taxId');
         if (!invoice) return res.status(404).json({ message: "Invoice not found" });
 
-        const doc = new PDFDocument({ margin: 50 });
+        const pdfBuffer = await generateInvoicePDFBuffer(invoice);
         
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`);
-        doc.pipe(res);
-
-        // Header
-        doc.fillColor('#444444').fontSize(20).text('GAME VAULT INVOICE', { align: 'center' });
-        doc.fontSize(10).text(`Issued on: ${invoice.issuedAt.toLocaleDateString()}`, { align: 'center' });
-        doc.moveDown();
-
-        // Customer Details
-        doc.fontSize(12).fillColor('black');
-        doc.text(`Invoice Number: ${invoice.invoiceNumber}`, 50, 160);
-        doc.text(`Bill To: ${invoice.customer?.name || 'Customer'}`, 50, 175);
-        doc.text(`Address: ${invoice.billingAddress}`, 50, 190);
-        if (invoice.customer?.taxId) doc.text(`Tax ID: ${invoice.customer.taxId}`, 50, 205);
-
-        // Table Header
-        const tableTop = 250;
-        doc.font('Helvetica-Bold').text('Product', 50, tableTop);
-        doc.text('Qty', 350, tableTop);
-        doc.text('Total', 450, tableTop);
-        doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
-
-        // Table Rows
-        doc.font('Helvetica');
-        let currentY = tableTop + 30;
-        invoice.items.forEach(item => {
-            doc.text(item.name, 50, currentY);
-            doc.text(item.quantity.toString(), 350, currentY);
-            doc.text(`$${item.lineTotal.toFixed(2)}`, 450, currentY);
-            currentY += 25;
-        });
-
-        // Total
-        doc.moveTo(50, currentY + 10).lineTo(550, currentY + 10).stroke();
-        doc.font('Helvetica-Bold').fontSize(14).text(`TOTAL: $${invoice.totalAmount.toFixed(2)}`, 350, currentY + 30);
-
-        doc.fontSize(10).font('Helvetica').fillColor('grey').text('Payment confirmed (Mock entity).', 50, 700, { align: 'center' });
-        
-        doc.end();
+        res.send(pdfBuffer);
     } catch (err) {
         console.error("PDF generation error:", err);
         res.status(500).json({ message: "Failed to generate PDF" });
