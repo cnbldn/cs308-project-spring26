@@ -29,12 +29,12 @@ const customerSchema = new mongoose.Schema(
       enum: ["customer", "salesManager", "productManager"],
       default: "customer",
     },
-
     taxId: {
       type: String,
-      required: [true, "Tax ID is required"],
       trim: true,
+      default: "",
     },
+
 
     homeAddress: {
       type: String,

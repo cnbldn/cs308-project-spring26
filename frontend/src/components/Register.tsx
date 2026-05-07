@@ -7,20 +7,21 @@ import styles from './Login.module.css';
 const Register: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [address, setAddress] = useState('');
-  const [taxId, setTaxId] = useState('');
+
   const [errors, setErrors] = useState<{
     name?: string;
     email?: string;
     password?: string;
     confirm?: string;
     address?: string;
-    taxId?: string;
   }>({});
+
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
 
@@ -53,10 +54,6 @@ const Register: React.FC = () => {
       newErrors.address = t('register.addressRequired');
     }
 
-    if (!taxId.trim()) {
-      newErrors.taxId = t('register.taxIdRequired');
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,19 +73,18 @@ const Register: React.FC = () => {
         name,
         email,
         password,
-        taxId,
         homeAddress: address,
       });
+
       navigate('/login');
     } catch (err: any) {
-      // This prints the error to your Browser Console (F12 -> Console)
-      console.error("REGISTRATION ERROR:", err);
-      
-      // This specifically prints what the backend sent back
+      console.error('REGISTRATION ERROR:', err);
+
       if (err.response) {
-        console.log("Backend Data:", err.response.data);
-        console.log("Status Code:", err.response.status);
+        console.log('Backend Data:', err.response.data);
+        console.log('Status Code:', err.response.status);
       }
+
       const message = err.response?.data?.message || t('register.registrationFailed');
       setApiError(message);
     } finally {
@@ -101,7 +97,9 @@ const Register: React.FC = () => {
       <div className={styles.loginCard}>
         <h2 className={styles.loginTitle}>{t('register.title')}</h2>
         <p className={styles.subTitle}>{t('register.subtitle')}</p>
+
         {apiError && <div className={styles.error}>{apiError}</div>}
+
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="name" className={styles.label}>
@@ -183,22 +181,6 @@ const Register: React.FC = () => {
             {errors.address && <div className={styles.error}>{errors.address}</div>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="taxId" className={styles.label}>
-              {t('register.taxIdLabel')}
-            </label>
-            <input
-              type="text"
-              id="taxId"
-              className={styles.input}
-              value={taxId}
-              onChange={(e) => setTaxId(e.target.value)}
-              placeholder={t('register.taxIdPlaceholder')}
-              required
-            />
-            {errors.taxId && <div className={styles.error}>{errors.taxId}</div>}
-          </div>
-
           <button
             type="submit"
             className={styles.button}
@@ -210,7 +192,9 @@ const Register: React.FC = () => {
 
         <div className={styles.links}>
           <span>{t('register.alreadyHaveAccount')}</span>
-          <Link to="/login" className={styles.link}>{t('login.signIn')}</Link>
+          <Link to="/login" className={styles.link}>
+            {t('login.signIn')}
+          </Link>
         </div>
       </div>
     </div>
