@@ -6,18 +6,19 @@ const Cart = require("../models/Cart");
 // REGISTER
 router.post("/register", async (req, res) => {
   console.log("[REGISTER] Incoming body:", req.body);
+
   try {
-    const { name, email, password, taxId, homeAddress } = req.body;
+    const { name, email, password, homeAddress } = req.body;
 
     // Basic validation to help the frontend dev
-    if (!name || !email || !password || !taxId || !homeAddress) {
+    if (!name || !email || !password || !homeAddress) {
       console.warn("[REGISTER] Missing fields:", {
         name: !!name,
         email: !!email,
         password: !!password,
-        taxId: !!taxId,
         homeAddress: !!homeAddress,
       });
+
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -31,23 +32,23 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password,
-      taxId,
-      homeAddress, // Database guy will change this to String in the model
+      homeAddress,
     });
 
     console.log("[REGISTER] Created customer:", customer._id);
+
     res.status(201).json({
       message: "Customer created successfully",
       id: customer._id,
     });
   } catch (err) {
     console.error("[REGISTER] Error:", err);
+
     res.status(500).json({
       message: err.message || "Server error during registration",
     });
   }
 });
-
 
 // LOGIN
 router.post("/login", async (req, res) => {
@@ -81,6 +82,7 @@ router.post("/login", async (req, res) => {
         name: customer.name,
         email: customer.email,
         role: customer.role,
+        taxId: customer.taxId || "",
         homeAddress: customer.homeAddress,
       },
     });

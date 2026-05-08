@@ -44,6 +44,11 @@ const Account: React.FC = () => {
             <label className={styles.label}>{t('account.address')}</label>
             <div className={styles.value}>{user.homeAddress || '—'}</div>
           </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>{t('account.taxId')}</label>
+            <div className={styles.value}>{user.taxId || '—'}</div>
+          </div>
         </div>
 
         <button onClick={handleLogout} className={styles.logoutButton}>

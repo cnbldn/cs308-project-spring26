@@ -116,6 +116,7 @@
     "name": "Ad Soyad",
     "email": "E-posta Adresi",
     "address": "Teslimat Adresi",
+    "taxId": "Vergi Numarası",
     "passwordSection": "Şifre Değiştir",
     "currentPassword": "Mevcut Şifre",
     "newPassword": "Yeni Şifre",

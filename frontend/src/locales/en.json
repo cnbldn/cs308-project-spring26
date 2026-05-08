@@ -116,6 +116,7 @@
     "name": "Full Name",
     "email": "Email Address",
     "address": "Delivery Address",
+    "taxId": "Tax ID",
     "passwordSection": "Change Password",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
