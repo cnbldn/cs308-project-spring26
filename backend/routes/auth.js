@@ -91,4 +91,87 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// UPDATE PROFILE (name / email / homeAddress / taxId)
+router.put("/profile/:id", async (req, res) => {
+  try {
+    const { name, email, homeAddress, taxId } = req.body;
+
+    if (!name || !email || !homeAddress) {
+      return res
+        .status(400)
+        .json({ message: "Name, email and home address are required" });
+    }
+
+    if (email) {
+      const existing = await Customer.findOne({
+        email: email.toLowerCase(),
+        _id: { $ne: req.params.id },
+      });
+      if (existing) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+    }
+
+    const updated = await Customer.findByIdAndUpdate(
+      req.params.id,
+      { name, email, homeAddress, taxId: taxId || "" },
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      user: {
+        id: updated._id,
+        name: updated.name,
+        email: updated.email,
+        role: updated.role,
+        taxId: updated.taxId || "",
+        homeAddress: updated.homeAddress,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// UPDATE PASSWORD
+router.put("/password/:id", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Current and new password are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 6 characters" });
+    }
+
+    const customer = await Customer.findById(req.params.id).select("+password");
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const isMatch = await customer.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    customer.password = newPassword;
+    await customer.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
