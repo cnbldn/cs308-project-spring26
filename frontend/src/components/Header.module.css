@@ -1,0 +1,162 @@
+.pageHeader {
+  width: 100%;
+  left: 0;
+  right: 0;
+  position: fixed;
+  top: 0;
+  padding: 0 2.5rem;
+  height: 64px;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #161210;
+  color: #d4c9a8;
+  border-bottom: 1px solid #3a3225;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.brand {
+  font-weight: 700;
+  color: #ffd700;
+  font-size: 1.25rem;
+  text-decoration: none;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.brand:hover {
+  color: #ffe44d;
+}
+
+.linkGroup {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.navLink {
+  color: #a89a78;
+  font-size: 0.875rem;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 0.45rem 0.75rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  display: inline-flex;
+  align-items: center;
+}
+
+.navLink:hover {
+  color: #ffd700;
+  background: rgba(212, 160, 23, 0.07);
+}
+
+.userGreeting {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #d4c9a8;
+  padding: 0.45rem 0.75rem;
+}
+
+.signInButton {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  padding: 0.45rem 1.1rem;
+  border-radius: 4px;
+  border: 1px solid #d4a017;
+  color: #ffd700;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.signInButton:hover {
+  background: rgba(212, 160, 23, 0.12);
+  color: #ffe44d;
+}
+
+.logoutButton {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 0.45rem 1.1rem;
+  border-radius: 4px;
+  border: 1px solid #3a3225;
+  color: #a89a78;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.logoutButton:hover {
+  border-color: #d4a017;
+  color: #ffd700;
+  background: rgba(212, 160, 23, 0.07);
+}
+
+.languageSwitcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #3a3225;
+  border-radius: 5px;
+  padding: 3px;
+  position: relative;
+  margin-left: 1rem;
+}
+
+.langButton {
+  background: transparent;
+  border: none;
+  color: #a89a78;
+  padding: 0.35rem 0.85rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.langButton.active {
+  color: #ffd700;
+}
+
+.languageSwitcher::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  height: calc(100% - 6px);
+  background: rgba(212, 160, 23, 0.12);
+  border-radius: 3px;
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.languageSwitcher[data-lang="tr"]::before {
+  transform: translateX(100%);
+}
+
+.cartBadge {
+  background: #d4a017;
+  color: #161210;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0 5px;
+  border-radius: 10px;
+  margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  line-height: 1;
+}

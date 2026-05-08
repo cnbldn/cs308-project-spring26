@@ -1,0 +1,344 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 8rem 1.5rem 4rem;
+  color: #d4c9a8;
+}
+
+.title {
+  color: #ffd700;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #8a7d62;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.muted {
+  color: #8a7d62;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.error {
+  color: #e05050;
+  text-align: center;
+  padding: 1rem;
+  background: #1f1410;
+  border: 1px solid #4a1e1e;
+  border-radius: 8px;
+}
+
+.emptyCard {
+  background: #161210;
+  border: 1px solid #3a3225;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.primaryButton {
+  display: inline-block;
+  margin-top: 1rem;
+  background: #d4a017;
+  color: #000;
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.primaryButton:hover {
+  background: #ffd700;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.orderCard {
+  background: #161210;
+  border: 1px solid #3a3225;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.orderHeader {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #2a2418;
+}
+
+.orderMeta {
+  font-size: 0.7rem;
+  color: #8a7d62;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.orderId {
+  font-family: 'Courier New', monospace;
+  color: #ffd700;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.orderValue {
+  color: #d4c9a8;
+  font-size: 0.95rem;
+}
+
+.statusBadge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  justify-self: end;
+}
+
+.status_processing {
+  background: #3a2f10;
+  color: #ffd700;
+  border: 1px solid #d4a017;
+}
+
+.status_in_transit {
+  background: #10293a;
+  color: #6fc0ff;
+  border: 1px solid #3a7db3;
+}
+
+.status_delivered {
+  background: #10331e;
+  color: #6fbf6f;
+  border: 1px solid #3a8f52;
+}
+
+.status_cancelled {
+  background: #331010;
+  color: #e05050;
+  border: 1px solid #8a3030;
+}
+
+.tracker {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 0.5rem;
+}
+
+.trackerStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  width: 100px;
+}
+
+.stepDot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0d0d0d;
+  border: 2px solid #3a3225;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a7d62;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.stepDotActive {
+  background: #d4a017;
+  border-color: #ffd700;
+  color: #000;
+}
+
+.stepDotCurrent {
+  box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.2);
+}
+
+.stepLabel {
+  font-size: 0.8rem;
+  color: #8a7d62;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.stepLabelActive {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.stepConnector {
+  flex: 1;
+  height: 2px;
+  background: #3a3225;
+  margin: 0 -4px;
+  margin-bottom: 2rem;
+}
+
+.stepConnectorActive {
+  background: #d4a017;
+}
+
+.cancelledBanner {
+  margin: 1rem 0;
+  padding: 0.9rem;
+  background: #1f1010;
+  border: 1px solid #4a1e1e;
+  border-radius: 6px;
+  color: #e05050;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.orderActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2a2418;
+}
+
+.detailsButton {
+  background: transparent;
+  border: 1px solid #3a3225;
+  color: #d4c9a8;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.detailsButton:hover {
+  border-color: #d4a017;
+  color: #ffd700;
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid #4a1e1e;
+  color: #e05050;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cancelButton:hover {
+  background: #4a1e1e;
+  color: #fff;
+}
+
+.details {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #2a2418;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detailsSection h4 {
+  color: #d4a017;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.itemsTable th {
+  text-align: left;
+  padding: 0.6rem;
+  color: #8a7d62;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #2a2418;
+}
+
+.itemsTable td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #1a1510;
+  color: #d4c9a8;
+}
+
+.itemsTable th:nth-child(n+2),
+.itemsTable td:nth-child(n+2) {
+  text-align: right;
+}
+
+.address {
+  color: #d4c9a8;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #1a1510;
+  font-size: 0.9rem;
+}
+
+.timelineStatus {
+  color: #d4c9a8;
+  text-transform: capitalize;
+}
+
+.timelineDate {
+  color: #8a7d62;
+}
+
+@media (max-width: 700px) {
+  .orderHeader {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .statusBadge {
+    justify-self: start;
+  }
+
+  .tracker {
+    overflow-x: auto;
+  }
+
+  .trackerStep {
+    width: 80px;
+  }
+}

@@ -1,0 +1,23 @@
+.pageFooter {
+  width: 100%;
+  height: auto;
+  left: 0;
+  right: 0;
+  position: fixed;
+  bottom: 0;
+  margin: 0;
+  padding: 0.7rem 1.5rem;
+  background: #161210;
+  border-top: 1px solid #3a3225;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #6b5c3a;
+  font-size: 0.8rem;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.footerDivider {
+  color: #3a3225;
+}
