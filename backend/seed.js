@@ -496,7 +496,7 @@ const productsData = baseProductsData.map((product, index) => ({
 
 const demoUsersData = [
   {
-    name: "Demo Customer One",
+    name: "MertKaya91",
     email: "demo.customer1@example.com",
     password: "demo1234",
     role: "customer",
@@ -504,7 +504,7 @@ const demoUsersData = [
     homeAddress: "Sabanci University Dorms, Tuzla, Istanbul"
   },
   {
-    name: "Demo Customer Two",
+    name: "ZeynepPlays",
     email: "demo.customer2@example.com",
     password: "demo1234",
     role: "customer",
@@ -512,7 +512,7 @@ const demoUsersData = [
     homeAddress: "Orhanli Mah., Tuzla, Istanbul"
   },
   {
-    name: "Demo Customer Three",
+    name: "CanArcade",
     email: "demo.customer3@example.com",
     password: "demo1234",
     role: "customer",
@@ -551,6 +551,20 @@ const buildOrderItem = (product, quantity) => ({
 
 const sumLineTotals = (items) =>
   Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
+
+const approvedReviewTemplates = [
+  (product) => `${product.name} grabbed me right away. The gameplay feels polished and I kept saying "one more hour" all week.`,
+  (product) => `I was mainly curious about ${product.name}, but it ended up being one of the easiest games to recommend to friends.`,
+  (product) => `${product.name} has a strong first impression and stays fun after a few sessions. Definitely worth keeping in the rotation.`,
+  (product) => `Really happy with ${product.name}. It runs well, looks great, and the core loop is genuinely hard to put down.`,
+  (product) => `${product.name} surprised me in a good way. I expected something decent and got a game I actually want to revisit.`
+];
+
+const pendingReviewTemplates = [
+  (product) => `Still deciding how I feel about ${product.name}. There is a lot to like, but I want a few more hours before I settle on a final take.`,
+  (product) => `Early impression of ${product.name}: fun mechanics so far, though I am not fully sold on every design choice yet.`,
+  (product) => `I need more time with ${product.name}. Some parts clicked immediately, while others feel like they will grow on me later.`
+];
 
 const buildStatusHistory = (orderStatus, placedAt) => {
   const baseTime = new Date(placedAt);
@@ -643,7 +657,7 @@ const seedDatabase = async () => {
       const approvedComment = {
         product: product._id,
         customer: approvedCustomer._id,
-        text: `${product.name} is in the demo catalog and this approved comment should be visible on the product page.`,
+        text: approvedReviewTemplates[index % approvedReviewTemplates.length](product),
         status: "approved",
         approvedBy: productManager._id,
         approvedAt: new Date(Date.UTC(2026, 3, 10 + (index % 10), 10, 0, 0))
@@ -656,7 +670,7 @@ const seedDatabase = async () => {
           {
             product: product._id,
             customer: pendingCustomer._id,
-            text: `Pending moderation example for ${product.name}. This one should stay hidden until approval.`,
+            text: pendingReviewTemplates[index % pendingReviewTemplates.length](product),
             status: "pending"
           }
         ];
