@@ -36,7 +36,7 @@ const Checkout: React.FC = () => {
     if (!/^\d{16}$/.test(cleanCard)) return 'Card number must be exactly 16 digits.';
     
     if (!/^\d{2}\/\d{2}$/.test(expiry)) return 'Expiry must be in MM/YY format.';
-    if (!/^\d{3,4}$/.test(cvv)) return 'CVV must be 3 or 4 digits.';
+    if (!/^\d{3}$/.test(cvv)) return 'CVV must be exactly 3 digits.';
     
     return null;
   };
@@ -58,7 +58,7 @@ const Checkout: React.FC = () => {
   };
 
   const handleCvvChange = (val: string) => {
-    setCvv(val.replace(/\D/g, '').substring(0, 4));
+    setCvv(val.replace(/\D/g, '').substring(0, 3));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
