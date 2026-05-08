@@ -120,7 +120,7 @@ const ProductDetail: React.FC = () => {
         </div>
 
         <div className={styles.infoSection}>
-          <span className={styles.category}>{product.category}</span>
+          <span className={styles.category}>{String(t(`genres.${product.category}`, product.category))}</span>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.price}>${product.price.toFixed(2)}</div>
 

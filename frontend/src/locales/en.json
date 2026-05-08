@@ -133,6 +133,32 @@
     "passwordSuccess": "Password updated successfully!",
     "passwordError": "Failed to update password. Please try again."
   },
+  "orders": {
+    "recentOrders": "Recent Orders",
+    "viewAll": "View all →",
+    "loading": "Loading...",
+    "noOrders": "No orders yet.",
+    "browseShop": "Browse the shop →",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "status_processing": "Processing",
+    "status_in_transit": "In Transit",
+    "status_delivered": "Delivered",
+    "status_cancelled": "Cancelled"
+  },
+  "genres": {
+    "Action": "Action",
+    "Action RPG": "Action RPG",
+    "Adventure": "Adventure",
+    "Fighting": "Fighting",
+    "Horror": "Horror",
+    "JRPG": "JRPG",
+    "Platformer": "Platformer",
+    "RPG": "RPG",
+    "Shooter": "Shooter",
+    "Simulation": "Simulation",
+    "Sports": "Sports"
+  },
   "productDetail": {
     "loading": "Loading...",
     "notFound": "Product not found.",

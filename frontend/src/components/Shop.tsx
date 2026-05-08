@@ -187,7 +187,7 @@ const Shop: React.FC = () => {
                   className={`${styles.categoryButton} ${selectedCategory === cat ? styles.activeCategory : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat}
+                  {t(`genres.${cat}`, cat)}
                 </button>
               </li>
             ))}
@@ -232,7 +232,7 @@ const Shop: React.FC = () => {
                     <div key={product.id} className={styles.productCard}>
                       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                         <ProductImageHover src={product.image} alt={product.name} />
-                        <p className={styles.productCategory}>{product.category}</p>
+                        <p className={styles.productCategory}>{t(`genres.${product.category}`, product.category)}</p>
                         <h3 className={styles.productName}>{product.name}</h3>
                       </Link>
                       <div className={styles.productRating} aria-label={`Rating ${product.averageRating} out of 5`}>

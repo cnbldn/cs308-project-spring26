@@ -133,6 +133,32 @@
     "passwordSuccess": "Şifre başarıyla güncellendi!",
     "passwordError": "Şifre güncellenemedi. Lütfen tekrar deneyin."
   },
+  "orders": {
+    "recentOrders": "Son Siparişler",
+    "viewAll": "Tümünü gör →",
+    "loading": "Yükleniyor...",
+    "noOrders": "Henüz sipariş yok.",
+    "browseShop": "Mağazaya göz at →",
+    "itemCount_one": "{{count}} ürün",
+    "itemCount_other": "{{count}} ürün",
+    "status_processing": "İşleniyor",
+    "status_in_transit": "Yolda",
+    "status_delivered": "Teslim Edildi",
+    "status_cancelled": "İptal Edildi"
+  },
+  "genres": {
+    "Action": "Aksiyon",
+    "Action RPG": "Aksiyon RPG",
+    "Adventure": "Macera",
+    "Fighting": "Dövüş",
+    "Horror": "Korku",
+    "JRPG": "JRPG",
+    "Platformer": "Platform",
+    "RPG": "RPG",
+    "Shooter": "Nişancı",
+    "Simulation": "Simülasyon",
+    "Sports": "Spor"
+  },
   "productDetail": {
     "loading": "Yükleniyor...",
     "notFound": "Ürün bulunamadı.",
