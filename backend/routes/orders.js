@@ -102,6 +102,10 @@ router.post('/checkout', async (req, res) => {
 
             // Requirement #3: Decrement stock
             product.stock -= cartItem.quantity;
+
+            // Dynamic Popularity: Increment based on sales (Requirement #7 enhancement)
+            product.popularity = (product.popularity || 0) + (cartItem.quantity * 5);
+            
             await product.save({ session });
 
             const lineTotal = product.price * cartItem.quantity;
