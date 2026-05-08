@@ -62,7 +62,8 @@
     "sortPriceDesc": "Fiyat: Yüksekten Düşüğe",
     "sortPopularity": "Popülerlik",
     "inStock": "Stokta {{count}} adet",
-    "outOfStock": "Stokta yok"
+    "outOfStock": "Stokta yok",
+    "noProducts": "Ürün bulunamadı."
   },
   "cart": {
     "title": "Sepet",

@@ -62,7 +62,8 @@
     "sortPriceDesc": "Price: High to Low",
     "sortPopularity": "Popularity",
     "inStock": "{{count}} in stock",
-    "outOfStock": "Out of stock"
+    "outOfStock": "Out of stock",
+    "noProducts": "No products found."
   },
   "cart": {
     "title": "Cart",
