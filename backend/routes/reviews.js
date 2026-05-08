@@ -26,6 +26,9 @@ router.post('/rate', async (req, res) => {
             { new: true, upsert: true }
         );
 
+        // Dynamic Popularity: Increment popularity for the product (Requirement #7 enhancement)
+        await Product.findByIdAndUpdate(productId, { $inc: { popularity: 3 } });
+
         res.status(200).json({ message: "Rating submitted successfully.", rating });
     } catch (err) {
         console.error("Rating submission error:", err);
