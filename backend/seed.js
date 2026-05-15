@@ -15,7 +15,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 120,
     category: "RPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg"
   },
   {
     name: "Cyberpunk 2077",
@@ -23,7 +23,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 200,
     category: "RPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg"
   },
   {
     name: "EA SPORTS FC 24",
@@ -31,7 +31,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 300,
     category: "Sports",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg"
   },
   {
     name: "Call of Duty: Modern Warfare III",
@@ -39,7 +39,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 250,
     category: "Shooter",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2519060/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2519060/header.jpg"
   },
   {
     name: "Marvel's Spider-Man 2",
@@ -47,7 +47,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 180,
     category: "Action",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/header.jpg"
   },
   {
     name: "The Legend of Zelda: Tears of the Kingdom",
@@ -63,7 +63,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 500,
     category: "Action",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/3240220/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/3240220/header.jpg"
   },
   {
     name: "Red Dead Redemption 2",
@@ -71,7 +71,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 220,
     category: "Action",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg"
   },
   {
     name: "Super Mario Bros. Wonder",
@@ -87,7 +87,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 130,
     category: "Action",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2322010/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2322010/header.jpg"
   },
   {
     name: "Resident Evil 4 Remake",
@@ -95,7 +95,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 110,
     category: "Horror",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg"
   },
   {
     name: "Mortal Kombat 1",
@@ -103,7 +103,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 175,
     category: "Fighting",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1971870/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1971870/header.jpg"
   },
   {
     name: "Baldur's Gate 3",
@@ -111,7 +111,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 300,
     category: "RPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg"
   },
   {
     name: "Halo Infinite",
@@ -119,7 +119,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 210,
     category: "Shooter",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1240440/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1240440/header.jpg"
   },
   {
     name: "The Witcher 3: Wild Hunt",
@@ -127,7 +127,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 400,
     category: "RPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg"
   },
   {
     name: "Stardew Valley",
@@ -135,7 +135,7 @@ const baseProductsData = [
     price: 14.99,
     stock: 0,
     category: "Simulation",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg"
   },
   {
     name: "NieR: Automata",
@@ -143,7 +143,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 145,
     category: "Action RPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/524220/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/524220/header.jpg"
   },
   {
     name: "Dead by Daylight",
@@ -151,7 +151,7 @@ const baseProductsData = [
     price: 19.99,
     stock: 210,
     category: "Horror",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/header.jpg"
   },
   {
     name: "Titanfall 2",
@@ -159,7 +159,7 @@ const baseProductsData = [
     price: 24.99,
     stock: 95,
     category: "Shooter",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1237970/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1237970/header.jpg"
   },
   {
     name: "Team Fortress 2",
@@ -167,7 +167,7 @@ const baseProductsData = [
     price: 9.99,
     stock: 0,
     category: "Shooter",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/440/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/440/header.jpg"
   },
   {
     name: "Drakengard",
@@ -183,7 +183,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 105,
     category: "Horror",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/418370/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/418370/header.jpg"
   },
   {
     name: "Call of Duty: Black Ops III",
@@ -191,7 +191,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 165,
     category: "Shooter",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/311210/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/311210/header.jpg"
   },
   {
     name: "Persona 5",
@@ -199,7 +199,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 125,
     category: "JRPG",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/header.jpg"
   },
   {
     name: "For Honor",
@@ -207,7 +207,7 @@ const baseProductsData = [
     price: 19.99,
     stock: 150,
     category: "Fighting",
-    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/304390/library_600x900.jpg"
+    imageUrl: "https://cdn.cloudflare.steamstatic.com/steam/apps/304390/header.jpg"
   }
 ];
 
