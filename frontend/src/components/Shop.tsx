@@ -80,6 +80,9 @@ const Shop: React.FC = () => {
   // Debounce timer ref for search
   const searchTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const translateCategory = (category: string) =>
+    t(`shop.categoryLabels.${category}`, { defaultValue: category });
+
   const fetchProducts = async (
     searchVal: string,
     categoryVal: string,
@@ -187,7 +190,7 @@ const Shop: React.FC = () => {
                   className={`${styles.categoryButton} ${selectedCategory === cat ? styles.activeCategory : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat}
+                  {translateCategory(cat)}
                 </button>
               </li>
             ))}
@@ -232,7 +235,7 @@ const Shop: React.FC = () => {
                     <div key={product.id} className={styles.productCard}>
                       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                         <ProductImageHover src={product.image} alt={product.name} />
-                        <p className={styles.productCategory}>{product.category}</p>
+                        <p className={styles.productCategory}>{translateCategory(product.category)}</p>
                         <h3 className={styles.productName}>{product.name}</h3>
                       </Link>
                       <div className={styles.productRating} aria-label={`Rating ${product.averageRating} out of 5`}>
