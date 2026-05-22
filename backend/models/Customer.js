@@ -1,6 +1,21 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+const wishlistItemSchema = new mongoose.Schema(
+  {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const customerSchema = new mongoose.Schema(
   {
     name: {
@@ -41,6 +56,11 @@ const customerSchema = new mongoose.Schema(
       required: [true, "Home address is required"],
       trim: true,
     },
+
+    wishlist: {
+      type: [wishlistItemSchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -59,5 +79,6 @@ customerSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 customerSchema.index({ role: 1 });
+customerSchema.index({ "wishlist.product": 1 });
 
 module.exports = mongoose.model("Customer", customerSchema);
