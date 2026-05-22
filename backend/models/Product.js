@@ -28,6 +28,34 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product price is required'],
       min: [0, 'Price cannot be negative']
     },
+    basePrice: {
+      type: Number,
+      min: [0, 'Base price cannot be negative'],
+      default: function () {
+        return this.price;
+      }
+    },
+    discountRate: {
+      type: Number,
+      min: [0, 'Discount rate cannot be negative'],
+      max: [100, 'Discount rate cannot exceed 100'],
+      default: 0
+    },
+    discountedPrice: {
+      type: Number,
+      min: [0, 'Discounted price cannot be negative'],
+      default: function () {
+        return this.price;
+      }
+    },
+    discountStart: {
+      type: Date,
+      default: null
+    },
+    discountEnd: {
+      type: Date,
+      default: null
+    },
     stock: {
       type: Number,
       required: true,
@@ -74,9 +102,32 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.pre('validate', function (next) {
+  if (this.basePrice == null) {
+    this.basePrice = this.price;
+  }
+
+  const safeBasePrice = this.basePrice ?? this.price ?? 0;
+  const safeDiscountRate = this.discountRate ?? 0;
+  const computedDiscountedPrice = Number(
+    (safeBasePrice * (1 - safeDiscountRate / 100)).toFixed(2)
+  );
+
+  this.discountedPrice = computedDiscountedPrice;
+  this.price = computedDiscountedPrice;
+
+  if (safeDiscountRate === 0) {
+    this.discountStart = null;
+    this.discountEnd = null;
+  }
+
+  next();
+});
+
 productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });
+productSchema.index({ discountRate: 1 });
 productSchema.index({ popularity: -1 });
 productSchema.index({ stock: 1 });
 

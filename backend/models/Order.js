@@ -36,6 +36,29 @@ const orderItemSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Line total is required'],
       min: [0, 'Line total cannot be negative']
+    },
+    returnStatus: {
+      type: String,
+      enum: ['none', 'requested', 'approved', 'rejected', 'received', 'refunded'],
+      default: 'none'
+    },
+    returnedQuantity: {
+      type: Number,
+      min: [0, 'Returned quantity cannot be negative'],
+      default: 0
+    },
+    refundAmount: {
+      type: Number,
+      min: [0, 'Refund amount cannot be negative'],
+      default: 0
+    },
+    returnRequestedAt: {
+      type: Date,
+      default: null
+    },
+    returnProcessedAt: {
+      type: Date,
+      default: null
     }
   },
   { _id: false }
