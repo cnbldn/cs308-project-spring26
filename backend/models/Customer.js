@@ -1,6 +1,21 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+const wishlistItemSchema = new mongoose.Schema(
+  {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const notificationSchema = new mongoose.Schema(
   {
     type: {
@@ -42,7 +57,6 @@ const customerSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       trim: true,
     },
-
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -50,14 +64,12 @@ const customerSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
       select: false,
     },
-
     role: {
       type: String,
       enum: ["customer", "salesManager", "productManager"],
@@ -68,26 +80,19 @@ const customerSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-
-
     homeAddress: {
       type: String,
       required: [true, "Home address is required"],
       trim: true,
     },
-
-    wishlist: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
-
+    wishlist: {
+      type: [wishlistItemSchema],
+      default: [],
+    },
     notifications: {
       type: [notificationSchema],
       default: [],
     },
-
     isActive: {
       type: Boolean,
       default: true,
@@ -98,8 +103,7 @@ const customerSchema = new mongoose.Schema(
 
 // 🔐 Hash password before saving
 customerSchema.pre("save", async function () {
-  if(!this.isModified("password")) return;
-
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
@@ -110,6 +114,6 @@ customerSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 customerSchema.index({ role: 1 });
-customerSchema.index({ wishlist: 1 });
+customerSchema.index({ "wishlist.product": 1 });
 
 module.exports = mongoose.model("Customer", customerSchema);
