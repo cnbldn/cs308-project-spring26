@@ -102,7 +102,7 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-productSchema.pre('validate', function (next) {
+productSchema.pre('validate', function () {
   if (this.basePrice == null) {
     this.basePrice = this.price;
   }
@@ -120,8 +120,6 @@ productSchema.pre('validate', function (next) {
     this.discountStart = null;
     this.discountEnd = null;
   }
-
-  next();
 });
 
 productSchema.index({ name: 'text', description: 'text' });
