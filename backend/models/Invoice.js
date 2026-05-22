@@ -91,6 +91,20 @@ const invoiceSchema = new mongoose.Schema(
         return this.subtotal;
       }
     },
+    refundTotal: {
+      type: Number,
+      min: [0, 'Refund total cannot be negative'],
+      default: 0
+    },
+    invoiceStatus: {
+      type: String,
+      enum: ['pending', 'issued', 'refunded', 'adjusted', 'cancelled'],
+      default: 'issued'
+    },
+    lastRefundedAt: {
+      type: Date,
+      default: null
+    },
     pdfUrl: {
       type: String,
       trim: true,
@@ -113,5 +127,6 @@ const invoiceSchema = new mongoose.Schema(
 
 invoiceSchema.index({ customer: 1, issuedAt: -1 });
 invoiceSchema.index({ emailStatus: 1, issuedAt: -1 });
+invoiceSchema.index({ invoiceStatus: 1, issuedAt: -1 });
 
 module.exports = mongoose.model('Invoice', invoiceSchema);
