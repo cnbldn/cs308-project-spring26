@@ -29,6 +29,8 @@ const ProductDetail: React.FC = () => {
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
+  const translateCategory = (category: string) =>
+    t(`shop.categoryLabels.${category}`, { defaultValue: category });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,7 +132,7 @@ const ProductDetail: React.FC = () => {
         </div>
 
         <div className={styles.infoSection}>
-          <span className={styles.category}>{product.category}</span>
+          <span className={styles.category}>{translateCategory(product.category)}</span>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.price}>${product.price.toFixed(2)}</div>
 
