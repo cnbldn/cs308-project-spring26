@@ -6,6 +6,7 @@ import styles from './ProductDetail.module.css';
 import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
+const PLACEHOLDER_IMAGE = 'https://placehold.co/600x600/161210/ffd700?text=No+Image';
 
 interface ReviewData {
   averageRating: number;
@@ -116,7 +117,16 @@ const ProductDetail: React.FC = () => {
 
       <div className={styles.mainSection}>
         <div className={styles.imageContainer}>
-          <img src={product.imageUrl || 'https://placehold.co/600x600'} alt={product.name} className={styles.productImage} />
+          <img
+            src={product.imageUrl || PLACEHOLDER_IMAGE}
+            alt={product.name}
+            className={styles.productImage}
+            onError={(event) => {
+              if (event.currentTarget.src !== PLACEHOLDER_IMAGE) {
+                event.currentTarget.src = PLACEHOLDER_IMAGE;
+              }
+            }}
+          />
         </div>
 
         <div className={styles.infoSection}>
