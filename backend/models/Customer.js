@@ -1,6 +1,40 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+const notificationSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["wishlist_discount", "order_update", "refund_update"],
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    message: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: true }
+);
+
 const customerSchema = new mongoose.Schema(
   {
     name: {
@@ -41,6 +75,23 @@ const customerSchema = new mongoose.Schema(
       required: [true, "Home address is required"],
       trim: true,
     },
+
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+
+    notifications: {
+      type: [notificationSchema],
+      default: [],
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
@@ -59,5 +110,6 @@ customerSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 customerSchema.index({ role: 1 });
+customerSchema.index({ wishlist: 1 });
 
 module.exports = mongoose.model("Customer", customerSchema);
