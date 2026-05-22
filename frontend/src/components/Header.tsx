@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
+import { useCart } from '../context/CartContext';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { cartCount } = useCart();
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
@@ -16,13 +18,19 @@ const Header: React.FC = () => {
         <Link to="/shop" className={styles.navLink}>{t('header.collections')}</Link>
         <Link to="/deals" className={styles.navLink}>{t('header.deals')}</Link>
         <Link to="/support" className={styles.navLink}>{t('header.support')}</Link>
-        <Link to="/cart" className={styles.navLink}>{t('cart.title')}</Link>
+        <Link to="/cart" className={styles.navLink}>
+          {t('cart.title')}
+          {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
+        </Link>
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {/* Note: You may want to add a translation key for 'Orders' here eventually */}
             <Link to="/orders" className={styles.navLink}>Orders</Link>
             
+            {user.role === 'productManager' && (
+              <Link to="/manager" className={styles.navLink}>Manager</Link>
+            )}
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>

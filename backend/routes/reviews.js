@@ -26,6 +26,9 @@ router.post('/rate', async (req, res) => {
             { new: true, upsert: true }
         );
 
+        // Dynamic Popularity: Increment popularity for the product (Requirement #7 enhancement)
+        await Product.findByIdAndUpdate(productId, { $inc: { popularity: 3 } });
+
         res.status(200).json({ message: "Rating submitted successfully.", rating });
     } catch (err) {
         console.error("Rating submission error:", err);
@@ -69,16 +72,32 @@ router.get('/product/:productId', async (req, res) => {
             .populate('customer', 'name')
             .sort({ createdAt: -1 });
 
-        // 2. Calculate Average Rating
+        // 2. Fetch all ratings for this product to calculate average and enrich comments
         const ratings = await Rating.find({ product: productId });
+        
+        // Create a map for quick rating lookup by customerId
+        const ratingMap = new Map();
+        ratings.forEach(r => {
+            ratingMap.set(r.customer.toString(), r.value);
+        });
+
         const avgRating = ratings.length > 0 
             ? (ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length).toFixed(1)
             : 0;
 
+        // 3. Enrich comments with the specific rating given by that customer
+        const enrichedComments = comments.map(c => {
+            const commentObj = c.toObject();
+            if (c.customer) {
+                commentObj.customerRating = ratingMap.get(c.customer._id.toString()) || null;
+            }
+            return commentObj;
+        });
+
         res.status(200).json({
             averageRating: parseFloat(avgRating),
             totalRatings: ratings.length,
-            comments: comments
+            comments: enrichedComments
         });
     } catch (err) {
         console.error("Fetch reviews error:", err);
@@ -95,8 +114,31 @@ router.get('/pending', async (req, res) => {
             .populate('customer', 'name')
             .sort({ createdAt: 1 });
         
-        res.status(200).json(pendingComments);
+        // Enrich pending comments with ratings
+        const productIds = [...new Set(pendingComments.map(c => c.product?._id).filter(id => !!id))];
+        const customerIds = [...new Set(pendingComments.map(c => c.customer?._id).filter(id => !!id))];
+
+        const ratings = await Rating.find({
+            product: { $in: productIds },
+            customer: { $in: customerIds }
+        });
+
+        const ratingMap = new Map();
+        ratings.forEach(r => {
+            ratingMap.set(`${r.product.toString()}_${r.customer.toString()}`, r.value);
+        });
+
+        const enriched = pendingComments.map(c => {
+            const obj = c.toObject();
+            if (c.product && c.customer) {
+                obj.customerRating = ratingMap.get(`${c.product._id.toString()}_${c.customer._id.toString()}`) || null;
+            }
+            return obj;
+        });
+        
+        res.status(200).json(enriched);
     } catch (err) {
+        console.error("Fetch pending comments error:", err);
         res.status(500).json({ message: err.message });
     }
 });

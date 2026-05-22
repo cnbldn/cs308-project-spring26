@@ -15,7 +15,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 120,
     category: "RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Elden+Ring"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/b677845905ccd63299c86ae6bfcff423.jpg"
   },
   {
     name: "Cyberpunk 2077",
@@ -23,7 +23,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 200,
     category: "RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Cyberpunk+2077"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/29bd8035bd874ae1c931ea77c60d4bee.jpg"
   },
   {
     name: "EA SPORTS FC 24",
@@ -31,7 +31,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 300,
     category: "Sports",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=FC+24"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/24470f6dca8610bae3f10ad0aea40774.jpg"
   },
   {
     name: "Call of Duty: Modern Warfare III",
@@ -39,7 +39,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 250,
     category: "Shooter",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=MW+III"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/def4fb0d7b11c89e57dfb51d72d606be.jpg"
   },
   {
     name: "Marvel's Spider-Man 2",
@@ -47,7 +47,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 180,
     category: "Action",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Spider-Man+2"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/3da4dbc271f500a4cb64dbf80bcd2047.jpg"
   },
   {
     name: "The Legend of Zelda: Tears of the Kingdom",
@@ -55,7 +55,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 140,
     category: "Adventure",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Zelda+TotK"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/d376c4c8c82ee5467c7b642c3a54e2ed.jpg"
   },
   {
     name: "Grand Theft Auto V",
@@ -63,7 +63,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 500,
     category: "Action",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=GTA+V"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/6a38579399f89b6426961ef7aad5c77c.jpg"
   },
   {
     name: "Red Dead Redemption 2",
@@ -71,7 +71,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 220,
     category: "Action",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=RDR+2"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/ec2fd5cc6ec44e485f9eaad4dd0257be.jpg"
   },
   {
     name: "Super Mario Bros. Wonder",
@@ -79,7 +79,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 160,
     category: "Platformer",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Mario+Wonder"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/f356bb58106a594ae677c4f661314e71.jpg"
   },
   {
     name: "God of War Ragnarök",
@@ -87,7 +87,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 130,
     category: "Action",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=GoW+Ragnarok"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/f20d554d8b70ffc8b50bb8612e75bed9.jpg"
   },
   {
     name: "Resident Evil 4 Remake",
@@ -95,7 +95,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 110,
     category: "Horror",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=RE+4"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/62a57cc70364d76148cd8e752f6f713b.jpg"
   },
   {
     name: "Mortal Kombat 1",
@@ -103,7 +103,7 @@ const baseProductsData = [
     price: 69.99,
     stock: 175,
     category: "Fighting",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=MK+1"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/7f7e3b7be9aec4420369732f864c0c22.jpg"
   },
   {
     name: "Baldur's Gate 3",
@@ -111,7 +111,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 300,
     category: "RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=BG+3"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/e757b7c33cf58073fad852b1ec15dc63.jpg"
   },
   {
     name: "Halo Infinite",
@@ -119,7 +119,7 @@ const baseProductsData = [
     price: 59.99,
     stock: 210,
     category: "Shooter",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Halo+Infinite"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/e14a79a0a67da822e7445954ddf3e63d.jpg"
   },
   {
     name: "The Witcher 3: Wild Hunt",
@@ -127,7 +127,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 400,
     category: "RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Witcher+3"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/2d7a8c98d70915a09570c17593019540.jpg"
   },
   {
     name: "Stardew Valley",
@@ -135,7 +135,7 @@ const baseProductsData = [
     price: 14.99,
     stock: 0,
     category: "Simulation",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Stardew+Valley"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/6b9d9a2c8f76fb432bb302d7e7b723ff.jpg"
   },
   {
     name: "NieR: Automata",
@@ -143,7 +143,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 145,
     category: "Action RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=NieR+Automata"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/02d684e1ec5674d1f89f38d756b387e6.jpg"
   },
   {
     name: "Dead by Daylight",
@@ -151,7 +151,7 @@ const baseProductsData = [
     price: 19.99,
     stock: 210,
     category: "Horror",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Dead+by+Daylight"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/02711ba1051cbca7dd7acf4ca1dc3e01.jpg"
   },
   {
     name: "Titanfall 2",
@@ -159,7 +159,7 @@ const baseProductsData = [
     price: 24.99,
     stock: 95,
     category: "Shooter",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Titanfall+2"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/1dac7e6380e320858f674a185f17ad70.jpg"
   },
   {
     name: "Team Fortress 2",
@@ -167,7 +167,7 @@ const baseProductsData = [
     price: 9.99,
     stock: 0,
     category: "Shooter",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Team+Fortress+2"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/8ea675904334dae3ac1070c37e876c19.jpg"
   },
   {
     name: "Drakengard",
@@ -175,7 +175,7 @@ const baseProductsData = [
     price: 34.99,
     stock: 45,
     category: "Action RPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Drakengard"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/7d3ebd3eafad8b7420088cef8e016b16.jpg"
   },
   {
     name: "Resident Evil 7: Biohazard",
@@ -183,7 +183,7 @@ const baseProductsData = [
     price: 29.99,
     stock: 105,
     category: "Horror",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Resident+Evil+7"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/f11e37f2d90955f10473e1cb2e45a346.jpg"
   },
   {
     name: "Call of Duty: Black Ops III",
@@ -191,7 +191,7 @@ const baseProductsData = [
     price: 39.99,
     stock: 165,
     category: "Shooter",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Black+Ops+III"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/812759e3a5b93c8d3db0089c32a7e835.jpg"
   },
   {
     name: "Persona 5",
@@ -199,7 +199,7 @@ const baseProductsData = [
     price: 49.99,
     stock: 125,
     category: "JRPG",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=Persona+5"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/a70af1b57993128d9b5c57a7cdd3dd41.jpg"
   },
   {
     name: "For Honor",
@@ -207,7 +207,7 @@ const baseProductsData = [
     price: 19.99,
     stock: 150,
     category: "Fighting",
-    imageUrl: "https://dummyimage.com/400x400/000/fff&text=For+Honor"
+    imageUrl: "https://cdn2.steamgriddb.com/thumb/18d519f79841a7629faa656ab8262791.jpg"
   }
 ];
 
@@ -496,7 +496,7 @@ const productsData = baseProductsData.map((product, index) => ({
 
 const demoUsersData = [
   {
-    name: "Demo Customer One",
+    name: "MertKaya91",
     email: "demo.customer1@example.com",
     password: "demo1234",
     role: "customer",
@@ -504,7 +504,7 @@ const demoUsersData = [
     homeAddress: "Sabanci University Dorms, Tuzla, Istanbul"
   },
   {
-    name: "Demo Customer Two",
+    name: "ZeynepPlays",
     email: "demo.customer2@example.com",
     password: "demo1234",
     role: "customer",
@@ -512,7 +512,7 @@ const demoUsersData = [
     homeAddress: "Orhanli Mah., Tuzla, Istanbul"
   },
   {
-    name: "Demo Customer Three",
+    name: "CanArcade",
     email: "demo.customer3@example.com",
     password: "demo1234",
     role: "customer",
@@ -551,6 +551,20 @@ const buildOrderItem = (product, quantity) => ({
 
 const sumLineTotals = (items) =>
   Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
+
+const approvedReviewTemplates = [
+  (product) => `${product.name} grabbed me right away. The gameplay feels polished and I kept saying "one more hour" all week.`,
+  (product) => `I was mainly curious about ${product.name}, but it ended up being one of the easiest games to recommend to friends.`,
+  (product) => `${product.name} has a strong first impression and stays fun after a few sessions. Definitely worth keeping in the rotation.`,
+  (product) => `Really happy with ${product.name}. It runs well, looks great, and the core loop is genuinely hard to put down.`,
+  (product) => `${product.name} surprised me in a good way. I expected something decent and got a game I actually want to revisit.`
+];
+
+const pendingReviewTemplates = [
+  (product) => `Still deciding how I feel about ${product.name}. There is a lot to like, but I want a few more hours before I settle on a final take.`,
+  (product) => `Early impression of ${product.name}: fun mechanics so far, though I am not fully sold on every design choice yet.`,
+  (product) => `I need more time with ${product.name}. Some parts clicked immediately, while others feel like they will grow on me later.`
+];
 
 const buildStatusHistory = (orderStatus, placedAt) => {
   const baseTime = new Date(placedAt);
@@ -643,7 +657,7 @@ const seedDatabase = async () => {
       const approvedComment = {
         product: product._id,
         customer: approvedCustomer._id,
-        text: `${product.name} is in the demo catalog and this approved comment should be visible on the product page.`,
+        text: approvedReviewTemplates[index % approvedReviewTemplates.length](product),
         status: "approved",
         approvedBy: productManager._id,
         approvedAt: new Date(Date.UTC(2026, 3, 10 + (index % 10), 10, 0, 0))
@@ -656,7 +670,7 @@ const seedDatabase = async () => {
           {
             product: product._id,
             customer: pendingCustomer._id,
-            text: `Pending moderation example for ${product.name}. This one should stay hidden until approval.`,
+            text: pendingReviewTemplates[index % pendingReviewTemplates.length](product),
             status: "pending"
           }
         ];

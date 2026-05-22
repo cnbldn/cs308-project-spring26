@@ -16,6 +16,40 @@ const wishlistItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const notificationSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["wishlist_discount", "order_update", "refund_update"],
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    message: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: true }
+);
+
 const customerSchema = new mongoose.Schema(
   {
     name: {
@@ -23,7 +57,6 @@ const customerSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       trim: true,
     },
-
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -31,35 +64,38 @@ const customerSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
       select: false,
     },
-
     role: {
       type: String,
       enum: ["customer", "salesManager", "productManager"],
       default: "customer",
     },
-
     taxId: {
       type: String,
-      required: [true, "Tax ID is required"],
       trim: true,
+      default: "",
     },
-
     homeAddress: {
       type: String,
       required: [true, "Home address is required"],
       trim: true,
     },
-
     wishlist: {
       type: [wishlistItemSchema],
       default: [],
+    },
+    notifications: {
+      type: [notificationSchema],
+      default: [],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
@@ -67,8 +103,7 @@ const customerSchema = new mongoose.Schema(
 
 // 🔐 Hash password before saving
 customerSchema.pre("save", async function () {
-  if(!this.isModified("password")) return;
-
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

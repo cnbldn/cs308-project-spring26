@@ -11,27 +11,32 @@ import ProductDetail from './components/ProductDetail';
 import Checkout from './components/Checkout';
 import Account from './components/Account';
 import OrderHistory from './components/OrderHistory';
+import ManagerDashboard from './components/ManagerDashboard';
+import { CartProvider } from './context/CartContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
+      <CartProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/orders" element={<OrderHistory />} />
-        </Route>
-      </Routes>
-      <Footer />
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/manager" element={<ManagerDashboard />} />
+          </Route>
+        </Routes>
+        <Footer />
+      </CartProvider>
     </BrowserRouter>
   );
 }

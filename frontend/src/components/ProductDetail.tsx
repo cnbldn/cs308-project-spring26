@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import styles from './ProductDetail.module.css';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
+const PLACEHOLDER_IMAGE = 'https://placehold.co/600x600/161210/ffd700?text=No+Image';
 
 interface ReviewData {
   averageRating: number;
@@ -16,6 +18,7 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { refreshCart } = useCart();
 
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<ReviewData>({ averageRating: 0, totalRatings: 0, comments: [] });
@@ -26,6 +29,8 @@ const ProductDetail: React.FC = () => {
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
+  const translateCategory = (category: string) =>
+    t(`shop.categoryLabels.${category}`, { defaultValue: category });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +60,7 @@ const ProductDetail: React.FC = () => {
         customerId: user?.id || user?._id || null,
         sessionId: !user ? sessionId : null
       });
+      await refreshCart();
       setFeedback({ type: 'success', message: t('shop.added') });
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.response?.data?.message || t('productDetail.addFailed') });
@@ -113,11 +119,20 @@ const ProductDetail: React.FC = () => {
 
       <div className={styles.mainSection}>
         <div className={styles.imageContainer}>
-          <img src={product.imageUrl || 'https://placehold.co/600x600'} alt={product.name} className={styles.productImage} />
+          <img
+            src={product.imageUrl || PLACEHOLDER_IMAGE}
+            alt={product.name}
+            className={styles.productImage}
+            onError={(event) => {
+              if (event.currentTarget.src !== PLACEHOLDER_IMAGE) {
+                event.currentTarget.src = PLACEHOLDER_IMAGE;
+              }
+            }}
+          />
         </div>
 
         <div className={styles.infoSection}>
-          <span className={styles.category}>{product.category}</span>
+          <span className={styles.category}>{translateCategory(product.category)}</span>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.price}>${product.price.toFixed(2)}</div>
 
@@ -213,7 +228,14 @@ const ProductDetail: React.FC = () => {
           {reviews.comments.length > 0 ? reviews.comments.map((comment: any) => (
             <div key={comment._id} className={styles.commentCard}>
               <div className={styles.commentHeader}>
-                <span className={styles.commentUser}>{comment.customer?.name}</span>
+                <div>
+                  <span className={styles.commentUser}>{comment.customer?.name}</span>
+                  {comment.customerRating && (
+                    <span className={styles.commentRating} aria-label={`Rated ${comment.customerRating} stars`}>
+                      {'★'.repeat(comment.customerRating)}
+                    </span>
+                  )}
+                </div>
                 <span className={styles.commentDate}>{new Date(comment.createdAt).toLocaleDateString()}</span>
               </div>
               <p className={styles.commentText}>{comment.text}</p>

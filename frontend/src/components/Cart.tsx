@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import styles from './Cart.module.css';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -25,6 +26,7 @@ const getSessionId = () => {
 
 const Cart: React.FC = () => {
   const { t } = useTranslation();
+  const { refreshCart } = useCart();
   const [items, setItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -47,6 +49,7 @@ const Cart: React.FC = () => {
       const res = await axios.get(`${API_BASE}/cart/${cartId}`);
       setItems(res.data.items || []);
       setTotal(res.data.cartTotal || 0);
+      refreshCart();
     } catch (err) {
       console.error('Failed to fetch cart:', err);
     } finally {

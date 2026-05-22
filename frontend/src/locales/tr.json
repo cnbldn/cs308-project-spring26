@@ -57,12 +57,26 @@
     "categories": "Kategoriler",
     "allProducts": "Tüm Ürünler",
     "allCategories": "Tüm Kategoriler",
+    "categoryLabels": {
+      "Action": "Aksiyon",
+      "Action RPG": "Aksiyon RPG",
+      "Adventure": "Macera",
+      "Fighting": "Dövüş",
+      "Horror": "Korku",
+      "JRPG": "JRPG",
+      "Platformer": "Platform",
+      "RPG": "RPG",
+      "Shooter": "Nişancı",
+      "Simulation": "Simülasyon",
+      "Sports": "Spor"
+    },
     "sortDefault": "En Yeni",
     "sortPriceAsc": "Fiyat: Düşükten Yükseğe",
     "sortPriceDesc": "Fiyat: Yüksekten Düşüğe",
     "sortPopularity": "Popülerlik",
     "inStock": "Stokta {{count}} adet",
-    "outOfStock": "Stokta yok"
+    "outOfStock": "Stokta yok",
+    "noProducts": "Ürün bulunamadı."
   },
   "cart": {
     "title": "Sepet",
@@ -116,6 +130,7 @@
     "name": "Ad Soyad",
     "email": "E-posta Adresi",
     "address": "Teslimat Adresi",
+    "taxId": "Vergi Numarası",
     "passwordSection": "Şifre Değiştir",
     "currentPassword": "Mevcut Şifre",
     "newPassword": "Yeni Şifre",

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import styles from './Shop.module.css';
 import ProductImageHover from './ProductImageHover';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -17,6 +18,8 @@ interface RawProduct {
   stock: number;
   imageUrl?: string | null;
   image?: string;
+  averageRating?: number;
+  totalRatings?: number;
 }
 
 interface Product {
@@ -27,6 +30,8 @@ interface Product {
   price: number;
   stock: number;
   image: string;
+  averageRating: number;
+  totalRatings: number;
 }
 
 const PLACEHOLDER_IMAGE = 'https://placehold.co/300x300/161210/ffd700?text=No+Image';
@@ -39,6 +44,8 @@ const normalize = (raw: RawProduct): Product => ({
   price: raw.price,
   stock: raw.stock,
   image: raw.imageUrl || raw.image || PLACEHOLDER_IMAGE,
+  averageRating: raw.averageRating ?? 0,
+  totalRatings: raw.totalRatings ?? 0,
 });
 
 // Helper to handle guest session IDs (Fulfills Req #4)
@@ -53,6 +60,7 @@ const getSessionId = () => {
 
 const Shop: React.FC = () => {
   const { t } = useTranslation();
+  const { refreshCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,6 +79,9 @@ const Shop: React.FC = () => {
 
   // Debounce timer ref for search
   const searchTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const translateCategory = (category: string) =>
+    t(`shop.categoryLabels.${category}`, { defaultValue: category });
 
   const fetchProducts = async (
     searchVal: string,
@@ -140,6 +151,7 @@ const Shop: React.FC = () => {
         customerId,
         sessionId,
       });
+      await refreshCart();
       setFeedback({
         id: product.id,
         type: 'success',
@@ -178,7 +190,7 @@ const Shop: React.FC = () => {
                   className={`${styles.categoryButton} ${selectedCategory === cat ? styles.activeCategory : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat}
+                  {translateCategory(cat)}
                 </button>
               </li>
             ))}
@@ -217,14 +229,27 @@ const Shop: React.FC = () => {
                   const outOfStock = product.stock === 0;
                   const isAdding = addingId === product.id;
                   const productFeedback = feedback && feedback.id === product.id ? feedback : null;
+                  const rounded = Math.round(product.averageRating);
 
                   return (
                     <div key={product.id} className={styles.productCard}>
                       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                         <ProductImageHover src={product.image} alt={product.name} />
-                        <p className={styles.productCategory}>{product.category}</p>
+                        <p className={styles.productCategory}>{translateCategory(product.category)}</p>
                         <h3 className={styles.productName}>{product.name}</h3>
                       </Link>
+                      <div className={styles.productRating} aria-label={`Rating ${product.averageRating} out of 5`}>
+                        <span className={styles.ratingStars}>
+                          {'★'.repeat(rounded)}<span className={styles.ratingStarsEmpty}>{'★'.repeat(5 - rounded)}</span>
+                        </span>
+                        {product.totalRatings > 0 ? (
+                          <span className={styles.ratingValue}>
+                            {product.averageRating.toFixed(1)} <span className={styles.ratingCount}>({product.totalRatings})</span>
+                          </span>
+                        ) : (
+                          <span className={styles.ratingCount}>(0)</span>
+                        )}
+                      </div>
                       <p className={`${styles.productStock} ${outOfStock ? styles.outOfStock : ''}`}>
                         {outOfStock ? (t('shop.outOfStock') || 'Out of Stock') : (t('shop.inStock', { count: product.stock }) || `In Stock: ${product.stock}`)}
                       </p>

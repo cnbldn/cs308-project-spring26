@@ -262,6 +262,13 @@
   color: #d4a017;
 }
 
+.commentRating {
+  margin-left: 0.75rem;
+  color: #ffd700;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
 .commentDate {
   font-size: 0.8rem;
   color: #5c5040;

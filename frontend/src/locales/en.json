@@ -62,7 +62,8 @@
     "sortPriceDesc": "Price: High to Low",
     "sortPopularity": "Popularity",
     "inStock": "{{count}} in stock",
-    "outOfStock": "Out of stock"
+    "outOfStock": "Out of stock",
+    "noProducts": "No products found."
   },
   "cart": {
     "title": "Cart",
@@ -116,6 +117,7 @@
     "name": "Full Name",
     "email": "Email Address",
     "address": "Delivery Address",
+    "taxId": "Tax ID",
     "passwordSection": "Change Password",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
