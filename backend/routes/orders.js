@@ -118,6 +118,7 @@ router.post('/checkout', async (req, res) => {
                 serialNumber: product.serialNumber,
                 quantity: cartItem.quantity,
                 unitPrice: product.price,
+                unitCost: product.costPrice || (product.price * 0.6),
                 lineTotal: lineTotal
             });
         }
@@ -420,6 +421,88 @@ router.patch('/:id/process-return', async (req, res) => {
         await session.abortTransaction();
         session.endSession();
         console.error("[PROCESS RETURN ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+/**
+ * @route GET /api/orders/financials
+ * @desc Get revenue and profit stats within a date range (Sales Manager - Req #11)
+ */
+router.get('/financials', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        let query = { orderStatus: { $ne: 'cancelled' } };
+
+        if (startDate || endDate) {
+            query.placedAt = {};
+            if (startDate) query.placedAt.$gte = new Date(startDate);
+            if (endDate) query.placedAt.$lte = new Date(endDate);
+        }
+
+        const orders = await Order.find(query);
+
+        let totalRevenue = 0;
+        let totalCost = 0;
+
+        orders.forEach(order => {
+            totalRevenue += order.totalAmount;
+            order.items.forEach(item => {
+                // If item was refunded, subtract its cost and revenue from profit calculation
+                if (item.returnStatus === 'refunded') {
+                    // Revenue lost is already reflected if we used a separate refund field, 
+                    // but totalAmount on order usually stays same for historical records.
+                    // For profit calculation:
+                    // Profit = (Revenue - Refunds) - (Cost - Restocked Cost)
+                    // Let's keep it simple: Profit = sum of (item.unitPrice - item.unitCost) for items NOT refunded
+                } else {
+                    totalCost += (item.unitCost * item.quantity);
+                }
+            });
+        });
+
+        // Simple profit calculation for the demo
+        const netRevenue = orders.reduce((acc, order) => {
+            const itemsRefundValue = order.items.reduce((sum, item) => sum + (item.refundAmount || 0), 0);
+            return acc + (order.totalAmount - itemsRefundValue);
+        }, 0);
+
+        const totalProfit = netRevenue - totalCost;
+
+        res.status(200).json({
+            count: orders.length,
+            totalRevenue: Number(netRevenue.toFixed(2)),
+            totalCost: Number(totalCost.toFixed(2)),
+            totalProfit: Number(totalProfit.toFixed(2))
+        });
+    } catch (err) {
+        console.error("[FINANCIALS ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+/**
+ * @route GET /api/orders/invoices-list
+ * @desc Get all invoices in a given date range (Sales Manager - Req #11)
+ */
+router.get('/invoices-list', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        let query = {};
+
+        if (startDate || endDate) {
+            query.issuedAt = {};
+            if (startDate) query.issuedAt.$gte = new Date(startDate);
+            if (endDate) query.issuedAt.$lte = new Date(endDate);
+        }
+
+        const invoices = await Invoice.find(query)
+            .populate('customer', 'name email')
+            .sort({ issuedAt: -1 });
+
+        res.status(200).json(invoices);
+    } catch (err) {
+        console.error("[INVOICES LIST ERROR]", err);
         res.status(500).json({ message: err.message });
     }
 });
