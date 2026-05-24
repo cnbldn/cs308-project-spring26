@@ -1,0 +1,356 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8rem 1.5rem 4rem;
+  color: #d4c9a8;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.title {
+  color: #ffd700;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #8a7d62;
+  font-size: 1.1rem;
+}
+
+.card {
+  background: #161210;
+  border: 1px solid #3a3225;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #3a3225;
+  padding-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: #8a7d62;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.tab:hover {
+  color: #d4c9a8;
+  background: #1a1610;
+}
+
+.tabActive {
+  color: #ffd700;
+  background: #2a2215;
+  box-shadow: 0 0 10px rgba(212, 160, 23, 0.1);
+}
+
+.panel {
+  background: #161210;
+  border: 1px solid #3a3225;
+  border-radius: 12px;
+  padding: 2rem;
+  min-height: 400px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  background: #0d0d0d;
+  border: 1px solid #3a3225;
+  color: #d4c9a8;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  width: 300px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem;
+  color: #8a7d62;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid #3a3225;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #1a1510;
+}
+
+.numInput {
+  background: #0d0d0d;
+  border: 1px solid #3a3225;
+  color: #ffd700;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 80px;
+  font-weight: 600;
+}
+
+.finalPrice {
+  color: #d4a017;
+  font-weight: 700;
+}
+
+.saveButton {
+  background: #d4a017;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveButton:hover {
+  background: #ffd700;
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successInline {
+  color: #6fbf6f;
+  font-size: 0.8rem;
+  margin-left: 0.75rem;
+}
+
+.errorInline {
+  color: #e05050;
+  font-size: 0.8rem;
+  margin-left: 0.75rem;
+}
+
+.dateFilter {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.dateFilter label {
+  display: block;
+  font-size: 0.75rem;
+  color: #8a7d62;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.dateInput {
+  background: #0d0d0d;
+  border: 1px solid #3a3225;
+  color: #d4c9a8;
+  padding: 0.6rem;
+  border-radius: 6px;
+}
+
+.filterButton {
+  background: transparent;
+  border: 1px solid #d4a017;
+  color: #d4a017;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filterButton:hover {
+  background: #2a2215;
+}
+
+.finGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.finCard {
+  background: #1a1610;
+  border: 1px solid #3a3225;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.finCard:hover {
+  transform: translateY(-2px);
+  border-color: #d4a017;
+}
+
+.finCard h3 {
+  font-size: 0.75rem;
+  color: #8a7d62;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.finValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.profit {
+  color: #6fbf6f;
+}
+
+.loss {
+  color: #e05050;
+}
+
+.chartContainer {
+  grid-column: 1 / -1;
+  margin-top: 2rem;
+  background: #0d0d0d;
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid #2a2418;
+}
+
+.chartRow {
+  display: flex;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+.chartSection {
+  flex: 1;
+  min-width: 300px;
+}
+
+.chartSection h3 {
+  color: #d4a017;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.barChart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 250px;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #3a3225;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.categoryBarWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.categoryLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #d4c9a8;
+}
+
+.categoryBarBg {
+  background: #1a1610;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.categoryBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.barGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 100px;
+  height: 100%;
+}
+
+.barRevenue {
+  width: 40px;
+  background: linear-gradient(to top, #004d40, #6fbf6f);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease-out;
+}
+
+.barProfit {
+  width: 40px;
+  background: linear-gradient(to top, #1a237e, #6fc0ff);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease-out;
+}
+
+.barGroup label {
+  font-size: 0.8rem;
+  color: #d4c9a8;
+  font-weight: 600;
+}
+
+.pdfLink {
+  color: #6fc0ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pdfLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .finGrid {
+    grid-template-columns: 1fr;
+  }
+  .chartContainer {
+    grid-column: span 1;
+  }
+}

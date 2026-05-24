@@ -12,6 +12,11 @@ const orderItemSchema = new mongoose.Schema(
       required: [true, 'Product name is required'],
       trim: true
     },
+    category: {
+      type: String,
+      required: [true, 'Product category is required'],
+      trim: true
+    },
     model: {
       type: String,
       required: [true, 'Product model is required'],

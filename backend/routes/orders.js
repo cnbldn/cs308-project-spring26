@@ -114,6 +114,7 @@ router.post('/checkout', async (req, res) => {
             orderItems.push({
                 product: product._id,
                 name: product.name,
+                category: product.category,
                 model: product.model,
                 serialNumber: product.serialNumber,
                 quantity: cartItem.quantity,
@@ -435,45 +436,70 @@ router.get('/financials', async (req, res) => {
         let query = { orderStatus: { $ne: 'cancelled' } };
 
         if (startDate || endDate) {
-            query.placedAt = {};
-            if (startDate) query.placedAt.$gte = new Date(startDate);
-            if (endDate) query.placedAt.$lte = new Date(endDate);
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+
+            if ((start && !isNaN(start.getTime())) || (end && !isNaN(end.getTime()))) {
+                query.placedAt = {};
+                if (start && !isNaN(start.getTime())) query.placedAt.$gte = start;
+                if (end && !isNaN(end.getTime())) query.placedAt.$lte = end;
+            }
         }
 
-        const orders = await Order.find(query);
+        const orders = await Order.find(query).lean();
 
         let totalRevenue = 0;
         let totalCost = 0;
 
         orders.forEach(order => {
-            totalRevenue += order.totalAmount;
             order.items.forEach(item => {
                 // If item was refunded, subtract its cost and revenue from profit calculation
                 if (item.returnStatus === 'refunded') {
-                    // Revenue lost is already reflected if we used a separate refund field, 
-                    // but totalAmount on order usually stays same for historical records.
-                    // For profit calculation:
-                    // Profit = (Revenue - Refunds) - (Cost - Restocked Cost)
-                    // Let's keep it simple: Profit = sum of (item.unitPrice - item.unitCost) for items NOT refunded
+                    // Item was refunded, skip cost for profit calc
                 } else {
-                    totalCost += (item.unitCost * item.quantity);
+                    const safeUnitCost = item.unitCost ?? (item.unitPrice * 0.6);
+                    totalCost += (safeUnitCost * (item.quantity || 1));
                 }
             });
         });
 
-        // Simple profit calculation for the demo
+        // Enhanced Stats
         const netRevenue = orders.reduce((acc, order) => {
             const itemsRefundValue = order.items.reduce((sum, item) => sum + (item.refundAmount || 0), 0);
             return acc + (order.totalAmount - itemsRefundValue);
         }, 0);
 
         const totalProfit = netRevenue - totalCost;
+        const averageOrderValue = orders.length > 0 ? (netRevenue / orders.length) : 0;
+        const profitMargin = netRevenue > 0 ? ((totalProfit / netRevenue) * 100) : 0;
+
+        // Category Breakdown
+        const categoryMap = {};
+        orders.forEach(order => {
+            if (Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    if (item.returnStatus !== 'refunded') {
+                        const cat = item.category || 'Other'; 
+                        const amount = Number(item.lineTotal) || (Number(item.unitPrice) * (Number(item.quantity) || 1)) || 0;
+                        categoryMap[cat] = (categoryMap[cat] || 0) + amount;
+                    }
+                });
+            }
+        });
+
+        const categoryBreakdown = Object.entries(categoryMap).map(([name, value]) => ({
+            name,
+            value: Number(value.toFixed(2))
+        })).sort((a, b) => b.value - a.value);
 
         res.status(200).json({
             count: orders.length,
             totalRevenue: Number(netRevenue.toFixed(2)),
             totalCost: Number(totalCost.toFixed(2)),
-            totalProfit: Number(totalProfit.toFixed(2))
+            totalProfit: Number(totalProfit.toFixed(2)),
+            averageOrderValue: Number(averageOrderValue.toFixed(2)),
+            profitMargin: Number(profitMargin.toFixed(1)),
+            categoryBreakdown
         });
     } catch (err) {
         console.error("[FINANCIALS ERROR]", err);

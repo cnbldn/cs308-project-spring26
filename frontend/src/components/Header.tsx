@@ -25,11 +25,14 @@ const Header: React.FC = () => {
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Note: You may want to add a translation key for 'Orders' here eventually */}
+            <Link to="/wishlist" className={styles.navLink}>Wishlist</Link>
             <Link to="/orders" className={styles.navLink}>Orders</Link>
             
             {user.role === 'productManager' && (
               <Link to="/manager" className={styles.navLink}>Manager</Link>
+            )}
+            {user.role === 'salesManager' && (
+              <Link to="/sales-manager" className={styles.navLink}>Sales</Link>
             )}
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
