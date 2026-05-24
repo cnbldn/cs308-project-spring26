@@ -144,6 +144,21 @@
   cursor: not-allowed;
 }
 
+.rejectButton {
+  background: transparent;
+  border: 1px solid #e05050;
+  color: #e05050;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rejectButton:hover {
+  background: #331010;
+}
+
 .successInline {
   color: #6fbf6f;
   font-size: 0.8rem;

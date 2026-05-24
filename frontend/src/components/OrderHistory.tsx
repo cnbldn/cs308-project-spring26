@@ -99,6 +99,30 @@ const OrderHistory: React.FC = () => {
     }
   };
 
+  const handleReturnRequest = async (orderId: string, productId: string) => {
+    const reason = window.prompt('Please enter a reason for the return:');
+    if (reason === null) return; // User cancelled prompt
+
+    try {
+      await axios.post(`${API_BASE}/orders/${orderId}/return-request`, {
+        productId,
+        quantity: 1, // Simple 1-qty return for now
+        reason
+      });
+      alert('Return request submitted successfully.');
+      await fetchOrders();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Could not submit return request.');
+    }
+  };
+
+  const isEligibleForReturn = (order: Order) => {
+    if (order.orderStatus !== 'delivered') return false;
+    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+    const placedDate = new Date(order.placedAt || order.createdAt).getTime();
+    return (Date.now() - placedDate) < thirtyDaysInMs;
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -234,14 +258,35 @@ const OrderHistory: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {order.items.map((item, idx) => (
-                          <tr key={`${order._id}-${idx}`}>
-                            <td>{item.name}</td>
-                            <td>{item.quantity}</td>
-                            <td>${item.unitPrice.toFixed(2)}</td>
-                            <td>${item.lineTotal.toFixed(2)}</td>
-                          </tr>
-                        ))}
+                        {order.items.map((item, idx) => {
+                          const canReturn = isEligibleForReturn(order) && item.returnStatus === 'none';
+                          return (
+                            <tr key={`${order._id}-${idx}`}>
+                              <td>
+                                {item.name}
+                                {item.returnStatus !== 'none' && (
+                                  <span className={`${styles.itemBadge} ${styles[`status_${item.returnStatus}`]}`}>
+                                    {item.returnStatus.toUpperCase()}
+                                  </span>
+                                )}
+                              </td>
+                              <td>{item.quantity}</td>
+                              <td>${item.unitPrice.toFixed(2)}</td>
+                              <td>
+                                {canReturn ? (
+                                  <button 
+                                    className={styles.miniReturnButton}
+                                    onClick={() => handleReturnRequest(order._id, item.product)}
+                                  >
+                                    Request Return
+                                  </button>
+                                ) : (
+                                  `$${item.lineTotal.toFixed(2)}`
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

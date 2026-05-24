@@ -286,8 +286,34 @@
 
 .itemsTable td {
   padding: 0.6rem;
-  border-bottom: 1px solid #1a1510;
+  border-bottom: solid 1px #1a1510;
   color: #d4c9a8;
+  vertical-align: middle;
+}
+
+.itemBadge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.miniReturnButton {
+  background: transparent;
+  border: 1px solid #d4a017;
+  color: #d4a017;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.miniReturnButton:hover {
+  background: #2a2215;
+  color: #ffd700;
 }
 
 .itemsTable th:nth-child(n+2),
