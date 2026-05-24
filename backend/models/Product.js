@@ -28,6 +28,13 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product price is required'],
       min: [0, 'Price cannot be negative']
     },
+    costPrice: {
+      type: Number,
+      min: [0, 'Cost price cannot be negative'],
+      default: function () {
+        return (this.price * 0.6).toFixed(2);
+      }
+    },
     basePrice: {
       type: Number,
       min: [0, 'Base price cannot be negative'],

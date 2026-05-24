@@ -32,6 +32,11 @@ const orderItemSchema = new mongoose.Schema(
       required: [true, 'Unit price is required'],
       min: [0, 'Unit price cannot be negative']
     },
+    unitCost: {
+      type: Number,
+      required: [true, 'Unit cost is required'],
+      min: [0, 'Unit cost cannot be negative']
+    },
     lineTotal: {
       type: Number,
       required: [true, 'Line total is required'],
