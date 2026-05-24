@@ -32,7 +32,7 @@ interface ManagedInvoice {
   issuedAt: string;
 }
 
-type Tab = 'pricing' | 'financials' | 'invoices';
+type Tab = 'pricing' | 'financials' | 'invoices' | 'returns';
 
 const SalesManagerDashboard: React.FC = () => {
   const userStr = localStorage.getItem('user');
@@ -60,6 +60,10 @@ const SalesManagerDashboard: React.FC = () => {
   // Invoices State
   const [invoices, setInvoices] = useState<ManagedInvoice[]>([]);
   const [invLoading, setInvLoading] = useState(false);
+
+  // Returns State
+  const [returnOrders, setReturns] = useState<any[]>([]);
+  const [retLoading, setRetLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const [rowFeedback, setRowFeedback] = useState<{ id: string; type: 'success' | 'error'; message: string } | null>(null);
@@ -104,11 +108,27 @@ const SalesManagerDashboard: React.FC = () => {
     }
   };
 
+  const fetchReturns = async () => {
+    try {
+      setRetLoading(true);
+      const res = await axios.get(`${API_BASE}/orders`);
+      const requested = res.data.filter((o: any) => 
+        o.items.some((i: any) => i.returnStatus === 'requested')
+      );
+      setReturns(requested);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRetLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isSalesManager) return;
     fetchProducts();
     fetchFinancials();
     fetchInvoices();
+    fetchReturns();
   }, [isSalesManager]);
 
   if (!user) return <Navigate to="/login" replace />;
@@ -152,6 +172,20 @@ const SalesManagerDashboard: React.FC = () => {
     }
   };
 
+  const handleReturnAction = async (orderId: string, productId: string, action: 'approved' | 'rejected' | 'refunded') => {
+    try {
+      setUpdatingId(`${orderId}-${productId}`);
+      await axios.patch(`${API_BASE}/orders/${orderId}/process-return`, { productId, action });
+      await fetchReturns();
+      setRowFeedback({ id: `${orderId}-${productId}`, type: 'success', message: `Processed as ${action}!` });
+    } catch (err: any) {
+      setRowFeedback({ id: `${orderId}-${productId}`, type: 'error', message: 'Failed' });
+    } finally {
+      setUpdatingId(null);
+      setTimeout(() => setRowFeedback(null), 2500);
+    }
+  };
+
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
@@ -164,6 +198,9 @@ const SalesManagerDashboard: React.FC = () => {
       <div className={styles.tabs}>
         <button className={`${styles.tab} ${tab === 'pricing' ? styles.tabActive : ''}`} onClick={() => setTab('pricing')}>
           Pricing & Discounts
+        </button>
+        <button className={`${styles.tab} ${tab === 'returns' ? styles.tabActive : ''}`} onClick={() => setTab('returns')}>
+          Return Requests
         </button>
         <button className={`${styles.tab} ${tab === 'financials' ? styles.tabActive : ''}`} onClick={() => setTab('financials')}>
           Financial Reports
@@ -242,6 +279,66 @@ const SalesManagerDashboard: React.FC = () => {
               </tbody>
             </table>
           </div>
+        </section>
+      )}
+
+      {tab === 'returns' && (
+        <section className={styles.panel}>
+          {retLoading ? <p>Loading returns...</p> : returnOrders.length === 0 ? (
+            <p className={styles.muted}>No pending return requests.</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Requested On</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {returnOrders.map(order => (
+                    order.items.filter((i: any) => i.returnStatus === 'requested').map((item: any) => {
+                      const feedback = rowFeedback?.id === `${order._id}-${item.product}` ? rowFeedback : null;
+                      return (
+                        <tr key={`${order._id}-${item.product}`}>
+                          <td style={{ fontFamily: 'monospace' }}>#{order._id.slice(-8).toUpperCase()}</td>
+                          <td>{order.customer?.name || 'Unknown'}</td>
+                          <td>{item.name} (x{item.quantity})</td>
+                          <td>{item.returnRequestedAt ? new Date(item.returnRequestedAt).toLocaleDateString() : 'N/A'}</td>
+                          <td>
+                            <div className={styles.actions}>
+                              <button 
+                                className={styles.saveButton} 
+                                onClick={() => handleReturnAction(order._id, item.product, 'refunded')}
+                                disabled={updatingId === `${order._id}-${item.product}`}
+                              >
+                                Authorize Refund
+                              </button>
+                              <button 
+                                className={styles.rejectButton} 
+                                onClick={() => handleReturnAction(order._id, item.product, 'rejected')}
+                                disabled={updatingId === `${order._id}-${item.product}`}
+                              >
+                                Reject
+                              </button>
+                              {feedback && (
+                                <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>
+                                  {feedback.message}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 
