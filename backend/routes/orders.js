@@ -309,4 +309,119 @@ router.patch('/:id/cancel', async (req, res) => {
     }
 });
 
+/**
+ * @route POST /api/orders/:id/return-request
+ * @desc Customer requests a return for a specific item (Req #13 & #15)
+ */
+router.post('/:id/return-request', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { productId, quantity, reason } = req.body;
+
+        const order = await Order.findById(id);
+        if (!order) return res.status(404).json({ message: "Order not found." });
+
+        // Validate 30-day window (Req #15)
+        const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+        if (Date.now() - new Date(order.placedAt).getTime() > thirtyDaysInMs) {
+            return res.status(400).json({ message: "Return period (30 days) has expired." });
+        }
+
+        // Only delivered orders can be returned
+        if (order.orderStatus !== 'delivered') {
+            return res.status(400).json({ message: "Only delivered orders can be returned." });
+        }
+
+        const item = order.items.find(i => i.product.toString() === productId);
+        if (!item) return res.status(404).json({ message: "Product not found in this order." });
+
+        if (quantity > item.quantity - item.returnedQuantity) {
+            return res.status(400).json({ message: "Invalid quantity requested for return." });
+        }
+
+        item.returnStatus = 'requested';
+        item.returnRequestedAt = new Date();
+        // We could store the reason in a separate field if needed, for now just logging it
+        console.log(`[RETURN REQUEST] Order ${id}, Product ${productId}, Qty ${quantity}, Reason: ${reason}`);
+
+        await order.save();
+        res.status(200).json({ message: "Return request submitted successfully.", order });
+    } catch (err) {
+        console.error("[RETURN REQUEST ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+/**
+ * @route PATCH /api/orders/:id/process-return
+ * @desc Sales Manager authorizes refund and updates stock (Req #11, #12, #15)
+ */
+router.patch('/:id/process-return', async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { id } = req.params;
+        const { productId, action } = req.body; // action: 'approve', 'reject', 'refunded' (received & authorized)
+
+        const order = await Order.findById(id).session(session);
+        if (!order) {
+            await session.abortTransaction();
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        const item = order.items.find(i => i.product.toString() === productId);
+        if (!item) {
+            await session.abortTransaction();
+            return res.status(404).json({ message: "Product not found in this order." });
+        }
+
+        if (action === 'refunded') {
+            // Authorization logic (Req #15)
+            // 1. Mark as refunded
+            item.returnStatus = 'refunded';
+            item.returnProcessedAt = new Date();
+            
+            // Refund amount is same as time of purchase (item.unitPrice)
+            const refundValue = item.quantity * item.unitPrice;
+            item.refundAmount = refundValue;
+            item.returnedQuantity = item.quantity; // Assuming full return for simplicity
+
+            // 2. Add product back to stock
+            await Product.findByIdAndUpdate(
+                productId,
+                { $inc: { stock: item.quantity } },
+                { session }
+            );
+
+            // 3. Notify customer (Optional but good practice)
+            const customer = await Customer.findById(order.customer).session(session);
+            if (customer) {
+                customer.notifications.push({
+                    type: 'refund_update',
+                    title: 'Refund Processed',
+                    message: `Your refund of $${refundValue.toFixed(2)} for "${item.name}" has been authorized and processed.`,
+                    product: productId
+                });
+                await customer.save({ session });
+            }
+        } else if (action === 'rejected') {
+            item.returnStatus = 'rejected';
+        } else if (action === 'approved') {
+            item.returnStatus = 'approved';
+        }
+
+        await order.save({ session });
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: `Return processed as ${action}.`, order });
+    } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error("[PROCESS RETURN ERROR]", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
