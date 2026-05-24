@@ -31,6 +31,9 @@ const Header: React.FC = () => {
             {user.role === 'productManager' && (
               <Link to="/manager" className={styles.navLink}>Manager</Link>
             )}
+            {user.role === 'salesManager' && (
+              <Link to="/sales-manager" className={styles.navLink}>Sales</Link>
+            )}
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
