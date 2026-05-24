@@ -235,6 +235,38 @@
   margin-top: auto;
 }
 
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wishlistButton {
+  background: #1a1610;
+  border: 1px solid #3a3225;
+  color: #6b5c3a;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wishlistButton:hover {
+  border-color: #d4a017;
+  color: #ffd700;
+  background: #2a2215;
+}
+
+.wishlistButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .productPrice {
   color: #d4a017;
   font-size: 0.98rem;

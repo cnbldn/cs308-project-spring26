@@ -12,6 +12,7 @@ import Checkout from './components/Checkout';
 import Account from './components/Account';
 import OrderHistory from './components/OrderHistory';
 import ManagerDashboard from './components/ManagerDashboard';
+import Wishlist from './components/Wishlist';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/account" element={<Account />} />
             <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/manager" element={<ManagerDashboard />} />
           </Route>
         </Routes>

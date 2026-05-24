@@ -25,7 +25,7 @@ const Header: React.FC = () => {
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Note: You may want to add a translation key for 'Orders' here eventually */}
+            <Link to="/wishlist" className={styles.navLink}>Wishlist</Link>
             <Link to="/orders" className={styles.navLink}>Orders</Link>
             
             {user.role === 'productManager' && (

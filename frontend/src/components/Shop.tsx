@@ -72,6 +72,8 @@ const Shop: React.FC = () => {
     message: string;
   } | null>(null);
 
+  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(null);
+
   // Filter & sort state
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -167,6 +169,29 @@ const Shop: React.FC = () => {
     }
   };
 
+  const handleAddToWishlist = async (productId: string) => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+
+    if (!user) {
+      setFeedback({ id: productId, type: 'error', message: 'Please login to use wishlist.' });
+      setTimeout(() => setFeedback(null), 3000);
+      return;
+    }
+
+    setWishlistLoadingId(productId);
+    try {
+      await axios.post(`${API_BASE}/wishlist/${user.id || user._id}/add`, { productId });
+      setFeedback({ id: productId, type: 'success', message: 'Added to wishlist!' });
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Failed to add to wishlist.';
+      setFeedback({ id: productId, type: 'error', message });
+    } finally {
+      setWishlistLoadingId(null);
+      setTimeout(() => setFeedback(null), 2500);
+    }
+  };
+
   return (
     <div className={styles.shopContainer}>
       <h2 className={styles.shopTitle}>{t('shop.title') || 'Shop'}</h2>
@@ -255,13 +280,23 @@ const Shop: React.FC = () => {
                       </p>
                       <div className={styles.productFooter}>
                         <span className={styles.productPrice}>${product.price.toFixed(2)}</span>
-                        <button
-                          className={styles.addButton}
-                          disabled={outOfStock || isAdding}
-                          onClick={() => handleAddToCart(product)}
-                        >
-                          {isAdding ? (t('shop.adding') || 'Adding...') : (t('shop.addToCart') || 'Add to Cart')}
-                        </button>
+                        <div className={styles.actions}>
+                          <button
+                            className={styles.wishlistButton}
+                            disabled={wishlistLoadingId === product.id}
+                            onClick={() => handleAddToWishlist(product.id)}
+                            title="Add to Wishlist"
+                          >
+                            {wishlistLoadingId === product.id ? '...' : '♡'}
+                          </button>
+                          <button
+                            className={styles.addButton}
+                            disabled={outOfStock || isAdding}
+                            onClick={() => handleAddToCart(product)}
+                          >
+                            {isAdding ? (t('shop.adding') || 'Adding...') : (t('shop.addToCart') || 'Add to Cart')}
+                          </button>
+                        </div>
                       </div>
                       {productFeedback && (
                         <p className={productFeedback.type === 'success' ? styles.successMessage : styles.errorMessage}>
