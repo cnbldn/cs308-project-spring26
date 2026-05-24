@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const Rating = require('../models/Rating');
+const Customer = require('../models/Customer');
 
 const attachRatings = async (products) => {
     const ids = products.map((p) => p._id);
@@ -110,6 +111,55 @@ router.patch('/:id/stock', async (req, res) => {
         res.status(200).json({ message: "Stock updated successfully.", product });
     } catch (err) {
         console.error("Stock update error:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+/**
+ * @route PATCH /api/products/:id/price
+ * @desc Update product basePrice and/or discountRate (Sales Manager - Req #11)
+ */
+router.patch('/:id/price', async (req, res) => {
+    try {
+        const { basePrice, discountRate } = req.body;
+        const productId = req.params.id;
+
+        const product = await Product.findById(productId);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+
+        const oldDiscountRate = product.discountRate;
+
+        if (basePrice !== undefined) product.basePrice = basePrice;
+        if (discountRate !== undefined) product.discountRate = discountRate;
+
+        // The pre('validate') hook in Product.js handles computing price/discountedPrice
+        await product.save();
+
+        // Notify users if a discount was added/increased (Requirement #11)
+        if (discountRate > 0 && discountRate > oldDiscountRate) {
+            const customers = await Customer.find({ "wishlist.product": productId });
+            
+            const notificationPromises = customers.map(customer => {
+                customer.notifications.push({
+                    type: 'wishlist_discount',
+                    title: 'Price Drop Alert!',
+                    message: `A product in your wishlist, "${product.name}", is now ${product.discountRate}% off!`,
+                    product: product._id
+                });
+                return customer.save();
+            });
+
+            await Promise.all(notificationPromises);
+            console.log(`[DISCOUNT] Notified ${customers.length} users about discount on ${product.name}`);
+        }
+
+        res.status(200).json({ 
+            message: "Pricing updated successfully.", 
+            product,
+            notifiedCount: (discountRate > 0 && discountRate > oldDiscountRate) ? (await Customer.countDocuments({ "wishlist.product": productId })) : 0
+        });
+    } catch (err) {
+        console.error("[PRICE UPDATE ERROR]", err);
         res.status(500).json({ message: err.message });
     }
 });
