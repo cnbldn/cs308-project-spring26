@@ -112,7 +112,7 @@ const SalesManagerDashboard: React.FC = () => {
     try {
       setRetLoading(true);
       const res = await axios.get(`${API_BASE}/orders`);
-      const requested = res.data.filter((o: any) => 
+      const requested = res.data.filter((o: any) =>
         o.items.some((i: any) => i.returnStatus === 'requested')
       );
       setReturns(requested);
@@ -132,6 +132,7 @@ const SalesManagerDashboard: React.FC = () => {
   }, [isSalesManager]);
 
   if (!user) return <Navigate to="/login" replace />;
+
   if (!isSalesManager) {
     return (
       <div className={styles.container}>
@@ -143,29 +144,120 @@ const SalesManagerDashboard: React.FC = () => {
     );
   }
 
+  const formatMoney = (value: number) => {
+    if (!Number.isFinite(value)) return '$0.00';
+    return `$${value.toFixed(2)}`;
+  };
+
+  const parseDraftNumber = (value: string | undefined, fallback: number) => {
+    if (value === undefined) return fallback;
+    if (value.trim() === '') return NaN;
+    return Number(value);
+  };
+
+  const getDraftValues = (product: ManagedProduct) => {
+    const draft = priceDrafts[product._id] || {};
+
+    const basePrice = parseDraftNumber(
+      draft.basePrice,
+      Number(product.basePrice ?? product.price ?? 0)
+    );
+
+    const discountRate = parseDraftNumber(
+      draft.discountRate,
+      Number(product.discountRate ?? 0)
+    );
+
+    return { basePrice, discountRate };
+  };
+
+  const getPreviewPrice = (product: ManagedProduct) => {
+    const { basePrice, discountRate } = getDraftValues(product);
+
+    if (!Number.isFinite(basePrice) || !Number.isFinite(discountRate)) {
+      return product.price ?? 0;
+    }
+
+    return Math.max(0, basePrice * (1 - discountRate / 100));
+  };
+
+  const getPriceValidationError = (product: ManagedProduct) => {
+    const draft = priceDrafts[product._id];
+
+    if (!draft) return null;
+
+    const { basePrice, discountRate } = getDraftValues(product);
+
+    if (!Number.isFinite(basePrice)) return 'Base price must be a valid number.';
+    if (!Number.isFinite(discountRate)) return 'Discount must be a valid number.';
+    if (basePrice < 0) return 'Base price cannot be negative.';
+    if (discountRate < 0 || discountRate > 100) return 'Discount must be between 0 and 100.';
+
+    return null;
+  };
+
+  const hasPriceChanges = (product: ManagedProduct) => {
+    const draft = priceDrafts[product._id];
+
+    if (!draft) return false;
+
+    const { basePrice, discountRate } = getDraftValues(product);
+
+    return (
+      basePrice !== Number(product.basePrice ?? product.price ?? 0) ||
+      discountRate !== Number(product.discountRate ?? 0)
+    );
+  };
+
   const handlePriceUpdate = async (productId: string) => {
-    const draft = priceDrafts[productId];
-    if (!draft) return;
+    const product = products.find(p => p._id === productId);
+
+    if (!product) return;
+
+    const validationError = getPriceValidationError(product);
+
+    if (validationError) {
+      setRowFeedback({
+        id: productId,
+        type: 'error',
+        message: validationError,
+      });
+
+      setTimeout(() => setRowFeedback(null), 2500);
+      return;
+    }
+
+    if (!hasPriceChanges(product)) return;
+
+    const { basePrice, discountRate } = getDraftValues(product);
 
     setUpdatingId(productId);
-    try {
-      const payload: any = {};
-      if (draft.basePrice !== undefined) payload.basePrice = Number(draft.basePrice);
-      if (draft.discountRate !== undefined) payload.discountRate = Number(draft.discountRate);
 
-      const res = await axios.patch(`${API_BASE}/products/${productId}/price`, payload);
+    try {
+      const res = await axios.patch(`${API_BASE}/products/${productId}/price`, {
+        basePrice,
+        discountRate,
+      });
+
       const updated = res.data.product;
 
-      setProducts(prev => prev.map(p => p._id === productId ? { ...p, ...updated } : p));
+      setProducts(prev =>
+        prev.map(p => (p._id === productId ? { ...p, ...updated } : p))
+      );
+
       setPriceDrafts(prev => {
         const next = { ...prev };
         delete next[productId];
         return next;
       });
-      
+
       setRowFeedback({ id: productId, type: 'success', message: 'Updated!' });
     } catch (err: any) {
-      setRowFeedback({ id: productId, type: 'error', message: err.response?.data?.message || 'Failed' });
+      setRowFeedback({
+        id: productId,
+        type: 'error',
+        message: err.response?.data?.message || 'Failed',
+      });
     } finally {
       setUpdatingId(null);
       setTimeout(() => setRowFeedback(null), 2500);
@@ -186,7 +278,9 @@ const SalesManagerDashboard: React.FC = () => {
     }
   };
 
-  const filteredProducts = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className={styles.container}>
@@ -213,72 +307,109 @@ const SalesManagerDashboard: React.FC = () => {
       {tab === 'pricing' && (
         <section className={styles.panel}>
           <div className={styles.toolbar}>
-            <input 
-              type="text" 
-              className={styles.searchInput} 
-              placeholder="Search products..." 
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Base Price ($)</th>
-                  <th>Discount (%)</th>
-                  <th>Final Price</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map(p => {
-                  const draft = priceDrafts[p._id] || {};
-                  const feedback = rowFeedback?.id === p._id ? rowFeedback : null;
-                  return (
-                    <tr key={p._id}>
-                      <td style={{ fontWeight: 600 }}>{p.name}</td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className={styles.numInput}
-                          value={draft.basePrice ?? p.basePrice}
-                          onChange={(e) => setPriceDrafts(prev => ({ ...prev, [p._id]: { ...draft, basePrice: e.target.value } }))}
-                        />
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className={styles.numInput}
-                          value={draft.discountRate ?? p.discountRate}
-                          onChange={(e) => setPriceDrafts(prev => ({ ...prev, [p._id]: { ...draft, discountRate: e.target.value } }))}
-                        />
-                      </td>
-                      <td>
-                        <span className={styles.finalPrice}>${p.price.toFixed(2)}</span>
-                      </td>
-                      <td>
-                        <button 
-                          className={styles.saveButton}
-                          disabled={updatingId === p._id}
-                          onClick={() => handlePriceUpdate(p._id)}
-                        >
-                          {updatingId === p._id ? '...' : 'Update'}
-                        </button>
-                        {feedback && (
-                          <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>
-                            {feedback.message}
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          {productsLoading ? (
+            <p className={styles.muted}>Loading products...</p>
+          ) : filteredProducts.length === 0 ? (
+            <p className={styles.muted}>No products found.</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Base Price ($)</th>
+                    <th>Discount (%)</th>
+                    <th>Final Price</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map(p => {
+                    const draft = priceDrafts[p._id] || {};
+                    const feedback = rowFeedback?.id === p._id ? rowFeedback : null;
+                    const validationError = getPriceValidationError(p);
+                    const priceChanged = hasPriceChanges(p);
+                    const previewPrice = getPreviewPrice(p);
+                    const currentBasePrice = p.basePrice ?? p.price ?? 0;
+                    const currentDiscountRate = p.discountRate ?? 0;
+
+                    return (
+                      <tr key={p._id}>
+                        <td style={{ fontWeight: 600 }}>{p.name}</td>
+                        <td>
+                          <input
+                            type="number"
+                            className={styles.numInput}
+                            min="0"
+                            step="0.01"
+                            value={draft.basePrice ?? currentBasePrice}
+                            onChange={(e) =>
+                              setPriceDrafts(prev => ({
+                                ...prev,
+                                [p._id]: { ...draft, basePrice: e.target.value }
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className={styles.numInput}
+                            min="0"
+                            max="100"
+                            step="1"
+                            value={draft.discountRate ?? currentDiscountRate}
+                            onChange={(e) =>
+                              setPriceDrafts(prev => ({
+                                ...prev,
+                                [p._id]: { ...draft, discountRate: e.target.value }
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <span className={styles.finalPrice}>{formatMoney(previewPrice)}</span>
+                          {priceChanged && !validationError && (
+                            <span className={styles.successInline}> preview</span>
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            className={styles.saveButton}
+                            disabled={updatingId === p._id || !priceChanged}
+                            onClick={() => handlePriceUpdate(p._id)}
+                          >
+                            {updatingId === p._id ? '...' : priceChanged ? 'Update' : 'Saved'}
+                          </button>
+
+                          {validationError && (
+                            <span className={styles.errorInline}>
+                              {validationError}
+                            </span>
+                          )}
+
+                          {feedback && (
+                            <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>
+                              {feedback.message}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 
@@ -310,15 +441,15 @@ const SalesManagerDashboard: React.FC = () => {
                           <td>{item.returnRequestedAt ? new Date(item.returnRequestedAt).toLocaleDateString() : 'N/A'}</td>
                           <td>
                             <div className={styles.actions}>
-                              <button 
-                                className={styles.saveButton} 
+                              <button
+                                className={styles.saveButton}
                                 onClick={() => handleReturnAction(order._id, item.product, 'refunded')}
                                 disabled={updatingId === `${order._id}-${item.product}`}
                               >
                                 Authorize Refund
                               </button>
-                              <button 
-                                className={styles.rejectButton} 
+                              <button
+                                className={styles.rejectButton}
                                 onClick={() => handleReturnAction(order._id, item.product, 'rejected')}
                                 disabled={updatingId === `${order._id}-${item.product}`}
                               >
@@ -395,12 +526,12 @@ const SalesManagerDashboard: React.FC = () => {
                         <label>Revenue</label>
                       </div>
                       <div className={styles.barGroup}>
-                        <div 
-                          className={styles.barProfit} 
-                          style={{ 
-                            height: (financials.totalRevenue ?? 0) > 0 
-                              ? `${Math.max(0, ((financials.totalProfit ?? 0) / (financials.totalRevenue ?? 1)) * 80)}%` 
-                              : '0%' 
+                        <div
+                          className={styles.barProfit}
+                          style={{
+                            height: (financials.totalRevenue ?? 0) > 0
+                              ? `${Math.max(0, ((financials.totalProfit ?? 0) / (financials.totalRevenue ?? 1)) * 80)}%`
+                              : '0%'
                           }}
                         ></div>
                         <label>Profit</label>
@@ -422,9 +553,9 @@ const SalesManagerDashboard: React.FC = () => {
                                 <span>${cat.value.toLocaleString()}</span>
                               </div>
                               <div className={styles.categoryBarBg}>
-                                <div 
-                                  className={styles.categoryBarFill} 
-                                  style={{ 
+                                <div
+                                  className={styles.categoryBarFill}
+                                  style={{
                                     width: `${percent}%`,
                                     backgroundColor: `hsl(${idx * 40}, 60%, 50%)`
                                   }}
@@ -478,9 +609,9 @@ const SalesManagerDashboard: React.FC = () => {
                     <td>{inv.customer?.name || 'Unknown'}</td>
                     <td>${inv.totalAmount.toFixed(2)}</td>
                     <td>
-                      <a 
-                        href={`${API_BASE}/orders/invoice/${inv._id}/pdf`} 
-                        target="_blank" 
+                      <a
+                        href={`${API_BASE}/orders/invoice/${inv._id}/pdf`}
+                        target="_blank"
                         rel="noreferrer"
                         className={styles.pdfLink}
                       >
