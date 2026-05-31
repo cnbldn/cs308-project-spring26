@@ -17,6 +17,8 @@ interface PendingComment {
 interface ManagedProduct {
   _id: string;
   name: string;
+  model?: string;
+  serialNumber?: string;
   category: string;
   price: number;
   stock: number;
@@ -33,6 +35,9 @@ interface ManagedOrder {
 }
 
 type Tab = 'comments' | 'stock' | 'orders';
+type StockSort = 'default' | 'low-to-high' | 'high-to-low';
+
+
 
 const ManagerDashboard: React.FC = () => {
   const userStr = localStorage.getItem('user');
@@ -62,6 +67,8 @@ const ManagerDashboard: React.FC = () => {
     message: string;
   } | null>(null);
   const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [stockSort, setStockSort] = useState<StockSort>('default');
 
   const fetchPending = async () => {
     try {
@@ -192,9 +199,36 @@ const ManagerDashboard: React.FC = () => {
       minute: '2-digit',
     });
 
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const categories = Array.from(
+    new Set(products.map((p) => p.category).filter(Boolean)),
+  ).sort();
+
+  const filteredProducts = products
+    .filter((p) => {
+      const searchTerm = search.toLowerCase();
+
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchTerm) ||
+        p.category.toLowerCase().includes(searchTerm) ||
+        (p.model || '').toLowerCase().includes(searchTerm) ||
+        (p.serialNumber || '').toLowerCase().includes(searchTerm);
+
+      const matchesCategory =
+        categoryFilter === 'all' || p.category === categoryFilter;
+
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (stockSort === 'low-to-high') {
+        return a.stock - b.stock;
+      }
+
+      if (stockSort === 'high-to-low') {
+        return b.stock - a.stock;
+      }
+
+      return 0;
+    });
 
   return (
     <div className={styles.container}>
@@ -215,7 +249,7 @@ const ManagerDashboard: React.FC = () => {
           className={`${styles.tab} ${tab === 'stock' ? styles.tabActive : ''}`}
           onClick={() => setTab('stock')}
         >
-          Stock Management
+          Product Catalog
         </button>
         <button
           className={`${styles.tab} ${tab === 'orders' ? styles.tabActive : ''}`}
@@ -294,10 +328,34 @@ const ManagerDashboard: React.FC = () => {
             <input
               type="text"
               className={styles.searchInput}
-              placeholder="Search products..."
+              placeholder="Search by name, category, model, or serial #..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+
+            <select
+              className={styles.statusSelect}
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className={styles.statusSelect}
+              value={stockSort}
+              onChange={(e) => setStockSort(e.target.value as StockSort)}
+            >
+              <option value="default">Default Sort</option>
+              <option value="low-to-high">Low to High</option>
+              <option value="high-to-low">High to Low</option>
+            </select>
+
             <span className={styles.muted}>
               {filteredProducts.length} of {products.length} products
             </span>
