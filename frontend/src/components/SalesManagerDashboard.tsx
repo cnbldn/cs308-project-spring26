@@ -30,7 +30,9 @@ interface ManagedInvoice {
   customer: { name: string; email: string } | null;
   totalAmount: number;
   issuedAt: string;
+  invoiceStatus?: string;
 }
+
 
 type Tab = 'pricing' | 'financials' | 'invoices' | 'returns';
 
@@ -575,56 +577,80 @@ const SalesManagerDashboard: React.FC = () => {
           )}
         </section>
       )}
-
       {tab === 'invoices' && (
         <section className={styles.panel}>
           <div className={styles.dateFilter}>
             <div>
               <label>From</label>
-              <input type="date" className={styles.dateInput} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </div>
             <div>
               <label>To</label>
-              <input type="date" className={styles.dateInput} value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
             </div>
-            <button className={styles.filterButton} onClick={fetchInvoices}>Filter Invoices</button>
+            <button className={styles.filterButton} onClick={fetchInvoices}>
+              Filter Invoices
+            </button>
           </div>
 
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Invoice #</th>
-                  <th>Date</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map(inv => (
-                  <tr key={inv._id}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{inv.invoiceNumber}</td>
-                    <td>{new Date(inv.issuedAt).toLocaleDateString()}</td>
-                    <td>{inv.customer?.name || 'Unknown'}</td>
-                    <td>${inv.totalAmount.toFixed(2)}</td>
-                    <td>
-                      <a
-                        href={`${API_BASE}/orders/invoice/${inv._id}/pdf`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={styles.pdfLink}
-                      >
-                        Download PDF
-                      </a>
-                    </td>
+          {invLoading ? (
+            <p className={styles.muted}>Loading invoices...</p>
+          ) : invoices.length === 0 ? (
+            <p className={styles.muted}>No invoices found for this range.</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {invoices.map(inv => (
+                    <tr key={inv._id}>
+                      <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                        {inv.invoiceNumber}
+                      </td>
+                      <td>{new Date(inv.issuedAt).toLocaleDateString()}</td>
+                      <td>{inv.customer?.name || 'Unknown'}</td>
+                      <td>{inv.customer?.email || 'N/A'}</td>
+                      <td>{inv.invoiceStatus || 'issued'}</td>
+                      <td>{formatMoney(inv.totalAmount)}</td>
+                      <td>
+                        <a
+                          href={`${API_BASE}/orders/invoice/${inv._id}/pdf`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={styles.pdfLink}
+                        >
+                          Download PDF
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
+
     </div>
   );
 };
