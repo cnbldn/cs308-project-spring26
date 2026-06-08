@@ -1,53 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Support.module.css';
-
-// ─── Static data ──────────────────────────────────────────────────────────────
-
-const CONTACT_METHODS = [
-  {
-    icon: '✉️',
-    label: 'Email Support',
-    value: 'support@gamevault.example\nWe reply within 24 hours.',
-  },
-  {
-    icon: '💬',
-    label: 'Live Chat',
-    value: 'Available on weekdays\n9:00 AM – 6:00 PM (GMT+3)',
-  },
-  {
-    icon: '📦',
-    label: 'Order Help',
-    value: 'Track, cancel, or return\norders from your Account page.',
-  },
-];
-
-const FAQ_ITEMS = [
-  {
-    question: 'How can I track my order?',
-    answer:
-      'Once your order ships, you can view its current status from the "Orders" section of your account. Each order shows whether it is processing, in transit, delivered, or cancelled.',
-  },
-  {
-    question: 'What is your return policy?',
-    answer:
-      'You can request a return for eligible items from your order history within 30 days of delivery. Once a sales manager approves the request, your refund will be processed to your original payment method.',
-  },
-  {
-    question: 'How do I change my account information?',
-    answer:
-      'Go to your Account page to update your name, email, delivery address, or tax ID, and to change your password at any time.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer:
-      'Checkout currently uses a simulated card payment flow for demonstration purposes. No real charges are made.',
-  },
-  {
-    question: 'I forgot my password. What should I do?',
-    answer:
-      'Use the "Forgot Password?" link on the login page to reset your password, or reach out to our support team for help.',
-  },
-];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +18,7 @@ interface Conversation {
   messages: ChatMessage[];
 }
 
-// ─── Mock conversations ───────────────────────────────────────────────────────
+// ─── Mock conversations (content intentionally not translated) ────────────────
 
 const INITIAL_CONVERSATIONS: Conversation[] = [
   {
@@ -76,22 +29,22 @@ const INITIAL_CONVERSATIONS: Conversation[] = [
     messages: [
       {
         from: 'user',
-        text: 'I placed an order 2 weeks ago and it still hasn\'t arrived.',
+        text: "I placed an order 2 weeks ago and it still hasn't arrived.",
         time: 'Jun 6, 10:00',
       },
       {
         from: 'support',
-        text: 'Hi! Sorry to hear that. Could you share your order ID so I can look into this for you?',
+        text: "Hi! Sorry to hear that. Could you share your order ID so I can look into this for you?",
         time: 'Jun 6, 11:30',
       },
       {
         from: 'user',
-        text: 'The order ID is #A3F7B2. I\'m getting worried it might be lost.',
+        text: "The order ID is #A3F7B2. I'm getting worried it might be lost.",
         time: 'Jun 7, 09:00',
       },
       {
         from: 'support',
-        text: 'Thank you! I can see your order is in transit and should arrive by tomorrow. We apologise for the delay!',
+        text: "Thank you! I can see your order is in transit and should arrive by tomorrow. We apologise for the delay!",
         time: 'Jun 7, 14:30',
       },
     ],
@@ -104,22 +57,22 @@ const INITIAL_CONVERSATIONS: Conversation[] = [
     messages: [
       {
         from: 'user',
-        text: 'I received a different game than what I ordered. I ordered Elden Ring but got FIFA.',
+        text: "I received a different game than what I ordered. I ordered Elden Ring but got FIFA.",
         time: 'Jun 1, 16:00',
       },
       {
         from: 'support',
-        text: 'We\'re sorry about the mix-up! We\'ll ship the correct item immediately and arrange a free return label for the wrong one.',
+        text: "We're sorry about the mix-up! We'll ship the correct item immediately and arrange a free return label for the wrong one.",
         time: 'Jun 2, 09:00',
       },
       {
         from: 'user',
-        text: 'The correct game arrived today. Thank you for sorting this out quickly!',
+        text: "The correct game arrived today. Thank you for sorting this out quickly!",
         time: 'Jun 3, 08:00',
       },
       {
         from: 'support',
-        text: 'Glad it arrived safely! I\'ve marked this ticket as resolved. Enjoy the game!',
+        text: "Glad it arrived safely! I've marked this ticket as resolved. Enjoy the game!",
         time: 'Jun 3, 09:00',
       },
     ],
@@ -134,6 +87,23 @@ const lastMessage = (convo: Conversation) =>
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Support: React.FC = () => {
+  const { t } = useTranslation();
+
+  // Derived data (uses t(), so defined inside component)
+  const contactMethods = [
+    { icon: '✉️', label: t('support.contactEmail'), value: t('support.contactEmailValue') },
+    { icon: '💬', label: t('support.contactChat'), value: t('support.contactChatValue') },
+    { icon: '📦', label: t('support.contactOrders'), value: t('support.contactOrdersValue') },
+  ];
+
+  const faqItems = [
+    { question: t('support.faq1Question'), answer: t('support.faq1Answer') },
+    { question: t('support.faq2Question'), answer: t('support.faq2Answer') },
+    { question: t('support.faq3Question'), answer: t('support.faq3Answer') },
+    { question: t('support.faq4Question'), answer: t('support.faq4Answer') },
+    { question: t('support.faq5Question'), answer: t('support.faq5Answer') },
+  ];
+
   // Page tab
   const [activeTab, setActiveTab] = useState<'help' | 'chats'>('help');
 
@@ -150,7 +120,6 @@ const Support: React.FC = () => {
   const [newChatForm, setNewChatForm] = useState({ subject: '', message: '' });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const activeConvo = conversations.find((c) => c.id === activeId) ?? null;
 
   useEffect(() => {
@@ -172,7 +141,6 @@ const Support: React.FC = () => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Create a new conversation from the contact form and switch to My Chats
     const id = String(Date.now());
     const now = new Date().toLocaleString('en-GB', { day: 'short', month: 'short', hour: '2-digit', minute: '2-digit' });
     const newConvo: Conversation = {
@@ -184,7 +152,7 @@ const Support: React.FC = () => {
         { from: 'user', text: form.message, time: now },
         {
           from: 'support',
-          text: 'Thanks for reaching out! Our support team will review your message and get back to you shortly.',
+          text: "Thanks for reaching out! Our support team will review your message and get back to you shortly.",
           time: now,
         },
       ],
@@ -210,7 +178,7 @@ const Support: React.FC = () => {
     const userMsg: ChatMessage = { from: 'user', text, time };
     const autoReply: ChatMessage = {
       from: 'support',
-      text: 'Thanks for your message! A support agent will follow up with you as soon as possible.',
+      text: "Thanks for your message! A support agent will follow up with you as soon as possible.",
       time,
     };
     setConversations((prev) =>
@@ -244,7 +212,7 @@ const Support: React.FC = () => {
         { from: 'user', text: message.trim(), time },
         {
           from: 'support',
-          text: 'Thanks for contacting support! We\'ll look into this and get back to you shortly.',
+          text: "Thanks for contacting support! We'll look into this and get back to you shortly.",
           time,
         },
       ],
@@ -260,10 +228,8 @@ const Support: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Support</h1>
-        <p className={styles.subtitle}>
-          Browse help articles, check your chat history, or send us a message.
-        </p>
+        <h1 className={styles.title}>{t('support.title')}</h1>
+        <p className={styles.subtitle}>{t('support.subtitle')}</p>
       </header>
 
       {/* Page tabs */}
@@ -272,13 +238,13 @@ const Support: React.FC = () => {
           className={`${styles.tabButton} ${activeTab === 'help' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('help')}
         >
-          Help Center
+          {t('support.tabHelp')}
         </button>
         <button
           className={`${styles.tabButton} ${activeTab === 'chats' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('chats')}
         >
-          My Chats
+          {t('support.tabChats')}
         </button>
       </div>
 
@@ -286,9 +252,9 @@ const Support: React.FC = () => {
       {activeTab === 'help' && (
         <>
           <section className={styles.section}>
-            <h3 className={styles.sectionTitle}>Get in Touch</h3>
+            <h3 className={styles.sectionTitle}>{t('support.contactTitle')}</h3>
             <div className={styles.contactGrid}>
-              {CONTACT_METHODS.map((method) => (
+              {contactMethods.map((method) => (
                 <div key={method.label} className={styles.contactCard}>
                   <div className={styles.contactIcon}>{method.icon}</div>
                   <p className={styles.contactLabel}>{method.label}</p>
@@ -301,12 +267,12 @@ const Support: React.FC = () => {
           </section>
 
           <section className={styles.section}>
-            <h3 className={styles.sectionTitle}>Frequently Asked Questions</h3>
+            <h3 className={styles.sectionTitle}>{t('support.faqTitle')}</h3>
             <div className={styles.faqList}>
-              {FAQ_ITEMS.map((item, index) => {
+              {faqItems.map((item, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
-                  <div key={item.question} className={styles.faqItem}>
+                  <div key={index} className={styles.faqItem}>
                     <button
                       type="button"
                       className={styles.faqQuestion}
@@ -324,52 +290,50 @@ const Support: React.FC = () => {
           </section>
 
           <section className={styles.section}>
-            <h3 className={styles.sectionTitle}>Send Us a Message</h3>
+            <h3 className={styles.sectionTitle}>{t('support.formTitle')}</h3>
             <form className={styles.form} onSubmit={handleFormSubmit}>
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label>Name</label>
+                  <label>{t('support.formName')}</label>
                   <input
                     type="text"
-                    placeholder="Your name"
+                    placeholder={t('support.formNamePlaceholder')}
                     value={form.name}
                     onChange={handleFormChange('name')}
                   />
                 </div>
                 <div className={styles.field}>
-                  <label>Email</label>
+                  <label>{t('support.formEmail')}</label>
                   <input
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder={t('support.formEmailPlaceholder')}
                     value={form.email}
                     onChange={handleFormChange('email')}
                   />
                 </div>
               </div>
               <div className={styles.field}>
-                <label>Subject</label>
+                <label>{t('support.formSubject')}</label>
                 <input
                   type="text"
-                  placeholder="What can we help you with?"
+                  placeholder={t('support.formSubjectPlaceholder')}
                   value={form.subject}
                   onChange={handleFormChange('subject')}
                 />
               </div>
               <div className={styles.field}>
-                <label>Message</label>
+                <label>{t('support.formMessage')}</label>
                 <textarea
-                  placeholder="Describe your issue or question..."
+                  placeholder={t('support.formMessagePlaceholder')}
                   value={form.message}
                   onChange={handleFormChange('message')}
                 />
               </div>
               <button type="submit" className={styles.submitButton} disabled={!isFormValid}>
-                Send Message
+                {t('support.formSend')}
               </button>
               {submitted && (
-                <p className={styles.successNote}>
-                  Message sent! Redirecting you to My Chats…
-                </p>
+                <p className={styles.successNote}>{t('support.formSent')}</p>
               )}
             </form>
           </section>
@@ -382,12 +346,12 @@ const Support: React.FC = () => {
           {/* Sidebar */}
           <aside className={styles.chatSidebar}>
             <div className={styles.chatSidebarHeader}>
-              <p className={styles.chatSidebarTitle}>Conversations</p>
+              <p className={styles.chatSidebarTitle}>{t('support.chatsTitle')}</p>
               <button
                 className={styles.newChatButton}
-                onClick={() => { setShowNewChat(true); }}
+                onClick={() => setShowNewChat(true)}
               >
-                + New
+                {t('support.newChatButton')}
               </button>
             </div>
 
@@ -404,7 +368,7 @@ const Support: React.FC = () => {
                   </div>
                   <p className={styles.ticketPreview}>{lastMessage(convo)}</p>
                   <span className={`${styles.statusBadge} ${convo.status === 'open' ? styles.statusOpen : styles.statusResolved}`}>
-                    {convo.status}
+                    {convo.status === 'open' ? t('support.statusOpen') : t('support.statusResolved')}
                   </span>
                 </div>
               ))}
@@ -416,36 +380,36 @@ const Support: React.FC = () => {
             {showNewChat ? (
               <>
                 <div className={styles.chatPanelHeader}>
-                  <h4 className={styles.chatPanelTitle}>New Conversation</h4>
+                  <h4 className={styles.chatPanelTitle}>{t('support.newChatTitle')}</h4>
                 </div>
                 <div className={styles.newChatForm}>
                   <div className={styles.newChatField}>
-                    <label>Subject</label>
+                    <label>{t('support.newChatSubjectLabel')}</label>
                     <input
                       type="text"
-                      placeholder="What do you need help with?"
+                      placeholder={t('support.newChatSubjectPlaceholder')}
                       value={newChatForm.subject}
                       onChange={(e) => setNewChatForm((p) => ({ ...p, subject: e.target.value }))}
                     />
                   </div>
                   <div className={styles.newChatField}>
-                    <label>Message</label>
+                    <label>{t('support.newChatMessageLabel')}</label>
                     <textarea
-                      placeholder="Describe your issue..."
+                      placeholder={t('support.newChatMessagePlaceholder')}
                       value={newChatForm.message}
                       onChange={(e) => setNewChatForm((p) => ({ ...p, message: e.target.value }))}
                     />
                   </div>
                   <div className={styles.newChatActions}>
                     <button className={styles.cancelButton} onClick={() => setShowNewChat(false)}>
-                      Cancel
+                      {t('support.cancel')}
                     </button>
                     <button
                       className={styles.startButton}
                       disabled={!newChatForm.subject.trim() || !newChatForm.message.trim()}
                       onClick={handleStartNewChat}
                     >
-                      Start Chat
+                      {t('support.startChat')}
                     </button>
                   </div>
                 </div>
@@ -455,7 +419,7 @@ const Support: React.FC = () => {
                 <div className={styles.chatPanelHeader}>
                   <h4 className={styles.chatPanelTitle}>{activeConvo.subject}</h4>
                   <span className={`${styles.statusBadge} ${activeConvo.status === 'open' ? styles.statusOpen : styles.statusResolved}`}>
-                    {activeConvo.status}
+                    {activeConvo.status === 'open' ? t('support.statusOpen') : t('support.statusResolved')}
                   </span>
                 </div>
 
@@ -466,7 +430,7 @@ const Support: React.FC = () => {
                       className={`${styles.messageRow} ${msg.from === 'user' ? styles.messageRowUser : styles.messageRowSupport}`}
                     >
                       <span className={styles.messageSender}>
-                        {msg.from === 'user' ? 'You' : 'Game Vault Support'}
+                        {msg.from === 'user' ? t('support.senderYou') : t('support.senderSupport')}
                       </span>
                       <div className={`${styles.messageBubble} ${msg.from === 'user' ? styles.bubbleUser : styles.bubbleSupport}`}>
                         {msg.text}
@@ -479,14 +443,12 @@ const Support: React.FC = () => {
 
                 <div className={styles.chatInputBar}>
                   {activeConvo.status === 'resolved' ? (
-                    <p className={styles.resolvedNote}>
-                      This conversation is resolved. Start a new chat to ask another question.
-                    </p>
+                    <p className={styles.resolvedNote}>{t('support.resolvedNote')}</p>
                   ) : (
                     <>
                       <textarea
                         className={styles.chatInput}
-                        placeholder="Type a message… (Enter to send)"
+                        placeholder={t('support.chatInputPlaceholder')}
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={handleChatInputKeyDown}
@@ -504,7 +466,7 @@ const Support: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className={styles.emptyChat}>Select a conversation to view messages.</div>
+              <div className={styles.emptyChat}>{t('support.emptyChat')}</div>
             )}
           </div>
         </div>
