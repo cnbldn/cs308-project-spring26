@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import styles from './ManagerDashboard.module.css';
 
@@ -40,6 +41,7 @@ type StockSort = 'default' | 'low-to-high' | 'high-to-low';
 
 
 const ManagerDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
   const isManager = user?.role === 'productManager';
@@ -77,7 +79,7 @@ const ManagerDashboard: React.FC = () => {
       setComments(res.data || []);
       setCommentsError('');
     } catch (err: any) {
-      setCommentsError(err.response?.data?.message || 'Could not load pending comments.');
+      setCommentsError(err.response?.data?.message || t('managerDashboard.loadCommentsError'));
     } finally {
       setCommentsLoading(false);
     }
@@ -90,7 +92,7 @@ const ManagerDashboard: React.FC = () => {
       setProducts(res.data || []);
       setProductsError('');
     } catch (err: any) {
-      setProductsError(err.response?.data?.message || 'Could not load products.');
+      setProductsError(err.response?.data?.message || t('managerDashboard.loadProductsError'));
     } finally {
       setProductsLoading(false);
     }
@@ -103,7 +105,7 @@ const ManagerDashboard: React.FC = () => {
       setOrders(res.data || []);
       setOrdersError('');
     } catch (err: any) {
-      setOrdersError(err.response?.data?.message || 'Could not load orders.');
+      setOrdersError(err.response?.data?.message || t('managerDashboard.loadOrdersError'));
     } finally {
       setOrdersLoading(false);
     }
@@ -121,8 +123,8 @@ const ManagerDashboard: React.FC = () => {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <h2>Access Denied</h2>
-          <p>This area is reserved for product managers.</p>
+          <h2>{t('managerDashboard.accessDeniedTitle')}</h2>
+          <p>{t('managerDashboard.accessDeniedMessage')}</p>
         </div>
       </div>
     );
@@ -137,7 +139,7 @@ const ManagerDashboard: React.FC = () => {
       });
       setComments((prev) => prev.filter((c) => c._id !== commentId));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Action failed.');
+      alert(err.response?.data?.message || t('managerDashboard.actionFailed'));
     } finally {
       setActingId(null);
     }
@@ -147,7 +149,7 @@ const ManagerDashboard: React.FC = () => {
     const draft = stockDrafts[productId];
     const value = Number(draft);
     if (!Number.isInteger(value) || value < 0) {
-      setRowFeedback({ id: productId, type: 'error', message: 'Stock must be a non-negative whole number.' });
+      setRowFeedback({ id: productId, type: 'error', message: t('managerDashboard.stockInvalid') });
       return;
     }
     setSavingId(productId);
@@ -160,12 +162,12 @@ const ManagerDashboard: React.FC = () => {
         delete next[productId];
         return next;
       });
-      setRowFeedback({ id: productId, type: 'success', message: 'Stock updated.' });
+      setRowFeedback({ id: productId, type: 'success', message: t('managerDashboard.stockUpdated') });
     } catch (err: any) {
       setRowFeedback({
         id: productId,
         type: 'error',
-        message: err.response?.data?.message || 'Update failed.',
+        message: err.response?.data?.message || t('managerDashboard.updateFailed'),
       });
     } finally {
       setSavingId(null);
@@ -175,15 +177,15 @@ const ManagerDashboard: React.FC = () => {
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
-      setRowFeedback({ id: orderId, type: 'success', message: 'Updating...' });
+      setRowFeedback({ id: orderId, type: 'success', message: t('managerDashboard.updating') });
       await axios.patch(`${API_BASE}/orders/${orderId}/status`, { status: newStatus });
       setOrders((prev) => prev.map((o) => (o._id === orderId ? { ...o, orderStatus: newStatus as any } : o)));
-      setRowFeedback({ id: orderId, type: 'success', message: 'Status updated.' });
+      setRowFeedback({ id: orderId, type: 'success', message: t('managerDashboard.statusUpdated') });
     } catch (err: any) {
       setRowFeedback({
         id: orderId,
         type: 'error',
-        message: err.response?.data?.message || 'Update failed.',
+        message: err.response?.data?.message || t('managerDashboard.updateFailed'),
       });
     } finally {
       setTimeout(() => setRowFeedback(null), 2500);
@@ -198,6 +200,19 @@ const ManagerDashboard: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
+
+  const orderStatusLabel = (status: ManagedOrder['orderStatus']) => {
+    switch (status) {
+      case 'processing':
+        return t('managerDashboard.statusProcessing');
+      case 'in-transit':
+        return t('managerDashboard.statusInTransit');
+      case 'delivered':
+        return t('managerDashboard.statusDelivered');
+      case 'cancelled':
+        return t('managerDashboard.statusCancelled');
+    }
+  };
 
   const categories = Array.from(
     new Set(products.map((p) => p.category).filter(Boolean)),
@@ -233,8 +248,8 @@ const ManagerDashboard: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Manager Dashboard</h1>
-        <p className={styles.subtitle}>Moderate comments, manage stock, and track deliveries.</p>
+        <h1 className={styles.title}>{t('managerDashboard.title')}</h1>
+        <p className={styles.subtitle}>{t('managerDashboard.subtitle')}</p>
       </header>
 
       <div className={styles.tabs}>
@@ -242,33 +257,33 @@ const ManagerDashboard: React.FC = () => {
           className={`${styles.tab} ${tab === 'comments' ? styles.tabActive : ''}`}
           onClick={() => setTab('comments')}
         >
-          Pending Comments
+          {t('managerDashboard.tabComments')}
           {comments.length > 0 && <span className={styles.badge}>{comments.length}</span>}
         </button>
         <button
           className={`${styles.tab} ${tab === 'stock' ? styles.tabActive : ''}`}
           onClick={() => setTab('stock')}
         >
-          Product Catalog
+          {t('managerDashboard.tabStock')}
         </button>
         <button
           className={`${styles.tab} ${tab === 'orders' ? styles.tabActive : ''}`}
           onClick={() => setTab('orders')}
         >
-          Orders & Delivery
+          {t('managerDashboard.tabOrders')}
         </button>
       </div>
 
       {tab === 'comments' && (
         <section className={styles.panel}>
           {commentsLoading ? (
-            <p className={styles.muted}>Loading pending comments...</p>
+            <p className={styles.muted}>{t('managerDashboard.loadingComments')}</p>
           ) : commentsError ? (
             <p className={styles.error}>{commentsError}</p>
           ) : comments.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>&#9989;</div>
-              <p>No pending comments. You're all caught up.</p>
+              <p>{t('managerDashboard.noComments')}</p>
             </div>
           ) : (
             <div className={styles.commentList}>
@@ -278,11 +293,11 @@ const ManagerDashboard: React.FC = () => {
                   <div key={c._id} className={styles.commentCard}>
                     <div className={styles.commentMeta}>
                       <div>
-                        <div className={styles.metaLabel}>Product</div>
+                        <div className={styles.metaLabel}>{t('managerDashboard.product')}</div>
                         <div className={styles.metaValue}>{c.product?.name ?? '—'}</div>
                       </div>
                       <div>
-                        <div className={styles.metaLabel}>Customer</div>
+                        <div className={styles.metaLabel}>{t('managerDashboard.customer')}</div>
                         <div className={styles.metaValue}>
                           {c.customer?.name ?? '—'}
                           {c.customerRating && (
@@ -293,7 +308,7 @@ const ManagerDashboard: React.FC = () => {
                         </div>
                       </div>
                       <div>
-                        <div className={styles.metaLabel}>Submitted</div>
+                        <div className={styles.metaLabel}>{t('managerDashboard.submitted')}</div>
                         <div className={styles.metaValue}>{formatDate(c.createdAt)}</div>
                       </div>
                     </div>
@@ -304,14 +319,14 @@ const ManagerDashboard: React.FC = () => {
                         disabled={isActing}
                         onClick={() => handleDecision(c._id, 'approved')}
                       >
-                        {isActing ? '...' : 'Approve'}
+                        {isActing ? '...' : t('managerDashboard.approve')}
                       </button>
                       <button
                         className={styles.rejectButton}
                         disabled={isActing}
                         onClick={() => handleDecision(c._id, 'rejected')}
                       >
-                        {isActing ? '...' : 'Reject'}
+                        {isActing ? '...' : t('managerDashboard.reject')}
                       </button>
                     </div>
                   </div>
@@ -328,7 +343,7 @@ const ManagerDashboard: React.FC = () => {
             <input
               type="text"
               className={styles.searchInput}
-              placeholder="Search by name, category, model, or serial #..."
+              placeholder={t('managerDashboard.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -338,7 +353,7 @@ const ManagerDashboard: React.FC = () => {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <option value="all">All Categories</option>
+              <option value="all">{t('managerDashboard.allCategories')}</option>
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -351,18 +366,18 @@ const ManagerDashboard: React.FC = () => {
               value={stockSort}
               onChange={(e) => setStockSort(e.target.value as StockSort)}
             >
-              <option value="default">Default Sort</option>
-              <option value="low-to-high">Low to High</option>
-              <option value="high-to-low">High to Low</option>
+              <option value="default">{t('managerDashboard.sortDefault')}</option>
+              <option value="low-to-high">{t('managerDashboard.sortLowToHigh')}</option>
+              <option value="high-to-low">{t('managerDashboard.sortHighToLow')}</option>
             </select>
 
             <span className={styles.muted}>
-              {filteredProducts.length} of {products.length} products
+              {t('managerDashboard.productsCount', { filtered: filteredProducts.length, total: products.length })}
             </span>
           </div>
 
           {productsLoading ? (
-            <p className={styles.muted}>Loading products...</p>
+            <p className={styles.muted}>{t('managerDashboard.loadingProducts')}</p>
           ) : productsError ? (
             <p className={styles.error}>{productsError}</p>
           ) : (
@@ -370,11 +385,11 @@ const ManagerDashboard: React.FC = () => {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Current Stock</th>
-                    <th>New Stock</th>
+                    <th>{t('managerDashboard.product')}</th>
+                    <th>{t('managerDashboard.category')}</th>
+                    <th>{t('managerDashboard.price')}</th>
+                    <th>{t('managerDashboard.currentStock')}</th>
+                    <th>{t('managerDashboard.newStock')}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -419,7 +434,7 @@ const ManagerDashboard: React.FC = () => {
                             disabled={!hasDraft || isSaving}
                             onClick={() => handleStockSave(p._id)}
                           >
-                            {isSaving ? 'Saving...' : 'Save'}
+                            {isSaving ? t('managerDashboard.saving') : t('managerDashboard.save')}
                           </button>
                           {feedback && (
                             <span
@@ -444,24 +459,24 @@ const ManagerDashboard: React.FC = () => {
       {tab === 'orders' && (
         <section className={styles.panel}>
           {ordersLoading ? (
-            <p className={styles.muted}>Loading orders...</p>
+            <p className={styles.muted}>{t('managerDashboard.loadingOrders')}</p>
           ) : ordersError ? (
             <p className={styles.error}>{ordersError}</p>
           ) : orders.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>No orders have been placed yet.</p>
+              <p>{t('managerDashboard.noOrders')}</p>
             </div>
           ) : (
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Placed At</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Update Status</th>
+                    <th>{t('managerDashboard.orderId')}</th>
+                    <th>{t('managerDashboard.customer')}</th>
+                    <th>{t('managerDashboard.placedAt')}</th>
+                    <th>{t('managerDashboard.amount')}</th>
+                    <th>{t('managerDashboard.status')}</th>
+                    <th>{t('managerDashboard.updateStatus')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -480,7 +495,7 @@ const ManagerDashboard: React.FC = () => {
                         <td>${o.totalAmount.toFixed(2)}</td>
                         <td>
                           <span className={`${styles[`status_${statusKey}`]}`} style={{ fontWeight: 600 }}>
-                            {o.orderStatus.charAt(0).toUpperCase() + o.orderStatus.slice(1).replace('-', ' ')}
+                            {orderStatusLabel(o.orderStatus)}
                           </span>
                         </td>
                         <td>
@@ -491,10 +506,10 @@ const ManagerDashboard: React.FC = () => {
                               disabled={o.orderStatus === 'cancelled'}
                               onChange={(e) => handleStatusUpdate(o._id, e.target.value)}
                             >
-                              <option value="processing">Processing</option>
-                              <option value="in-transit">In Transit</option>
-                              <option value="delivered">Delivered</option>
-                              <option value="cancelled" disabled>Cancelled</option>
+                              <option value="processing">{t('managerDashboard.statusProcessing')}</option>
+                              <option value="in-transit">{t('managerDashboard.statusInTransit')}</option>
+                              <option value="delivered">{t('managerDashboard.statusDelivered')}</option>
+                              <option value="cancelled" disabled>{t('managerDashboard.statusCancelled')}</option>
                             </select>
                             {feedback && (
                               <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>

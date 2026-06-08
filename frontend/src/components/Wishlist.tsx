@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import styles from './Wishlist.module.css';
 
@@ -19,6 +20,7 @@ interface WishlistItem {
 }
 
 const Wishlist: React.FC = () => {
+  const { t } = useTranslation();
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
@@ -33,7 +35,7 @@ const Wishlist: React.FC = () => {
       const res = await axios.get(`${API_BASE}/wishlist/${user.id || user._id}`);
       setItems(res.data || []);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load wishlist.');
+      setError(err.response?.data?.message || t('wishlist.loadError'));
     } finally {
       setLoading(false);
     }
@@ -48,28 +50,31 @@ const Wishlist: React.FC = () => {
       await axios.delete(`${API_BASE}/wishlist/${user.id || user._id}/remove/${productId}`);
       setItems((prev) => prev.filter((item) => item.product._id !== productId));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to remove item.');
+      alert(err.response?.data?.message || t('wishlist.removeFailed'));
     }
   };
 
   if (!user) return <Navigate to="/login" replace />;
 
+  const translateCategory = (category: string) =>
+    t(`shop.categoryLabels.${category}`, { defaultValue: category });
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>My Wishlist</h1>
-        <p className={styles.subtitle}>Items you've saved for later.</p>
+        <h1 className={styles.title}>{t('wishlist.title')}</h1>
+        <p className={styles.subtitle}>{t('wishlist.subtitle')}</p>
       </header>
 
       {loading ? (
-        <p className={styles.message}>Loading your wishlist...</p>
+        <p className={styles.message}>{t('wishlist.loading')}</p>
       ) : error ? (
         <p className={styles.error}>{error}</p>
       ) : items.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>&#9825;</div>
-          <p>Your wishlist is empty.</p>
-          <Link to="/shop" className={styles.shopLink}>Browse Products</Link>
+          <p>{t('wishlist.empty')}</p>
+          <Link to="/shop" className={styles.shopLink}>{t('wishlist.browseProducts')}</Link>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -87,21 +92,21 @@ const Wishlist: React.FC = () => {
                   />
                 </Link>
                 <div className={styles.content}>
-                  <p className={styles.category}>{product.category}</p>
+                  <p className={styles.category}>{translateCategory(product.category)}</p>
                   <h3 className={styles.name}>{product.name}</h3>
                   <p className={styles.price}>${product.price.toFixed(2)}</p>
                   <p className={`${styles.stock} ${product.stock === 0 ? styles.outOfStock : ''}`}>
-                    {product.stock === 0 ? 'Out of Stock' : `In Stock: ${product.stock}`}
+                    {product.stock === 0 ? t('wishlist.outOfStock') : t('wishlist.inStock', { count: product.stock })}
                   </p>
                   <div className={styles.actions}>
                     <button
                       className={styles.removeButton}
                       onClick={() => handleRemove(product._id)}
                     >
-                      Remove
+                      {t('wishlist.remove')}
                     </button>
                     <Link to={`/product/${product._id}`} className={styles.viewButton}>
-                      View Details
+                      {t('wishlist.viewDetails')}
                     </Link>
                   </div>
                 </div>
