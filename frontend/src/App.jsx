@@ -14,6 +14,7 @@ import OrderHistory from './components/OrderHistory';
 import ManagerDashboard from './components/ManagerDashboard';
 import SalesManagerDashboard from './components/SalesManagerDashboard';
 import Wishlist from './components/Wishlist';
+import Support from './components/Support';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/support" element={<Support />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
