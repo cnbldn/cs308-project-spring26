@@ -11,8 +11,24 @@ interface ManagedProduct {
   price: number;
   basePrice: number;
   discountRate: number;
+  discountStart?: string | null;
+  discountEnd?: string | null;
   stock: number;
 }
+
+type PriceDraft = {
+  basePrice?: string;
+  discountRate?: string;
+  discountStart?: string;
+  discountEnd?: string;
+};
+
+const toDateInputValue = (iso: string | null | undefined): string => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toISOString().slice(0, 10);
+};
 
 interface Financials {
   count: number;
@@ -50,7 +66,7 @@ const SalesManagerDashboard: React.FC = () => {
   // Pricing State
   const [products, setProducts] = useState<ManagedProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [priceDrafts, setPriceDrafts] = useState<Record<string, { basePrice?: string; discountRate?: string }>>({});
+  const [priceDrafts, setPriceDrafts] = useState<Record<string, PriceDraft>>({});
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Financials State
@@ -183,6 +199,13 @@ const SalesManagerDashboard: React.FC = () => {
     return Math.max(0, basePrice * (1 - discountRate / 100));
   };
 
+  const getDraftDates = (product: ManagedProduct) => {
+    const draft = priceDrafts[product._id] || {};
+    const start = draft.discountStart !== undefined ? draft.discountStart : toDateInputValue(product.discountStart);
+    const end = draft.discountEnd !== undefined ? draft.discountEnd : toDateInputValue(product.discountEnd);
+    return { start, end };
+  };
+
   const getPriceValidationError = (product: ManagedProduct) => {
     const draft = priceDrafts[product._id];
 
@@ -195,6 +218,11 @@ const SalesManagerDashboard: React.FC = () => {
     if (basePrice < 0) return 'Base price cannot be negative.';
     if (discountRate < 0 || discountRate > 100) return 'Discount must be between 0 and 100.';
 
+    const { start, end } = getDraftDates(product);
+    if (start && end && new Date(end).getTime() < new Date(start).getTime()) {
+      return 'End date must be on or after start date.';
+    }
+
     return null;
   };
 
@@ -204,10 +232,15 @@ const SalesManagerDashboard: React.FC = () => {
     if (!draft) return false;
 
     const { basePrice, discountRate } = getDraftValues(product);
+    const { start, end } = getDraftDates(product);
+    const originalStart = toDateInputValue(product.discountStart);
+    const originalEnd = toDateInputValue(product.discountEnd);
 
     return (
       basePrice !== Number(product.basePrice ?? product.price ?? 0) ||
-      discountRate !== Number(product.discountRate ?? 0)
+      discountRate !== Number(product.discountRate ?? 0) ||
+      start !== originalStart ||
+      end !== originalEnd
     );
   };
 
@@ -232,6 +265,7 @@ const SalesManagerDashboard: React.FC = () => {
     if (!hasPriceChanges(product)) return;
 
     const { basePrice, discountRate } = getDraftValues(product);
+    const { start, end } = getDraftDates(product);
 
     setUpdatingId(productId);
 
@@ -239,6 +273,8 @@ const SalesManagerDashboard: React.FC = () => {
       const res = await axios.patch(`${API_BASE}/products/${productId}/price`, {
         basePrice,
         discountRate,
+        discountStart: start === '' ? null : start,
+        discountEnd: end === '' ? null : end,
       });
 
       const updated = res.data.product;
@@ -330,6 +366,8 @@ const SalesManagerDashboard: React.FC = () => {
                     <th>Product</th>
                     <th>Base Price ($)</th>
                     <th>Discount (%)</th>
+                    <th>Starts</th>
+                    <th>Ends</th>
                     <th>Final Price</th>
                     <th>Action</th>
                   </tr>
@@ -374,6 +412,32 @@ const SalesManagerDashboard: React.FC = () => {
                               setPriceDrafts(prev => ({
                                 ...prev,
                                 [p._id]: { ...draft, discountRate: e.target.value }
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="date"
+                            className={styles.dateInput}
+                            value={draft.discountStart ?? toDateInputValue(p.discountStart)}
+                            onChange={(e) =>
+                              setPriceDrafts(prev => ({
+                                ...prev,
+                                [p._id]: { ...draft, discountStart: e.target.value }
+                              }))
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="date"
+                            className={styles.dateInput}
+                            value={draft.discountEnd ?? toDateInputValue(p.discountEnd)}
+                            onChange={(e) =>
+                              setPriceDrafts(prev => ({
+                                ...prev,
+                                [p._id]: { ...draft, discountEnd: e.target.value }
                               }))
                             }
                           />
