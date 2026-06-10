@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { decryptField, encryptField } = require('../utils/encryption');
 
 const orderItemSchema = new mongoose.Schema(
   {
@@ -129,7 +130,9 @@ const orderSchema = new mongoose.Schema(
     deliveryAddress: {
       type: String,
       required: [true, 'Delivery address is required'],
-      trim: true
+      trim: true,
+      set: encryptField,
+      get: decryptField
     },
     mockPaymentReference: {
       type: String,
@@ -148,7 +151,9 @@ const orderSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { getters: true },
+    toObject: { getters: true }
   }
 );
 
