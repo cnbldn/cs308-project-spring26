@@ -11,12 +11,25 @@ interface WishlistItem {
     _id: string;
     name: string;
     price: number;
+    basePrice?: number;
+    discountedPrice?: number;
+    discountRate?: number;
+    discountStart?: string | null;
+    discountEnd?: string | null;
     imageUrl?: string | null;
     stock: number;
     category: string;
   };
   addedAt: string;
 }
+
+const isLiveDiscount = (p: WishlistItem['product']): boolean => {
+  if (!p.discountRate || p.discountRate <= 0) return false;
+  const now = Date.now();
+  if (p.discountStart && new Date(p.discountStart).getTime() > now) return false;
+  if (p.discountEnd && new Date(p.discountEnd).getTime() < now) return false;
+  return true;
+};
 
 const Wishlist: React.FC = () => {
   const userStr = localStorage.getItem('user');
@@ -77,11 +90,23 @@ const Wishlist: React.FC = () => {
             const product = item.product;
             if (!product) return null;
 
+            const onSale = isLiveDiscount(product);
+            const basePrice = product.basePrice ?? product.price;
+            const livePrice = onSale ? (product.discountedPrice ?? product.price) : product.price;
+            const daysLeft = onSale && product.discountEnd
+              ? Math.max(0, Math.ceil((new Date(product.discountEnd).getTime() - Date.now()) / 86400000))
+              : null;
+
             return (
               <div key={item._id} className={styles.card}>
+                {onSale && (
+                  <span className={styles.discountBadge}>
+                    -{Math.round(product.discountRate ?? 0)}%
+                  </span>
+                )}
                 <Link to={`/product/${product._id}`} className={styles.imageLink}>
                   <img
-                    src={product.imageUrl || 'https://placehold.co/300x300?text=No+Image'}
+                    src={product.imageUrl || 'https://placehold.co/300x300/161210/ffd700?text=No+Image'}
                     alt={product.name}
                     className={styles.image}
                   />
@@ -89,7 +114,17 @@ const Wishlist: React.FC = () => {
                 <div className={styles.content}>
                   <p className={styles.category}>{product.category}</p>
                   <h3 className={styles.name}>{product.name}</h3>
-                  <p className={styles.price}>${product.price.toFixed(2)}</p>
+                  <div className={styles.priceRow}>
+                    {onSale && (
+                      <span className={styles.originalPrice}>${basePrice.toFixed(2)}</span>
+                    )}
+                    <span className={styles.price}>${livePrice.toFixed(2)}</span>
+                  </div>
+                  {daysLeft !== null && (
+                    <p className={styles.daysLeft}>
+                      {daysLeft === 0 ? 'Ends today!' : daysLeft === 1 ? '1 day left' : `${daysLeft} days left`}
+                    </p>
+                  )}
                   <p className={`${styles.stock} ${product.stock === 0 ? styles.outOfStock : ''}`}>
                     {product.stock === 0 ? 'Out of Stock' : `In Stock: ${product.stock}`}
                   </p>

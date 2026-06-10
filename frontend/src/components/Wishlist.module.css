@@ -87,6 +87,7 @@
 }
 
 .card {
+  position: relative;
   background: #161210;
   border: 1px solid #3a3225;
   border-radius: 6px;
@@ -99,6 +100,21 @@
 .card:hover {
   border-color: #d4a017;
   transform: translateY(-2px);
+}
+
+.discountBadge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 2;
+  background: #c0392b;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .imageLink {
@@ -147,11 +163,30 @@
   min-height: 2.3em;
 }
 
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0 0 0.35rem 0;
+}
+
 .price {
   color: #d4a017;
   font-size: 0.98rem;
   font-weight: 700;
-  margin: 0 0 0.35rem 0;
+}
+
+.originalPrice {
+  color: #8a7e6f;
+  font-size: 0.85rem;
+  text-decoration: line-through;
+}
+
+.daysLeft {
+  color: #c0392b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: -0.1rem 0 0.4rem 0;
 }
 
 .stock {
