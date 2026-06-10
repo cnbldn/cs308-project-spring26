@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { decryptField, encryptField } = require("../utils/encryption");
 
 const wishlistItemSchema = new mongoose.Schema(
   {
@@ -79,11 +80,15 @@ const customerSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+      set: encryptField,
+      get: decryptField,
     },
     homeAddress: {
       type: String,
       required: [true, "Home address is required"],
       trim: true,
+      set: encryptField,
+      get: decryptField,
     },
     wishlist: {
       type: [wishlistItemSchema],
@@ -98,7 +103,11 @@ const customerSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { getters: true },
+    toObject: { getters: true },
+  }
 );
 
 // 🔐 Hash password before saving
