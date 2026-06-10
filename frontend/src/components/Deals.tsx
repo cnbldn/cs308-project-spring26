@@ -56,12 +56,6 @@ const normalize = (raw: RawProduct): Deal => ({
   totalRatings: raw.totalRatings ?? 0,
 });
 
-const isLiveDeal = (p: Deal): boolean => {
-  if (p.discountRate <= 0) return false;
-  if (p.discountEnd && new Date(p.discountEnd).getTime() < Date.now()) return false;
-  return true;
-};
-
 const getSessionId = () => {
   let sessionId = localStorage.getItem('sessionId');
   if (!sessionId) {
@@ -94,11 +88,13 @@ const Deals: React.FC = () => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          axios.get<RawProduct[]>(`${API_BASE}/products`),
-          axios.get<string[]>(`${API_BASE}/products/categories`).catch(() => ({ data: [] as string[] })),
+        const [dealsRes, categoriesRes] = await Promise.all([
+          axios.get<RawProduct[]>(`${API_BASE}/products/deals`),
+          axios
+            .get<string[]>(`${API_BASE}/products/deals/categories`)
+            .catch(() => ({ data: [] as string[] })),
         ]);
-        setDeals(productsRes.data.map(normalize).filter(isLiveDeal));
+        setDeals(dealsRes.data.map(normalize));
         setCategories(categoriesRes.data);
         setError('');
       } catch (err) {
@@ -174,7 +170,9 @@ const Deals: React.FC = () => {
       return 0;
     });
 
-  const activeCategories = categories.filter((cat) => deals.some((d) => d.category === cat));
+  const activeCategories = categories.length > 0
+    ? categories
+    : Array.from(new Set(deals.map((d) => d.category)));
 
   return (
     <div className={styles.shopContainer}>
@@ -195,7 +193,7 @@ const Deals: React.FC = () => {
                 {t('deals.allDeals', { defaultValue: 'All Deals' })}
               </button>
             </li>
-            {activeCategories.map((cat) => (
+            {[...activeCategories].sort().map((cat) => (
               <li key={cat} className={styles.categoryItem}>
                 <button
                   className={`${styles.categoryButton} ${selectedCategory === cat ? styles.activeCategory : ''}`}
