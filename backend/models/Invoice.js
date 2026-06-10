@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { decryptField, encryptField } = require('../utils/encryption');
 
 const invoiceItemSchema = new mongoose.Schema(
   {
@@ -69,7 +70,9 @@ const invoiceSchema = new mongoose.Schema(
     billingAddress: {
       type: String,
       required: [true, 'Billing address is required'],
-      trim: true
+      trim: true,
+      set: encryptField,
+      get: decryptField
     },
     items: {
       type: [invoiceItemSchema],
@@ -121,7 +124,9 @@ const invoiceSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { getters: true },
+    toObject: { getters: true }
   }
 );
 
