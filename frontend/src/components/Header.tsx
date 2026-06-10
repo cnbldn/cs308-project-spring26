@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
 import { useCart } from '../context/CartContext';
+import NotificationBell from './NotificationBell';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -27,17 +28,20 @@ const Header: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Link to="/wishlist" className={styles.navLink}>Wishlist</Link>
             <Link to="/orders" className={styles.navLink}>Orders</Link>
-            
+
             {user.role === 'productManager' && (
               <Link to="/manager" className={styles.navLink}>Manager</Link>
             )}
             {user.role === 'salesManager' && (
               <Link to="/sales-manager" className={styles.navLink}>Sales</Link>
             )}
+            {(user.id || user._id) && (
+              <NotificationBell customerId={user.id || user._id} />
+            )}
             <span className={styles.userGreeting}>
               {t('header.hello')}, {user.name || user.email.split('@')[0]}
             </span>
-            
+
             <Link to="/account" className={styles.signInButton}>
               {t('account.myAccount')}
             </Link>
