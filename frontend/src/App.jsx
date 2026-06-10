@@ -7,6 +7,7 @@ import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Cart from './components/Cart';
 import Shop from './components/Shop';
+import Deals from './components/Deals';
 import ProductDetail from './components/ProductDetail';
 import Checkout from './components/Checkout';
 import Account from './components/Account';
@@ -27,6 +28,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/deals" element={<Deals />} />
           <Route path="/product/:id" element={<ProductDetail />} />
 
           {/* Protected Routes */}
