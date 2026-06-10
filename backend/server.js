@@ -16,6 +16,7 @@ const cartRoutes = require('./routes/cart');
 const reviewRoutes = require('./routes/reviews');
 const orderRoutes = require('./routes/orders');
 const wishlistRoutes = require('./routes/wishlist');
+const notificationRoutes = require('./routes/notifications');
 
 // Register Routes
 app.use('/api/auth', authRoutes);
@@ -24,6 +25,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // basic health-check route
 app.get('/', (req, res) => {
