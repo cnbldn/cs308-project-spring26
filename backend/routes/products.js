@@ -190,7 +190,7 @@ router.patch('/:id/stock', async (req, res) => {
  */
 router.patch('/:id/price', async (req, res) => {
     try {
-        const { basePrice, discountRate } = req.body;
+        const { basePrice, discountRate, discountStart, discountEnd } = req.body;
         const productId = req.params.id;
 
         const product = await Product.findById(productId);
@@ -201,7 +201,35 @@ router.patch('/:id/price', async (req, res) => {
         if (basePrice !== undefined) product.basePrice = basePrice;
         if (discountRate !== undefined) product.discountRate = discountRate;
 
+        const parseOptionalDate = (raw, label) => {
+            if (raw === undefined) return undefined;
+            if (raw === null || raw === '') return null;
+            const d = new Date(raw);
+            if (Number.isNaN(d.getTime())) {
+                throw new Error(`${label} is not a valid date.`);
+            }
+            return d;
+        };
+
+        let parsedStart, parsedEnd;
+        try {
+            parsedStart = parseOptionalDate(discountStart, 'discountStart');
+            parsedEnd = parseOptionalDate(discountEnd, 'discountEnd');
+        } catch (validationErr) {
+            return res.status(400).json({ message: validationErr.message });
+        }
+
+        const finalStart = parsedStart !== undefined ? parsedStart : product.discountStart;
+        const finalEnd = parsedEnd !== undefined ? parsedEnd : product.discountEnd;
+        if (finalStart && finalEnd && finalEnd.getTime() < finalStart.getTime()) {
+            return res.status(400).json({ message: 'discountEnd must be on or after discountStart.' });
+        }
+
+        if (parsedStart !== undefined) product.discountStart = parsedStart;
+        if (parsedEnd !== undefined) product.discountEnd = parsedEnd;
+
         // The pre('validate') hook in Product.js handles computing price/discountedPrice
+        // and clears discountStart/discountEnd when discountRate is 0.
         await product.save();
 
         // Notify users if a discount was added/increased (Requirement #11)
