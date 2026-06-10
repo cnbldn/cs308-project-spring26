@@ -80,6 +80,75 @@ router.get('/categories', async (req, res) => {
     }
 });
 
+// GET ACTIVE DEALS
+// Returns products whose discount is currently live (Requirement #11 — customer-facing).
+// Filters: discountRate > 0, discountStart <= now (or null), discountEnd >= now (or null).
+router.get('/deals', async (req, res) => {
+    try {
+        const { category, sort } = req.query;
+        const now = new Date();
+
+        const query = {
+            discountRate: { $gt: 0 },
+            $and: [
+                { $or: [{ discountStart: null }, { discountStart: { $lte: now } }] },
+                { $or: [{ discountEnd: null }, { discountEnd: { $gte: now } }] }
+            ]
+        };
+
+        if (category) query.category = category;
+
+        let apiQuery = Product.find(query);
+
+        if (sort === 'price_asc') {
+            apiQuery = apiQuery.sort({ price: 1 });
+        } else if (sort === 'price_desc') {
+            apiQuery = apiQuery.sort({ price: -1 });
+        } else if (sort === 'ending_soon') {
+            // Mongo sorts nulls first in ascending; we re-sort below to push them last.
+            apiQuery = apiQuery.sort({ discountEnd: 1 });
+        } else {
+            // Default: biggest discount first
+            apiQuery = apiQuery.sort({ discountRate: -1 });
+        }
+
+        let products = await apiQuery;
+
+        if (sort === 'ending_soon') {
+            products = [...products].sort((a, b) => {
+                const aEnd = a.discountEnd ? a.discountEnd.getTime() : Infinity;
+                const bEnd = b.discountEnd ? b.discountEnd.getTime() : Infinity;
+                return aEnd - bEnd;
+            });
+        }
+
+        const enriched = await attachRatings(products);
+        res.status(200).json(enriched);
+    } catch (err) {
+        console.error("Error fetching deals:", err);
+        res.status(500).json({ message: "Failed to fetch deals" });
+    }
+});
+
+// GET CATEGORIES THAT HAVE ACTIVE DEALS
+// Lets the Deals sidebar show only categories with live discounts.
+router.get('/deals/categories', async (req, res) => {
+    try {
+        const now = new Date();
+        const categories = await Product.distinct('category', {
+            discountRate: { $gt: 0 },
+            $and: [
+                { $or: [{ discountStart: null }, { discountStart: { $lte: now } }] },
+                { $or: [{ discountEnd: null }, { discountEnd: { $gte: now } }] }
+            ]
+        });
+        res.status(200).json(categories);
+    } catch (err) {
+        console.error("Error fetching deal categories:", err);
+        res.status(500).json({ message: "Failed to fetch deal categories" });
+    }
+});
+
 // GET PRODUCT BY ID
 router.get('/:id', async (req, res) => {
     try {
