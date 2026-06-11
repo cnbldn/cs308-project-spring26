@@ -533,4 +533,24 @@ router.get('/invoices-list', async (req, res) => {
     }
 });
 
+/**
+ * @route GET /api/orders/:orderId/invoice
+ * @desc Find invoice for an order and return PDF (Requirement #12)
+ */
+router.get('/:orderId/invoice', async (req, res) => {
+    try {
+        const invoice = await Invoice.findOne({ order: req.params.orderId }).populate('customer', 'name taxId');
+        if (!invoice) return res.status(404).json({ message: "Invoice not found for this order." });
+
+        const pdfBuffer = await generateInvoicePDFBuffer(invoice);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`);
+        res.send(pdfBuffer);
+    } catch (err) {
+        console.error("PDF fetch error:", err);
+        res.status(500).json({ message: "Failed to fetch invoice" });
+    }
+});
+
 module.exports = router;
