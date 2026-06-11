@@ -35,7 +35,12 @@ interface ManagedOrder {
   items: any[];
 }
 
-type Tab = 'comments' | 'stock' | 'orders';
+interface Category {
+  _id: string;
+  name: string;
+}
+
+type Tab = 'comments' | 'stock' | 'orders' | 'categories';
 type StockSort = 'default' | 'low-to-high' | 'high-to-low';
 
 
@@ -63,6 +68,9 @@ const ManagerDashboard: React.FC = () => {
   const [ordersError, setOrdersError] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+
   const [rowFeedback, setRowFeedback] = useState<{
     id: string;
     type: 'success' | 'error';
@@ -71,6 +79,34 @@ const ManagerDashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [stockSort, setStockSort] = useState<StockSort>('default');
+
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    description: '',
+    model: '',
+    serialNumber: '',
+    price: '',
+    stock: '',
+    category: '',
+    distributorInfo: { name: '', contactEmail: '', country: '' }
+  });
+
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  const fetchCategories = async () => {
+    try {
+      setCategoriesLoading(true);
+      const res = await axios.get(`${API_BASE}/products/categories`);
+      // The backend returns strings if empty, objects if not. Normalize to objects.
+      const normalized = res.data.map((c: any) => typeof c === 'string' ? { _id: c, name: c } : c);
+      setCategories(normalized);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
   const fetchPending = async () => {
     try {
@@ -116,6 +152,7 @@ const ManagerDashboard: React.FC = () => {
     fetchPending();
     fetchProducts();
     fetchOrders();
+    fetchCategories();
   }, [isManager]);
 
   if (!user) return <Navigate to="/login" replace />;
@@ -129,6 +166,60 @@ const ManagerDashboard: React.FC = () => {
       </div>
     );
   }
+
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API_BASE}/products`, newProduct);
+      setShowAddProduct(false);
+      setNewProduct({
+        name: '',
+        description: '',
+        model: '',
+        serialNumber: '',
+        price: '',
+        stock: '',
+        category: '',
+        distributorInfo: { name: '', contactEmail: '', country: '' }
+      });
+      fetchProducts();
+      alert('Product added successfully!');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to add product.');
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await axios.delete(`${API_BASE}/products/${id}`);
+      fetchProducts();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to delete product.');
+    }
+  };
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    try {
+      await axios.post(`${API_BASE}/products/categories`, { name: newCategoryName });
+      setNewCategoryName('');
+      fetchCategories();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to add category.');
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    try {
+      await axios.delete(`${API_BASE}/products/categories/${id}`);
+      fetchCategories();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to delete category.');
+    }
+  };
 
   const handleDecision = async (commentId: string, status: 'approved' | 'rejected') => {
     setActingId(commentId);
@@ -259,7 +350,25 @@ const ManagerDashboard: React.FC = () => {
         >
           Orders & Delivery
         </button>
+        <button
+          className={`${styles.tab} ${tab === 'categories' ? styles.tabActive : ''}`}
+          onClick={() => setTab('categories')}
+        >
+          Categories
+        </button>
       </div>
+
+      {tab === 'stock' && (
+        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+          <button 
+            className={styles.saveButton} 
+            onClick={() => setShowAddProduct(true)}
+            style={{ padding: '0.8rem 1.5rem' }}
+          >
+            + Add New Product
+          </button>
+        </div>
+      )}
 
       {tab === 'comments' && (
         <section className={styles.panel}>
@@ -342,8 +451,8 @@ const ManagerDashboard: React.FC = () => {
             >
               <option value="all">All Categories</option>
               {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+                <option key={category._id} value={category.name}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -422,6 +531,13 @@ const ManagerDashboard: React.FC = () => {
                             onClick={() => handleStockSave(p._id)}
                           >
                             {isSaving ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            className={styles.rejectButton}
+                            style={{ padding: '0.4rem 0.6rem', fontSize: '0.75rem' }}
+                            onClick={() => handleDeleteProduct(p._id)}
+                          >
+                            Delete
                           </button>
                           {feedback && (
                             <span
@@ -608,6 +724,198 @@ const ManagerDashboard: React.FC = () => {
             </div>
           )}
         </section>
+      )}
+
+      {tab === 'categories' && (
+        <section className={styles.panel}>
+          <form onSubmit={handleAddCategory} style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+            <input
+              type="text"
+              className={styles.stockInput}
+              style={{ flex: 1, padding: '0.8rem' }}
+              placeholder="New Category Name..."
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+            />
+            <button type="submit" className={styles.saveButton}>Add Category</button>
+          </form>
+
+          {categoriesLoading ? (
+            <p className={styles.muted}>Loading categories...</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Category Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categories.map((cat) => (
+                    <tr key={cat._id}>
+                      <td style={{ fontWeight: 600 }}>{cat.name}</td>
+                      <td>
+                        <button
+                          className={styles.rejectButton}
+                          onClick={() => handleDeleteCategory(cat._id)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {showAddProduct && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0,0,0,0.85)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '2rem'
+        }}>
+          <div style={{
+            background: '#161210',
+            border: '1px solid #3a3225',
+            borderRadius: '12px',
+            padding: '2rem',
+            width: '100%',
+            maxHeight: '90vh',
+            maxWidth: '600px',
+            overflowY: 'auto'
+          }}>
+            <h2 style={{ color: '#ffd700', marginTop: 0 }}>Add New Product</h2>
+            <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Name</label>
+                  <input
+                    type="text"
+                    required
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Category</label>
+                  <select
+                    required
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Model</label>
+                  <input
+                    type="text"
+                    required
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.model}
+                    onChange={(e) => setNewProduct({ ...newProduct, model: e.target.value })}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Serial Number</label>
+                  <input
+                    type="text"
+                    required
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.serialNumber}
+                    onChange={(e) => setNewProduct({ ...newProduct, serialNumber: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Description</label>
+                <textarea
+                  required
+                  style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8', minHeight: '80px' }}
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Price ($)</label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    step={0.01}
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Stock Quantity</label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    step={1}
+                    style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ border: '1px solid #3a3225', padding: '1rem', borderRadius: '8px', background: '#120f0d' }}>
+                <h4 style={{ color: '#ffd700', marginTop: 0, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Distributor Information</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className={styles.field}>
+                    <label style={{ color: '#8a7d62', fontSize: '0.7rem' }}>Distributor Name</label>
+                    <input
+                      type="text"
+                      required
+                      style={{ width: '100%', padding: '0.5rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8', fontSize: '0.8rem' }}
+                      value={newProduct.distributorInfo.name}
+                      onChange={(e) => setNewProduct({ ...newProduct, distributorInfo: { ...newProduct.distributorInfo, name: e.target.value } })}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label style={{ color: '#8a7d62', fontSize: '0.7rem' }}>Contact Email</label>
+                    <input
+                      type="email"
+                      required
+                      style={{ width: '100%', padding: '0.5rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8', fontSize: '0.8rem' }}
+                      value={newProduct.distributorInfo.contactEmail}
+                      onChange={(e) => setNewProduct({ ...newProduct, distributorInfo: { ...newProduct.distributorInfo, contactEmail: e.target.value } })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="submit" className={styles.saveButton} style={{ flex: 1 }}>Create Product</button>
+                <button type="button" className={styles.rejectButton} style={{ flex: 1 }} onClick={() => setShowAddProduct(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

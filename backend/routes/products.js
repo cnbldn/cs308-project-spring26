@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const Rating = require('../models/Rating');
 const Customer = require('../models/Customer');
+const Category = require('../models/Category');
 
 const attachRatings = async (products) => {
     const ids = products.map((p) => p._id);
@@ -69,14 +70,82 @@ router.get('/', async (req, res) => {
     }
 });
 
+/**
+ * @route POST /api/products
+ * @desc Create a new product (Requirement #12)
+ */
+router.post('/', async (req, res) => {
+    try {
+        const newProduct = new Product(req.body);
+        await newProduct.save();
+        res.status(201).json({ message: "Product created successfully", product: newProduct });
+    } catch (err) {
+        console.error("Product creation error:", err);
+        res.status(400).json({ message: err.message });
+    }
+});
+
+/**
+ * @route DELETE /api/products/:id
+ * @desc Remove a product (Requirement #12)
+ */
+router.delete('/:id', async (req, res) => {
+    try {
+        const product = await Product.findByIdAndDelete(req.params.id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        res.status(200).json({ message: "Product removed successfully" });
+    } catch (err) {
+        console.error("Product deletion error:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // GET UNIQUE CATEGORIES
 // Used to populate the sidebar (Requirement #1)
 router.get('/categories', async (req, res) => {
     try {
-        const categories = await Product.distinct('category');
+        const categories = await Category.find().sort({ name: 1 });
+        // If categories collection is empty, fall back to distinct categories in products
+        if (categories.length === 0) {
+            const distinct = await Product.distinct('category');
+            return res.status(200).json(distinct.map(name => ({ name })));
+        }
         res.status(200).json(categories);
     } catch (err) {
         res.status(500).json({ message: "Failed to fetch categories" });
+    }
+});
+
+/**
+ * @route POST /api/products/categories
+ * @desc Add a new category (Requirement #12)
+ */
+router.post('/categories', async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ message: "Category name is required" });
+        
+        const newCategory = new Category({ name });
+        await newCategory.save();
+        res.status(201).json({ message: "Category created successfully", category: newCategory });
+    } catch (err) {
+        console.error("Category creation error:", err);
+        res.status(400).json({ message: err.message });
+    }
+});
+
+/**
+ * @route DELETE /api/products/categories/:id
+ * @desc Remove a category (Requirement #12)
+ */
+router.delete('/categories/:id', async (req, res) => {
+    try {
+        const category = await Category.findByIdAndDelete(req.params.id);
+        if (!category) return res.status(404).json({ message: "Category not found" });
+        res.status(200).json({ message: "Category removed successfully" });
+    } catch (err) {
+        console.error("Category deletion error:", err);
+        res.status(500).json({ message: err.message });
     }
 });
 
