@@ -25,10 +25,12 @@ describe('Order Model Unit Tests', () => {
             items: [{
                 product: mockProductId,
                 name: 'Game A',
+                category: 'Action',
                 model: 'M1',
                 serialNumber: 'SN1',
                 quantity: 1,
                 unitPrice: 50,
+                unitCost: 30,
                 lineTotal: 50
             }],
             subtotal: 50,
