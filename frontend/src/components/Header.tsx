@@ -18,7 +18,6 @@ const Header: React.FC = () => {
       <div className={styles.linkGroup}>
         <Link to="/shop" className={styles.navLink}>{t('header.collections')}</Link>
         <Link to="/deals" className={styles.navLink}>{t('header.deals')}</Link>
-        <Link to="/support" className={styles.navLink}>{t('header.support')}</Link>
         <Link to="/cart" className={styles.navLink}>
           {t('cart.title')}
           {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
