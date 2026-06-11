@@ -27,9 +27,10 @@ interface ManagedProduct {
 
 interface ManagedOrder {
   _id: string;
-  customer: { name: string; email: string } | null;
+  customer: { _id: string; name: string; email: string } | null;
   totalAmount: number;
   orderStatus: 'processing' | 'in-transit' | 'delivered' | 'cancelled';
+  deliveryAddress: string;
   createdAt: string;
   items: any[];
 }
@@ -60,6 +61,7 @@ const ManagerDashboard: React.FC = () => {
   const [orders, setOrders] = useState<ManagedOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState('');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [rowFeedback, setRowFeedback] = useState<{
     id: string;
@@ -468,42 +470,137 @@ const ManagerDashboard: React.FC = () => {
                   {orders.map((o) => {
                     const feedback = rowFeedback && rowFeedback.id === o._id ? rowFeedback : null;
                     const statusKey = o.orderStatus.replace('-', '_');
+                    const isExpanded = expandedId === o._id;
 
                     return (
-                      <tr key={o._id}>
-                        <td style={{ fontWeight: 600 }}>#{o._id.slice(-8).toUpperCase()}</td>
-                        <td>
-                          <div>{o.customer?.name || 'Unknown'}</div>
-                          <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{o.customer?.email}</div>
-                        </td>
-                        <td>{formatDate(o.createdAt)}</td>
-                        <td>${o.totalAmount.toFixed(2)}</td>
-                        <td>
-                          <span className={`${styles[`status_${statusKey}`]}`} style={{ fontWeight: 600 }}>
-                            {o.orderStatus.charAt(0).toUpperCase() + o.orderStatus.slice(1).replace('-', ' ')}
-                          </span>
-                        </td>
-                        <td>
-                          <div className={styles.actionCell}>
-                            <select
-                              className={styles.statusSelect}
-                              value={o.orderStatus}
-                              disabled={o.orderStatus === 'cancelled'}
-                              onChange={(e) => handleStatusUpdate(o._id, e.target.value)}
-                            >
-                              <option value="processing">Processing</option>
-                              <option value="in-transit">In Transit</option>
-                              <option value="delivered">Delivered</option>
-                              <option value="cancelled" disabled>Cancelled</option>
-                            </select>
+                      <React.Fragment key={o._id}>
+                        <tr>
+                          <td style={{ fontWeight: 600 }}>#{o._id.slice(-8).toUpperCase()}</td>
+                          <td>
+                            <div>{o.customer?.name || 'Unknown'}</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{o.customer?.email}</div>
+                          </td>
+                          <td>{formatDate(o.createdAt)}</td>
+                          <td>${o.totalAmount.toFixed(2)}</td>
+                          <td>
+                            <span className={`${styles[`status_${statusKey}`]}`} style={{ fontWeight: 600 }}>
+                              {o.orderStatus.charAt(0).toUpperCase() + o.orderStatus.slice(1).replace('-', ' ')}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actionCell} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <select
+                                className={styles.statusSelect}
+                                value={o.orderStatus}
+                                disabled={o.orderStatus === 'cancelled'}
+                                onChange={(e) => handleStatusUpdate(o._id, e.target.value)}
+                              >
+                                <option value="processing">Processing</option>
+                                <option value="in-transit">In Transit</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled" disabled>Cancelled</option>
+                              </select>
+                              <button 
+                                style={{
+                                  padding: '0.4rem 0.8rem',
+                                  fontSize: '0.8rem',
+                                  background: isExpanded ? '#443a35' : '#d4a017',
+                                  color: isExpanded ? '#d4c9a8' : '#000',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                  fontWeight: 600
+                                }}
+                                onClick={() => setExpandedId(isExpanded ? null : o._id)}
+                              >
+                                {isExpanded ? 'Hide' : 'Details'}
+                              </button>
+                            </div>
                             {feedback && (
-                              <span className={feedback.type === 'success' ? styles.successInline : styles.errorInline}>
+                              <div className={feedback.type === 'success' ? styles.successInline : styles.errorInline} style={{ marginTop: '0.4rem' }}>
                                 {feedback.message}
-                              </span>
+                              </div>
                             )}
-                          </div>
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr style={{ background: '#1c1815' }}>
+                            <td colSpan={6} style={{ padding: '1.5rem', borderBottom: '1px solid #3a3225' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                <div>
+                                  <h4 style={{ color: '#ffd700', margin: '0 0 1rem 0' }}>Delivery Information (Requirement #12)</h4>
+                                  <div style={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                                    gap: '1rem',
+                                    padding: '1rem',
+                                    background: '#120f0d',
+                                    borderRadius: '8px',
+                                    border: '1px solid #3a3225'
+                                  }}>
+                                    <div>
+                                      <div style={{ color: '#8a7d62', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Delivery ID</div>
+                                      <div style={{ fontFamily: 'monospace' }}>#{o._id}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color: '#8a7d62', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Customer ID</div>
+                                      <div style={{ fontFamily: 'monospace' }}>{o.customer?._id || 'N/A'}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color: '#8a7d62', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Delivery Address</div>
+                                      <div style={{ fontSize: '0.9rem' }}>{o.deliveryAddress}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color: '#8a7d62', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Actions</div>
+                                      <a 
+                                        href={`${API_BASE}/orders/${o._id}/invoice`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                          color: '#ffd700',
+                                          fontSize: '0.9rem',
+                                          textDecoration: 'none',
+                                          borderBottom: '1px dashed #ffd700'
+                                        }}
+                                      >
+                                        View Invoice PDF
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <h5 style={{ color: '#ffd700', margin: '0 0 0.8rem 0' }}>Products to be Delivered</h5>
+                                  <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                                      <thead>
+                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #3a3225' }}>
+                                          <th style={{ padding: '0.5rem', color: '#8a7d62' }}>Product ID</th>
+                                          <th style={{ padding: '0.5rem', color: '#8a7d62' }}>Name</th>
+                                          <th style={{ padding: '0.5rem', color: '#8a7d62' }}>Quantity</th>
+                                          <th style={{ padding: '0.5rem', color: '#8a7d62' }}>Unit Price</th>
+                                          <th style={{ padding: '0.5rem', color: '#8a7d62' }}>Total</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {o.items.map((item, idx) => (
+                                          <tr key={idx} style={{ borderBottom: '1px solid #2a2522' }}>
+                                            <td style={{ padding: '0.75rem 0.5rem', fontFamily: 'monospace', fontSize: '0.8rem' }}>{item.product}</td>
+                                            <td style={{ padding: '0.75rem 0.5rem' }}>{item.name}</td>
+                                            <td style={{ padding: '0.75rem 0.5rem' }}>{item.quantity}</td>
+                                            <td style={{ padding: '0.75rem 0.5rem' }}>${item.unitPrice.toFixed(2)}</td>
+                                            <td style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>${item.lineTotal.toFixed(2)}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
