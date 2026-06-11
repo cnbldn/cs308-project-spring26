@@ -102,7 +102,6 @@
     "emailInvoice": "Email for Invoice",
     "deliveryAddress": "Delivery Address",
     "payment": "Payment (Mock)",
-    "paymentHint": "Requirement #14: Card verification is out of scope.",
     "nameOnCard": "Name on Card",
     "cardNumber": "Card Number",
     "expiry": "Expiry",

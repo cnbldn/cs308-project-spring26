@@ -115,7 +115,6 @@
     "emailInvoice": "Fatura için E-posta",
     "deliveryAddress": "Teslimat Adresi",
     "payment": "Ödeme (Simüle)",
-    "paymentHint": "Gereksinim #14: Kart doğrulama kapsam dışıdır.",
     "nameOnCard": "Kart Üzerindeki İsim",
     "cardNumber": "Kart Numarası",
     "expiry": "Son Kullanma",

@@ -210,7 +210,6 @@ const Checkout: React.FC = () => {
 
         <div className={styles.section}>
           <h3>{t('checkout.payment')}</h3>
-          <p className={styles.hint}>{t('checkout.paymentHint')}</p>
           <div className={styles.field}>
             <label>{t('checkout.nameOnCard')}</label>
             <input 
