@@ -114,8 +114,10 @@ const Shop: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get<string[]>(`${API_BASE}/products/categories`);
-        setCategories(res.data);
+        const res = await axios.get<any[]>(`${API_BASE}/products/categories`);
+        // The backend might return an array of objects [{ _id, name }] or strings
+        const names = res.data.map((c) => (typeof c === 'string' ? c : c.name));
+        setCategories(names);
       } catch (err) {
         console.error('Failed to fetch categories:', err);
       }
