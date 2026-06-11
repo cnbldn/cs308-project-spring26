@@ -89,6 +89,7 @@ const ManagerDashboard: React.FC = () => {
     price: '',
     stock: '',
     category: '',
+    imageUrl: '',
     distributorInfo: { name: '', contactEmail: '', country: '' }
   });
 
@@ -180,6 +181,7 @@ const ManagerDashboard: React.FC = () => {
         price: '',
         stock: '',
         category: '',
+        imageUrl: '',
         distributorInfo: { name: '', contactEmail: '', country: '' }
       });
       fetchProducts();
@@ -840,6 +842,17 @@ const ManagerDashboard: React.FC = () => {
                     onChange={(e) => setNewProduct({ ...newProduct, serialNumber: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className={styles.field}>
+                <label style={{ color: '#8a7d62', fontSize: '0.8rem' }}>Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/image.png"
+                  style={{ width: '100%', padding: '0.6rem', background: '#221c19', border: '1px solid #3a3225', color: '#d4c9a8' }}
+                  value={newProduct.imageUrl}
+                  onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                />
               </div>
 
               <div className={styles.field}>
