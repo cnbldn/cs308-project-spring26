@@ -292,10 +292,6 @@ const ManagerDashboard: React.FC = () => {
       minute: '2-digit',
     });
 
-  const categories = Array.from(
-    new Set(products.map((p) => p.category).filter(Boolean)),
-  ).sort();
-
   const filteredProducts = products
     .filter((p) => {
       const searchTerm = search.toLowerCase();
